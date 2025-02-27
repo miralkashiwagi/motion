@@ -1,0 +1,115 @@
+---
+import Layout from '../layouts/Layout.astro';
+import CategoryNav from '../components/CategoryNav.astro';
+import { getCollection } from 'astro:content';
+import AnimationCard from '../components/AnimationCard.astro';
+
+// アニメーションの取得
+const allAnimations = await getCollection('animations');
+
+// カテゴリの一覧を取得
+const categories = [...new Set(allAnimations.map(animation => animation.data.category))];
+
+// カテゴリごとにアニメーションを分類
+const animationsByCategory = {};
+categories.forEach(category => {
+  // そのカテゴリのアニメーションを取得して日付順にソート
+  const categoryAnimations = allAnimations
+    .filter(animation => animation.data.category === category)
+    .sort((a, b) => {
+      const dateA = a.data.pubDate || new Date(0);
+      const dateB = b.data.pubDate || new Date(0);
+      return dateB.getTime() - dateA.getTime();
+    })
+    .slice(0, 12); // 最大12件まで表示
+  
+  animationsByCategory[category] = categoryAnimations;
+});
+---
+
+<Layout title="ホーム">
+  <section class="py-12">
+    <div class="text-center mb-12">
+      <h1 class="text-4xl font-bold text-gray-900 dark:text-white mb-4">Web Animation Catalog</h1>
+      <p class="text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto">
+        ウェブ開発者のためのインタラクティブなアニメーションテクニックのカタログ。
+        CSS、GSAP、その他のライブラリを使用した実装例とコードサンプル。
+      </p>
+    </div>
+    
+    <div class="max-w-7xl mx-auto">
+      <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-6">カテゴリ</h2>
+      <CategoryNav />
+      
+      {categories.map(category => {
+        const categoryAnimations = animationsByCategory[category] || [];
+        return categoryAnimations.length > 0 ? (
+          <div class="mt-12">
+            <div class="flex justify-between items-center mb-6">
+              <h2 class="text-2xl font-bold text-gray-900 dark:text-white">{category}</h2>
+              <a href={`/categories/${category.toLowerCase().replace(/\s+/g, '-')}`} class="text-indigo-600 dark:text-indigo-400 hover:underline">
+                すべて見る →
+              </a>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {categoryAnimations.map(animation => (
+                <AnimationCard animation={animation} />
+              ))}
+            </div>
+          </div>
+        ) : null;
+      })}
+    </div>
+  </section>
+  
+  <section class="py-12 bg-gray-50 dark:bg-gray-800/50 rounded-lg my-12">
+    <div class="max-w-7xl mx-auto">
+      <div class="text-center mb-8">
+        <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">このカタログについて</h2>
+        <p class="text-gray-600 dark:text-gray-400 max-w-3xl mx-auto">
+          このカタログは、モダンなウェブサイトやアプリケーションで使用される様々なアニメーション技術を集めたリファレンスです。
+          各アニメーションには、実装方法の詳細な説明とコードサンプルが含まれています。
+        </p>
+      </div>
+      
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mt-8">
+        <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md">
+          <div class="text-indigo-600 dark:text-indigo-400 mb-4">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-8 h-8">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 7.5l3 2.25-3 2.25m4.5 0h3m-9 8.25h13.5A2.25 2.25 0 0021 18V6a2.25 2.25 0 00-2.25-2.25H5.25A2.25 2.25 0 003 6v12a2.25 2.25 0 002.25 2.25z" />
+            </svg>
+          </div>
+          <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">コードサンプル</h3>
+          <p class="text-gray-600 dark:text-gray-400">
+            すべてのアニメーションには、コピー＆ペーストで使用できるコードサンプルが含まれています。
+          </p>
+        </div>
+        
+        <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md">
+          <div class="text-indigo-600 dark:text-indigo-400 mb-4">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-8 h-8">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z" />
+            </svg>
+          </div>
+          <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">インタラクティブデモ</h3>
+          <p class="text-gray-600 dark:text-gray-400">
+            各アニメーションには、実際に動作するインタラクティブなデモが付属しています。
+          </p>
+        </div>
+        
+        <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md">
+          <div class="text-indigo-600 dark:text-indigo-400 mb-4">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-8 h-8">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M4.26 10.147a60.436 60.436 0 00-.491 6.347A48.627 48.627 0 0112 20.904a48.627 48.627 0 018.232-4.41 60.46 60.46 0 00-.491-6.347m-15.482 0a50.57 50.57 0 00-2.658-.813A59.905 59.905 0 0112 3.493a59.902 59.902 0 0110.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.697 50.697 0 0112 13.489a50.702 50.702 0 017.74-3.342M6.75 15a.75.75 0 100-1.5.75.75 0 000 1.5zm0 0v-3.675A55.378 55.378 0 0112 8.443m-7.007 11.55A5.981 5.981 0 006.75 15.75v-1.5" />
+            </svg>
+          </div>
+          <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">実装ガイド</h3>
+          <p class="text-gray-600 dark:text-gray-400">
+            各アニメーションには、実装方法の詳細な説明と注意点が記載されています。
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+</Layout>

@@ -1,0 +1,152 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import AnimationCard from '../../components/AnimationCard.astro';
+import { getCollection } from 'astro:content';
+
+// すべてのアニメーションを取得
+const allAnimations = await getCollection('animations');
+
+// フィルタリングとソートのための状態
+const categories = [...new Set(allAnimations.map(animation => animation.data.category))];
+const difficulties = ['beginner', 'intermediate', 'advanced'];
+
+// 初期状態ではすべてのアニメーションを表示
+const filteredAnimations = [...allAnimations].sort((a, b) => {
+  // 日付でソート（新しい順）
+  const dateA = a.data.pubDate || new Date(0);
+  const dateB = b.data.pubDate || new Date(0);
+  return dateB.getTime() - dateA.getTime();
+});
+---
+
+<Layout title="アニメーション一覧">
+  <div class="max-w-7xl mx-auto">
+    <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-8">アニメーション一覧</h1>
+    
+    <div class="flex flex-col md:flex-row gap-4 mb-8">
+      <div class="md:w-1/4">
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">フィルター</h2>
+          
+          <div class="mb-4">
+            <label for="category-filter" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">カテゴリ</label>
+            <select id="category-filter" class="w-full rounded-md border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+              <option value="">すべて</option>
+              {categories.map(category => (
+                <option value={category}>{category}</option>
+              ))}
+            </select>
+          </div>
+          
+          <div class="mb-4">
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">難易度</label>
+            <div class="space-y-2">
+              {difficulties.map(difficulty => (
+                <div class="flex items-center">
+                  <input 
+                    type="checkbox" 
+                    id={`difficulty-${difficulty}`} 
+                    name="difficulty" 
+                    value={difficulty}
+                    class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                  />
+                  <label for={`difficulty-${difficulty}`} class="ml-2 text-sm text-gray-700 dark:text-gray-300 capitalize">
+                    {difficulty === 'beginner' ? '初級' : difficulty === 'intermediate' ? '中級' : '上級'}
+                  </label>
+                </div>
+              ))}
+            </div>
+          </div>
+          
+          <div>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">ライブラリ</label>
+            <div class="space-y-2">
+              <div class="flex items-center">
+                <input 
+                  type="checkbox" 
+                  id="lib-css" 
+                  name="library" 
+                  value="css"
+                  class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                />
+                <label for="lib-css" class="ml-2 text-sm text-gray-700 dark:text-gray-300">CSS</label>
+              </div>
+              <div class="flex items-center">
+                <input 
+                  type="checkbox" 
+                  id="lib-gsap" 
+                  name="library" 
+                  value="gsap"
+                  class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                />
+                <label for="lib-gsap" class="ml-2 text-sm text-gray-700 dark:text-gray-300">GSAP</label>
+              </div>
+              <div class="flex items-center">
+                <input 
+                  type="checkbox" 
+                  id="lib-anime" 
+                  name="library" 
+                  value="anime.js"
+                  class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                />
+                <label for="lib-anime" class="ml-2 text-sm text-gray-700 dark:text-gray-300">Anime.js</label>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="md:w-3/4">
+        <div class="mb-4 flex justify-between items-center">
+          <p class="text-gray-600 dark:text-gray-400"><span id="animation-count">{filteredAnimations.length}</span> 件のアニメーション</p>
+          <div class="flex items-center">
+            <label for="sort-order" class="mr-2 text-sm text-gray-700 dark:text-gray-300">並び順:</label>
+            <select id="sort-order" class="rounded-md border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+              <option value="newest">新しい順</option>
+              <option value="oldest">古い順</option>
+              <option value="difficulty-asc">難易度（易しい順）</option>
+              <option value="difficulty-desc">難易度（難しい順）</option>
+            </select>
+          </div>
+        </div>
+        
+        <div id="animations-grid" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {filteredAnimations.map(animation => (
+            <AnimationCard animation={animation} />
+          ))}
+        </div>
+      </div>
+    </div>
+  </div>
+</Layout>
+
+<script>
+  // クライアントサイドのフィルタリングとソート機能
+  document.addEventListener('DOMContentLoaded', () => {
+    const categoryFilter = document.getElementById('category-filter');
+    const difficultyCheckboxes = document.querySelectorAll('input[name="difficulty"]');
+    const libraryCheckboxes = document.querySelectorAll('input[name="library"]');
+    const sortOrder = document.getElementById('sort-order');
+    const animationsGrid = document.getElementById('animations-grid');
+    const animationCount = document.getElementById('animation-count');
+    
+    // フィルタリングとソートを適用する関数
+    const applyFilters = () => {
+      // この部分はクライアントサイドで実装する必要があります
+      // 実際のアプリケーションでは、APIリクエストやJavaScriptでのフィルタリングを行います
+      console.log('フィルターが変更されました');
+    };
+    
+    // イベントリスナーの設定
+    categoryFilter?.addEventListener('change', applyFilters);
+    sortOrder?.addEventListener('change', applyFilters);
+    
+    difficultyCheckboxes.forEach(checkbox => {
+      checkbox.addEventListener('change', applyFilters);
+    });
+    
+    libraryCheckboxes.forEach(checkbox => {
+      checkbox.addEventListener('change', applyFilters);
+    });
+  });
+</script>

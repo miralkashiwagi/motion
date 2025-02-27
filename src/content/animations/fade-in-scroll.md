@@ -1,0 +1,166 @@
+---
+title: スクロールフェードイン
+description: 要素がビューポートに入ったときに徐々にフェードインするアニメーション。Intersection Observerを使用した実装例。
+category: スクロールアニメーション
+tags: [スクロール, JavaScript, フェードイン]
+difficulty: intermediate
+preview: /images/animations/scroll-fade.gif
+pubDate: 2023-03-05
+---
+
+
+# スクロールフェードイン
+
+ページをスクロールして要素がビューポートに入ったときに、徐々にフェードインするアニメーション効果です。モダンなウェブサイトでよく使用されるテクニックで、Intersection Observer APIを使用して実装します。
+
+## デモ
+
+<AnimationDemo title="スクロールフェードイン" description="下にスクロールすると要素が徐々に表示されます" height="300px">
+  <div class="scroll-container">
+    <div class="scroll-content">
+      <div class="fade-in-element">最初の要素</div>
+      <div class="fade-in-element">2番目の要素</div>
+      <div class="fade-in-element">3番目の要素</div>
+      <div class="fade-in-element">4番目の要素</div>
+    </div>
+  </div>
+  
+  <style>
+    .scroll-container {
+      height: 250px;
+      overflow-y: auto;
+      border: 1px solid #e5e7eb;
+      border-radius: 0.5rem;
+    }
+    
+    .scroll-content {
+      padding: 1rem;
+    }
+    
+    .fade-in-element {
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+      padding: 2rem;
+      margin-bottom: 1rem;
+      background-color: #f3f4f6;
+      border-radius: 0.5rem;
+      text-align: center;
+    }
+    
+    .fade-in-element.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  </style>
+  
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+          }
+        });
+      }, { threshold: 0.1 });
+      
+      const fadeElements = document.querySelectorAll('.fade-in-element');
+      fadeElements.forEach(element => {
+        observer.observe(element);
+      });
+      
+      // デモリセット時の処理
+      document.querySelector('.demo-content').addEventListener('demo-reset', () => {
+        setTimeout(() => {
+          const newFadeElements = document.querySelectorAll('.fade-in-element');
+          newFadeElements.forEach(element => {
+            element.classList.remove('visible');
+            observer.observe(element);
+          });
+        }, 100);
+      });
+    });
+  </script>
+</AnimationDemo>
+
+## 実装方法
+
+このエフェクトは、Intersection Observer APIを使用して要素がビューポートに入ったかどうかを検出し、CSSトランジションでフェードイン効果を適用します。
+
+### HTML
+
+```html
+<div class="fade-in-element">コンテンツ1</div>
+<div class="fade-in-element">コンテンツ2</div>
+<div class="fade-in-element">コンテンツ3</div>
+<div class="fade-in-element">コンテンツ4</div>
+```
+
+### CSS
+
+```css
+.fade-in-element {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+  /* 他のスタイリング */
+  padding: 2rem;
+  margin-bottom: 1rem;
+  background-color: #f3f4f6;
+  border-radius: 0.5rem;
+}
+.fade-in-element.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+```
+
+### JavaScript
+
+```javascript
+document.addEventListener('DOMContentLoaded', () => {
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        // 一度表示されたら監視を解除（オプション）
+        // observer.unobserve(entry.target);
+      }
+    });
+  }, { 
+    threshold: 0.1 // 要素の10%が見えたらコールバックを実行
+  });
+  
+  const fadeElements = document.querySelectorAll('.fade-in-element');
+  fadeElements.forEach(element => {
+    observer.observe(element);
+  });
+});
+```
+
+## ポイント
+
+- Intersection Observer APIを使用することで、スクロールイベントを監視するよりもパフォーマンスが向上します。
+- `threshold`オプションを調整することで、要素がどの程度見えたときにアニメーションを開始するかを制御できます。
+- `transform`と`opacity`の両方を変更することで、より自然な動きを作成できます。
+- 一度表示された要素を再度非表示にしたくない場合は、`observer.unobserve(entry.target)`を使用して監視を解除できます。
+
+## バリエーション
+
+このエフェクトには、以下のようなバリエーションも考えられます：
+
+1. **スライドイン**: 左右からスライドインする効果
+2. **スケールイン**: 小さいサイズから徐々に拡大する効果
+3. **連続アニメーション**: 複数の要素を順番にアニメーションさせる
+4. **パララックス効果**: スクロール速度に応じて異なる速度で移動する効果
+
+## ブラウザ互換性
+
+Intersection Observer APIは、以下のブラウザでサポートされています：
+
+- Chrome 51+
+- Firefox 55+
+- Safari 12.1+
+- Edge 15+
+
+Internet Explorer ではサポートされていないため、ポリフィルが必要です。
