@@ -6,6 +6,7 @@ tags: [スクロール, JavaScript, フェードイン]
 difficulty: intermediate
 preview: /images/animations/scroll-fade.gif
 pubDate: 2023-03-05
+useIframe: true
 ---
 
 
@@ -15,7 +16,7 @@ pubDate: 2023-03-05
 
 ## デモ
 
-<AnimationDemo title="スクロールフェードイン" description="下にスクロールすると要素が徐々に表示されます" height="300px">
+<IframeDemo title="スクロールフェードイン" description="下にスクロールすると要素が徐々に表示されます" height="300px">
   <div class="scroll-container">
     <div class="scroll-content">
       <div class="fade-in-element">最初の要素</div>
@@ -81,7 +82,7 @@ pubDate: 2023-03-05
       });
     });
   </script>
-</AnimationDemo>
+</IframeDemo>
 
 ## 実装方法
 

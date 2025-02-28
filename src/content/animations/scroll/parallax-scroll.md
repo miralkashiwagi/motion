@@ -1,0 +1,120 @@
+---
+title: パララックススクロール効果
+description: スクロール速度に応じて異なる速度で移動するパララックス効果。CSSのperspectiveプロパティを使用した実装例。
+category: スクロールアニメーション
+tags: [スクロール, CSS, パララックス]
+difficulty: intermediate
+preview: /images/animations/parallax-scroll.gif
+pubDate: 2023-03-15
+useIframe: true
+---
+
+# パララックススクロール効果
+
+パララックススクロールは、背景と前景が異なる速度で移動することで、奥行きと立体感を生み出すテクニックです。ウェブサイトに視覚的な深みを加えることができます。
+
+## デモ
+
+<IframeDemo 
+  title="パララックススクロール" 
+  description="スクロールすると各レイヤーが異なる速度で移動します" 
+  height="400px"
+/>
+
+## 実装方法
+
+このエフェクトは、CSSのperspectiveプロパティとtransformのtranslateZ値を組み合わせることで実現します。
+
+### HTML
+
+```html
+<div class="parallax-container">
+  <div class="parallax-layer layer-back">背景レイヤー</div>
+  <div class="parallax-layer layer-mid">中間レイヤー</div>
+  <div class="parallax-layer layer-front">前面レイヤー</div>
+  
+  <div class="content">
+    <h2>コンテンツタイトル</h2>
+    <p>コンテンツの説明文...</p>
+  </div>
+</div>
+```
+
+### CSS
+
+```css
+.parallax-container {
+  height: 100vh;
+  overflow-y: auto;
+  perspective: 1px;
+  perspective-origin: center top;
+}
+
+.parallax-layer {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100px;
+  margin-bottom: 20px;
+}
+
+.layer-back {
+  transform: translateZ(-0.5px) scale(1.5);
+  background-color: #3b82f6;
+  z-index: -1;
+}
+
+.layer-mid {
+  transform: translateZ(-0.25px) scale(1.25);
+  background-color: #8b5cf6;
+  z-index: 0;
+}
+
+.layer-front {
+  transform: translateZ(0);
+  background-color: #ec4899;
+  z-index: 1;
+}
+
+.content {
+  position: relative;
+  padding: 20px;
+  margin: 20px;
+  background-color: rgba(255, 255, 255, 0.9);
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  z-index: 2;
+}
+```
+
+## 仕組みの解説
+
+1. **perspective**: コンテナに3D空間を作成します。値が小さいほど効果が強くなります。
+2. **translateZ**: 要素のZ軸位置を設定します。負の値は要素を「奥」に配置します。
+3. **scale**: translateZで要素が小さくなるのを補正するために使用します。
+
+## バリエーション
+
+パララックス効果にはさまざまなバリエーションがあります：
+
+1. **水平パララックス**: 横スクロール時に効果を適用
+2. **マウス追従パララックス**: マウスの動きに応じて要素を移動
+3. **スティッキーパララックス**: 要素が一定位置に固定されながら他の要素がスクロール
+
+## 注意点
+
+- モバイルデバイスでは処理負荷が高くなる場合があるため、必要に応じて効果を軽減または無効化することを検討してください。
+- 過度なパララックス効果は、一部のユーザーに不快感や吐き気を引き起こす可能性があります。
+- アクセシビリティを考慮し、`prefers-reduced-motion`メディアクエリを使用して、ユーザーの設定に応じて効果を調整することをお勧めします。
+
+## 直接IframeDemoを使用する例
+
+<IframeDemo 
+title="カスタムパララックスデモ" 
+description="IframeDemoタグを直接使用した例"
+src="demos/scroll/parallax-scroll.html"
+height="350px"
+/>
+
+このように、AnimationDemoとIframeDemoの両方を同じMarkdownファイル内で使用することができます。

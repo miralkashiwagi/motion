@@ -1,0 +1,348 @@
+---
+title: GSAPを使用したフェードイン
+description: GSAPとScrollTriggerを使用して、要素がビューポートに入ったときに滑らかにフェードインするアニメーション。
+category: スクロールアニメーション
+tags: [GSAP, ScrollTrigger, フェードイン]
+difficulty: intermediate
+preview: /images/animations/gsap-fade-in.gif
+pubDate: 2023-03-10
+useIframe: true
+---
+
+# GSAPを使用したフェードイン
+
+GSAPとScrollTriggerプラグインを使用して、要素がビューポートに入ったときに滑らかにフェードインするアニメーションです。Intersection Observerよりも柔軟な制御が可能になります。
+
+## デモ
+
+<IframeDemo title="GSAPフェードイン" description="下にスクロールすると要素が滑らかにフェードインします" height="400px">
+  <div class="gsap-scroll-container">
+    <div class="gsap-scroll-content">
+      <div class="gsap-fade-element">基本的なフェードイン</div>
+      <div class="gsap-fade-element from-bottom">下からのスライドイン</div>
+      <div class="gsap-fade-element from-left">左からのスライドイン</div>
+      <div class="gsap-fade-element zoom-in">ズームイン</div>
+      <div class="gsap-fade-element rotate">回転しながらのフェードイン</div>
+    </div>
+  </div>
+  
+  <style>
+    .gsap-scroll-container {
+      height: 350px;
+      overflow-y: auto;
+      border: 1px solid #e5e7eb;
+      border-radius: 0.5rem;
+    }
+    
+    .gsap-scroll-content {
+      padding: 1rem;
+    }
+    
+    .gsap-fade-element {
+      opacity: 0;
+      padding: 2rem;
+      margin-bottom: 1.5rem;
+      background-color: #f3f4f6;
+      border-radius: 0.5rem;
+      text-align: center;
+      font-weight: 500;
+    }
+    
+    .gsap-fade-element.from-bottom {
+      transform: translateY(50px);
+    }
+    
+    .gsap-fade-element.from-left {
+      transform: translateX(-50px);
+    }
+    
+    .gsap-fade-element.zoom-in {
+      transform: scale(0.8);
+    }
+    
+    .gsap-fade-element.rotate {
+      transform: rotate(-10deg);
+    }
+  </style>
+  
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // GSAPとScrollTriggerが読み込まれていることを確認
+      if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
+        // ScrollTriggerプラグインを登録
+        gsap.registerPlugin(ScrollTrigger);
+        
+        // 基本的なフェードイン
+        gsap.utils.toArray('.gsap-fade-element').forEach((element, i) => {
+          // 各要素に対してアニメーションを設定
+          gsap.from(element, {
+            scrollTrigger: {
+              trigger: element,
+              scroller: '.gsap-scroll-container',
+              start: 'top 80%',
+              end: 'bottom 20%',
+              toggleActions: 'play none none reverse'
+            },
+            opacity: 0,
+            duration: 0.8,
+            delay: i * 0.2
+          });
+          
+          // 下からのスライドイン
+          if (element.classList.contains('from-bottom')) {
+            gsap.from(element, {
+              scrollTrigger: {
+                trigger: element,
+                scroller: '.gsap-scroll-container',
+                start: 'top 80%',
+                end: 'bottom 20%',
+                toggleActions: 'play none none reverse'
+              },
+              y: 50,
+              duration: 0.8,
+              delay: i * 0.2
+            });
+          }
+          
+          // 左からのスライドイン
+          if (element.classList.contains('from-left')) {
+            gsap.from(element, {
+              scrollTrigger: {
+                trigger: element,
+                scroller: '.gsap-scroll-container',
+                start: 'top 80%',
+                end: 'bottom 20%',
+                toggleActions: 'play none none reverse'
+              },
+              x: -50,
+              duration: 0.8,
+              delay: i * 0.2
+            });
+          }
+          
+          // ズームイン
+          if (element.classList.contains('zoom-in')) {
+            gsap.from(element, {
+              scrollTrigger: {
+                trigger: element,
+                scroller: '.gsap-scroll-container',
+                start: 'top 80%',
+                end: 'bottom 20%',
+                toggleActions: 'play none none reverse'
+              },
+              scale: 0.8,
+              duration: 0.8,
+              delay: i * 0.2
+            });
+          }
+          
+          // 回転しながらのフェードイン
+          if (element.classList.contains('rotate')) {
+            gsap.from(element, {
+              scrollTrigger: {
+                trigger: element,
+                scroller: '.gsap-scroll-container',
+                start: 'top 80%',
+                end: 'bottom 20%',
+                toggleActions: 'play none none reverse'
+              },
+              rotation: -10,
+              duration: 0.8,
+              delay: i * 0.2
+            });
+          }
+        });
+      }
+      
+      // デモリセット時の処理
+      const demoContent = document.querySelector('.demo-content');
+      if (demoContent) {
+        demoContent.addEventListener('demo-reset', () => {
+          // GSAPのアニメーションをリセット
+          if (typeof gsap !== 'undefined') {
+            // 既存のScrollTriggerを全て削除
+            ScrollTrigger.getAll().forEach(trigger => trigger.kill());
+            
+            setTimeout(() => {
+              // 新しい要素に対してアニメーションを再設定
+              gsap.utils.toArray('.gsap-fade-element').forEach((element, i) => {
+                // 基本的なフェードイン
+                gsap.set(element, { opacity: 0 });
+                
+                if (element.classList.contains('from-bottom')) {
+                  gsap.set(element, { y: 50 });
+                }
+                
+                if (element.classList.contains('from-left')) {
+                  gsap.set(element, { x: -50 });
+                }
+                
+                if (element.classList.contains('zoom-in')) {
+                  gsap.set(element, { scale: 0.8 });
+                }
+                
+                if (element.classList.contains('rotate')) {
+                  gsap.set(element, { rotation: -10 });
+                }
+                
+                // 各要素に対してアニメーションを設定
+                gsap.from(element, {
+                  scrollTrigger: {
+                    trigger: element,
+                    scroller: '.gsap-scroll-container',
+                    start: 'top 80%',
+                    end: 'bottom 20%',
+                    toggleActions: 'play none none reverse'
+                  },
+                  opacity: 0,
+                  duration: 0.8,
+                  delay: i * 0.2
+                });
+                
+                // 他のアニメーションも同様に再設定...
+              });
+            }, 100);
+          }
+        });
+      }
+    });
+  </script>
+</IframeDemo>
+
+## 実装方法
+
+このエフェクトは、GSAPライブラリとScrollTriggerプラグインを使用して実装します。要素がビューポートに入ったときに、様々なアニメーションを適用できます。
+
+### HTML
+
+```html
+<div class="gsap-fade-element">基本的なフェードイン</div>
+<div class="gsap-fade-element from-bottom">下からのスライドイン</div>
+<div class="gsap-fade-element from-left">左からのスライドイン</div>
+<div class="gsap-fade-element zoom-in">ズームイン</div>
+<div class="gsap-fade-element rotate">回転しながらのフェードイン</div>
+```
+
+### CSS
+
+```css
+.gsap-fade-element {
+  opacity: 0; /* 初期状態は非表示 */
+  padding: 2rem;
+  margin-bottom: 1.5rem;
+  background-color: #f3f4f6;
+  border-radius: 0.5rem;
+  text-align: center;
+}
+```
+
+### JavaScript (GSAP)
+
+```javascript
+// GSAPとScrollTriggerプラグインを登録
+gsap.registerPlugin(ScrollTrigger);
+
+// 基本的なフェードイン
+gsap.utils.toArray('.gsap-fade-element').forEach((element, i) => {
+  // 各要素に対してアニメーションを設定
+  gsap.from(element, {
+    scrollTrigger: {
+      trigger: element,
+      start: 'top 80%', // 要素の上部がビューポートの80%位置に来たとき
+      end: 'bottom 20%', // 要素の下部がビューポートの20%位置に来たとき
+      toggleActions: 'play none none reverse' // 入ったら再生、出たら逆再生
+    },
+    opacity: 0,
+    duration: 0.8,
+    delay: i * 0.2 // 各要素に少しずつ遅延を追加
+  });
+  
+  // 下からのスライドイン
+  if (element.classList.contains('from-bottom')) {
+    gsap.from(element, {
+      scrollTrigger: {
+        trigger: element,
+        start: 'top 80%',
+        end: 'bottom 20%',
+        toggleActions: 'play none none reverse'
+      },
+      y: 50, // 下から50px移動
+      duration: 0.8,
+      delay: i * 0.2
+    });
+  }
+  
+  // 左からのスライドイン
+  if (element.classList.contains('from-left')) {
+    gsap.from(element, {
+      scrollTrigger: {
+        trigger: element,
+        start: 'top 80%',
+        end: 'bottom 20%',
+        toggleActions: 'play none none reverse'
+      },
+      x: -50, // 左から50px移動
+      duration: 0.8,
+      delay: i * 0.2
+    });
+  }
+  
+  // ズームイン
+  if (element.classList.contains('zoom-in')) {
+    gsap.from(element, {
+      scrollTrigger: {
+        trigger: element,
+        start: 'top 80%',
+        end: 'bottom 20%',
+        toggleActions: 'play none none reverse'
+      },
+      scale: 0.8, // 80%のサイズから拡大
+      duration: 0.8,
+      delay: i * 0.2
+    });
+  }
+  
+  // 回転しながらのフェードイン
+  if (element.classList.contains('rotate')) {
+    gsap.from(element, {
+      scrollTrigger: {
+        trigger: element,
+        start: 'top 80%',
+        end: 'bottom 20%',
+        toggleActions: 'play none none reverse'
+      },
+      rotation: -10, // -10度から回転
+      duration: 0.8,
+      delay: i * 0.2
+    });
+  }
+});
+```
+
+## ポイント
+
+- GSAPの`from`メソッドを使用して、初期状態から最終状態へのアニメーションを定義します。
+- ScrollTriggerの`trigger`オプションで、アニメーションのトリガーとなる要素を指定します。
+- `start`と`end`オプションで、アニメーションの開始と終了のタイミングを制御します。
+- `toggleActions`オプションで、要素がビューポートに入ったときと出たときの動作を指定します。
+- 複数のアニメーションを組み合わせることで、より複雑な効果を作成できます。
+
+## バリエーション
+
+このエフェクトには、以下のようなバリエーションも考えられます：
+
+1. **順次表示**: `stagger`オプションを使用して、複数の要素を順番にアニメーションさせる
+2. **スクロール連動**: `scrub: true`オプションを使用して、スクロール位置に応じてアニメーションを進行させる
+3. **ピン留め**: `pin: true`オプションを使用して、スクロール中に要素を固定する
+4. **タイムライン**: `gsap.timeline()`を使用して、複数のアニメーションを連続して実行する
+
+## 必要なライブラリ
+
+このエフェクトを実装するには、以下のライブラリが必要です：
+
+- GSAP (GreenSock Animation Platform): https://greensock.com/gsap/
+- ScrollTrigger プラグイン: https://greensock.com/scrolltrigger/
+
+```html
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>

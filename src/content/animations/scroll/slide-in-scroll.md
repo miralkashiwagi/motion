@@ -1,0 +1,103 @@
+---
+title: スライドインスクロール
+description: 要素がビューポートに入ったときに左右からスライドインするアニメーション。Intersection Observerを使用した実装例。
+category: スクロールアニメーション
+tags: [スクロール, JavaScript, スライドイン]
+difficulty: intermediate
+preview: /images/animations/slide-in-scroll.gif
+pubDate: 2023-03-08
+useIframe: true
+---
+
+# スライドインスクロール
+
+ページをスクロールして要素がビューポートに入ったときに、左右からスライドインするアニメーション効果です。フェードインと組み合わせることで、より印象的な表示効果を実現できます。
+
+## デモ
+
+<IframeDemo 
+  title="スライドインスクロール" 
+  description="下にスクロールすると要素が左右からスライドインします" 
+  height="400px"
+/>
+
+## 実装方法
+
+このエフェクトは、Intersection Observer APIを使用して要素がビューポートに入ったかどうかを検出し、CSSトランジションでスライドイン効果を適用します。
+
+### HTML
+
+```html
+<div class="slide-in-element slide-left">左からスライドイン</div>
+<div class="slide-in-element slide-right">右からスライドイン</div>
+<div class="slide-in-element slide-left">左からスライドイン</div>
+<div class="slide-in-element slide-right">右からスライドイン</div>
+```
+
+### CSS
+
+```css
+.slide-in-element {
+  opacity: 0;
+  transition: opacity 0.6s ease, transform 0.6s ease;
+  padding: 2rem;
+  margin-bottom: 1rem;
+  background-color: #f3f4f6;
+  border-radius: 0.5rem;
+  text-align: center;
+}
+
+.slide-left {
+  transform: translateX(-50px);
+}
+
+.slide-right {
+  transform: translateX(50px);
+}
+
+.slide-in-element.visible {
+  opacity: 1;
+  transform: translateX(0);
+}
+```
+
+### JavaScript
+
+```javascript
+document.addEventListener('DOMContentLoaded', () => {
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+      }
+    });
+  }, { threshold: 0.1 });
+  
+  const slideElements = document.querySelectorAll('.slide-in-element');
+  slideElements.forEach(element => {
+    observer.observe(element);
+  });
+});
+```
+
+## 応用例
+
+このスライドインアニメーションは、以下のような要素に効果的です：
+
+1. **カード要素**: 商品カードや情報カードが画面に入るときの演出
+2. **セクション見出し**: 各セクションの見出しが画面に入るときの演出
+3. **リスト項目**: リストの各項目が順番にスライドインする演出
+4. **画像ギャラリー**: 画像が左右から交互にスライドインする演出
+
+## バリエーション
+
+スライドイン効果にはさまざまなバリエーションを追加できます：
+
+1. **方向の多様化**: 上下左右からのスライドイン
+2. **タイミングの調整**: 要素ごとに遅延を設定して順番に表示
+3. **イージング関数**: 異なるイージング関数を使用して動きに変化をつける
+4. **距離の調整**: スライドする距離を調整して効果の強さを変える
+
+## ブラウザ対応
+
+Intersection Observer APIは、最新のブラウザで広くサポートされています。古いブラウザでは、ポリフィルを使用するか、スクロールイベントを使用した代替実装を検討してください。

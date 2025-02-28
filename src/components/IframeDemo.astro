@@ -1,0 +1,70 @@
+---
+interface Props {
+  title: string;
+  description?: string;
+  src?: string;
+  height?: string;
+  controls?: boolean;
+}
+
+const { 
+  title, 
+  description, 
+  src: providedSrc,
+  height = '300px', 
+  controls = true 
+} = Astro.props;
+
+// 現在のパスからデモファイルのパスを自動生成
+let src = providedSrc;
+if (!src) {
+  // 現在のURLパスを取得
+  const currentPath = Astro.url.pathname;
+  // /animations/[category]/[name] の形式からdemos/[category]/[name].htmlを生成
+  const match = currentPath.match(/\/animations\/([^\/]+)\/([^\/]+)/);
+  if (match) {
+    const [, category, name] = match;
+    src = `${import.meta.env.BASE_URL}/demos/${category}/${name}.html`;
+  }
+}
+---
+
+<div class="iframe-demo my-8 bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden">
+  <div class="p-4 border-b border-gray-200 dark:border-gray-700">
+    <h3 class="text-lg font-semibold text-gray-900 dark:text-white">{title}</h3>
+    {description && <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">{description}</p>}
+  </div>
+  
+  <div class="demo-container relative">
+    <iframe 
+      src={src} 
+      class="w-full border-0" 
+      style={`height: ${height};`}
+      loading="lazy"
+      title={title}
+      id="demo-iframe"
+    ></iframe>
+    
+    {controls && (
+      <div class="demo-controls absolute bottom-0 right-0 p-2 bg-gray-100 dark:bg-gray-900 rounded-tl-md border-t border-l border-gray-200 dark:border-gray-700">
+        <button id="reset-iframe-demo" class="text-xs px-2 py-1 bg-indigo-100 hover:bg-indigo-200 dark:bg-indigo-900/30 dark:hover:bg-indigo-800/50 text-indigo-700 dark:text-indigo-400 rounded">
+          リセット
+        </button>
+      </div>
+    )}
+  </div>
+</div>
+
+<script>
+  // iframeデモのリセット機能
+  document.addEventListener('DOMContentLoaded', () => {
+    const resetButtons = document.querySelectorAll('#reset-iframe-demo');
+    
+    resetButtons.forEach(button => {
+      button.addEventListener('click', () => {
+        const iframe = button.closest('.demo-container').querySelector('iframe');
+        iframe.src = iframe.src;
+      });
+    });
+  });
+</script>

@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>パララックススクロール</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: #ffffff;
+      color: #333333;
+      line-height: 1.6;
+      overflow: hidden;
+    }
+    
+    .parallax-container {
+      height: 100%;
+      overflow-y: auto;
+      perspective: 1px;
+      perspective-origin: center top;
+    }
+    
+    .parallax-layer {
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100px;
+      margin-bottom: 20px;
+      color: white;
+      font-weight: bold;
+      text-align: center;
+      border-radius: 8px;
+    }
+    
+    .layer-back {
+      transform: translateZ(-0.5px) scale(1.5);
+      background-color: #3b82f6;
+      z-index: -1;
+    }
+    
+    .layer-mid {
+      transform: translateZ(-0.25px) scale(1.25);
+      background-color: #8b5cf6;
+      z-index: 0;
+    }
+    
+    .layer-front {
+      transform: translateZ(0);
+      background-color: #ec4899;
+      z-index: 1;
+    }
+    
+    .content {
+      padding: 20px;
+      margin: 20px;
+      background-color: rgba(255, 255, 255, 0.9);
+      border-radius: 8px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    
+    /* ダークモード対応 */
+    @media (prefers-color-scheme: dark) {
+      body {
+        background-color: #1f2937;
+        color: #e5e7eb;
+      }
+      
+      .content {
+        background-color: rgba(31, 41, 55, 0.9);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="parallax-container">
+    <div style="height: 50px;"></div>
+    
+    <div class="parallax-layer layer-back">背景レイヤー (遅い)</div>
+    <div class="parallax-layer layer-mid">中間レイヤー</div>
+    <div class="parallax-layer layer-front">前面レイヤー (速い)</div>
+    
+    <div class="content">
+      <h2>パララックスエフェクト</h2>
+      <p>スクロールすると、各レイヤーが異なる速度で移動します。これにより、奥行きと立体感が生まれます。</p>
+    </div>
+    
+    <div class="parallax-layer layer-back">背景レイヤー (遅い)</div>
+    <div class="parallax-layer layer-mid">中間レイヤー</div>
+    <div class="parallax-layer layer-front">前面レイヤー (速い)</div>
+    
+    <div class="content">
+      <h2>仕組み</h2>
+      <p>CSS の perspective プロパティと translateZ を組み合わせることで、3D 空間での動きを表現しています。</p>
+    </div>
+    
+    <div class="parallax-layer layer-back">背景レイヤー (遅い)</div>
+    <div class="parallax-layer layer-mid">中間レイヤー</div>
+    <div class="parallax-layer layer-front">前面レイヤー (速い)</div>
+    
+    <div style="height: 100px;"></div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // メッセージリスナーを追加（親フレームからのリセット指示を受け取る）
+      window.addEventListener('message', (event) => {
+        if (event.data === 'reset-demo') {
+          // スクロール位置をリセット
+          document.querySelector('.parallax-container').scrollTop = 0;
+        }
+      });
+    });
+  </script>
+</body>
+</html>
