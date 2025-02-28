@@ -11,6 +11,23 @@ const allAnimations = await getCollection('animations');
 // カテゴリの一覧を取得
 const categories = [...new Set(allAnimations.map(animation => animation.data.category))];
 
+// カテゴリ名とIDのマッピング
+const categoryIdMap = {
+  'ホバーエフェクト': 'interactive-animations',
+  'ボタンエフェクト': 'interactive-animations',
+  'カードエフェクト': 'interactive-animations',
+  'ハンバーガーメニュー': 'menu-animations',
+  'ドロップダウン': 'menu-animations',
+  'メガメニュー': 'menu-animations',
+  'スクロールトリガー': 'scroll-animations',
+  'パララックス': 'scroll-animations',
+  'タイピングエフェクト': 'text-animations',
+  'テキストエフェクト': 'text-animations',
+  'ローディングアニメーション': 'page-animations',
+  'ページトランジション': 'page-animations',
+  '特殊効果': 'others'
+};
+
 // カテゴリごとにアニメーションを分類
 const animationsByCategory = {};
 categories.forEach(category => {
@@ -32,14 +49,14 @@ categories.forEach(category => {
   <section class="py-12">
     <div class="text-center mb-12">
       <h1 class="text-4xl font-bold text-gray-900 dark:text-white mb-4">Web Animation Catalog</h1>
-      <p class="text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto">
+      <p class="text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto mb-4">
         ウェブ開発者のためのインタラクティブなアニメーションテクニックのカタログ。
         CSS、GSAP、その他のライブラリを使用した実装例とコードサンプル。
       </p>
     </div>
     
     <div class="max-w-7xl mx-auto">
-      <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-6">カテゴリ</h2>
+      <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-6">アニメーションカテゴリ</h2>
       <CategoryNav />
       
       {categories.map(category => {
@@ -48,7 +65,7 @@ categories.forEach(category => {
           <div class="mt-12">
             <div class="flex justify-between items-center mb-6">
               <h2 class="text-2xl font-bold text-gray-900 dark:text-white">{category}</h2>
-              <a href={`${import.meta.env.BASE_URL}/categories/${category.toLowerCase().replace(/\s+/g, '-')}/`} class="text-indigo-600 dark:text-indigo-400 hover:underline">
+              <a href={`${import.meta.env.BASE_URL}/categories/${categoryIdMap[category]}/`} class="text-indigo-600 dark:text-indigo-400 hover:underline">
                 すべて見る →
               </a>
             </div>

@@ -1,82 +1,63 @@
 ---
 import Layout from '../../layouts/Layout.astro';
 import AnimationCard from '../../components/AnimationCard.astro';
+import SubCategoryList from '../../components/SubCategoryList.astro';
 import { getCollection } from 'astro:content';
+import { getCategoryInfo } from '../../utils/categoryUtils';
 
 export async function getStaticPaths() {
-  const allAnimations = await getCollection('animations');
+  const categories = [
+    'interactive-animations',
+    'menu-animations',
+    'scroll-animations',
+    'text-animations',
+    'page-animations',
+    'others'
+  ];
   
-  // カテゴリの一覧を取得
-  const categories = [...new Set(allAnimations.map(animation => animation.data.category))];
-  
-  // カテゴリごとのページを生成
-  return categories.map(category => {
-    const categoryId = category.toLowerCase().replace(/\s+/g, '-');
-    const categoryAnimations = allAnimations.filter(animation => 
-      animation.data.category.toLowerCase() === category.toLowerCase()
-    );
-    
-    return {
-      params: { category: categoryId },
-      props: { category, animations: categoryAnimations }
-    };
-  });
+  return categories.map(category => ({
+    params: { category },
+    props: { categoryId: category }
+  }));
 }
 
-// カテゴリ情報のマッピング
-const categoryInfo = {
-  'ホバーエフェクト': {
-    description: 'マウスホバー時のインタラクティブなアニメーション効果のコレクション。ボタン、カード、テキストなどの要素に適用できる様々なエフェクトを紹介します。',
-    icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-8 h-8">
-      <path stroke-linecap="round" stroke-linejoin="round" d="M15.042 21.672 13.684 16.6m0 0-2.51 2.225.569-9.47 5.227 7.917-3.286-.672Zm-7.518-.267A8.25 8.25 0 1 1 20.25 10.5M8.288 14.212A5.25 5.25 0 1 1 17.25 10.5" />
-    </svg>`
-  },
-  'スクロールアニメーション': {
-    description: 'スクロールに連動した表示効果とパララックス効果のコレクション。ページのスクロールに応じて要素を表示したり、動かしたりする様々な手法を紹介します。',
-    icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-8 h-8">
-      <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 5.25l-7.5 7.5-7.5-7.5m15 6l-7.5 7.5-7.5-7.5" />
-    </svg>`
-  },
-  'テキストアニメーション': {
-    description: '文字の動きとタイピング効果のコレクション。テキストを魅力的に表示するための様々なアニメーション技術を紹介します。',
-    icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-8 h-8">
-      <path stroke-linecap="round" stroke-linejoin="round" d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133a1.14 1.14 0 0 1 .865-.501 48.172 48.172 0 0 0 3.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0 0 12 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018Z" />
-    </svg>`
-  },
-  'ローディングアニメーション': {
-    description: '読み込み中の表示とスケルトンUIのコレクション。ユーザーに読み込み状態を伝えるための様々なアニメーション技術を紹介します。',
-    icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-8 h-8">
-      <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99" />
-    </svg>`
-  },
-  'メニュー展開効果': {
-    description: 'ナビゲーションメニューの開閉アニメーションのコレクション。ハンバーガーメニューやドロップダウンメニューなどの様々な実装方法を紹介します。',
-    icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-8 h-8">
-      <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
-    </svg>`
-  },
-  'その他の効果': {
-    description: 'その他の効果のコレクション。',
-    icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-8 h-8">
-      <path stroke-linecap="round" stroke-linejoin="round" d="M7.5 21 3 16.5m0 0L7.5 12M3 16.5h13.5m0-13.5L21 7.5m0 0L16.5 12M21 7.5H7.5" />
-    </svg>`
-  },
+const { category } = Astro.params;
+const { categoryId } = Astro.props;
+
+// カテゴリ情報を取得
+const info = getCategoryInfo(category);
+
+// アニメーションを取得
+const allAnimations = await getCollection('animations');
+
+// カテゴリに基づいてアニメーションをフィルタリング
+const categoryAnimations = allAnimations.filter(animation => {
+  // カテゴリIDに基づいてフィルタリング
+  if (categoryId === 'interactive-animations') {
+    return ['ホバーエフェクト', 'ボタンエフェクト', 'カードエフェクト'].includes(animation.data.category);
+  } else if (categoryId === 'menu-animations') {
+    return ['ハンバーガーメニュー', 'ドロップダウン', 'メガメニュー'].includes(animation.data.category);
+  } else if (categoryId === 'scroll-animations') {
+    return ['スクロールトリガー', 'パララックス'].includes(animation.data.category);
+  } else if (categoryId === 'text-animations') {
+    return ['タイピングエフェクト', 'テキストエフェクト'].includes(animation.data.category);
+  } else if (categoryId === 'page-animations') {
+    return ['ローディングアニメーション', 'ページトランジション'].includes(animation.data.category);
+  } else if (categoryId === 'others') {
+    return ['特殊効果'].includes(animation.data.category);
+  }
+  return false;
+});
+
+// 難易度でソート
+const difficultyOrder = {
+  'beginner': 1,
+  'intermediate': 2,
+  'advanced': 3
 };
 
-const { category, animations } = Astro.props;
-const info = categoryInfo[category] || {
-  description: `${category}に関するアニメーション技術のコレクション。`,
-  icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-8 h-8">
-    <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456zM16.894 20.567L16.5 21.75l-.394-1.183a2.25 2.25 0 00-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 001.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 001.423 1.423l1.183.394-1.183.394a2.25 2.25 0 00-1.423 1.423z" />
-  </svg>`
-};
-
-// アニメーションを難易度でソート
-const sortedAnimations = [...animations].sort((a, b) => {
-  const difficultyOrder = { beginner: 1, intermediate: 2, advanced: 3 };
-  const aDifficulty = a.data.difficulty ? difficultyOrder[a.data.difficulty] : 0;
-  const bDifficulty = b.data.difficulty ? difficultyOrder[b.data.difficulty] : 0;
-  return aDifficulty - bDifficulty;
+const sortedAnimations = [...categoryAnimations].sort((a, b) => {
+  return difficultyOrder[a.data.difficulty] - difficultyOrder[b.data.difficulty];
 });
 ---
 
@@ -119,11 +100,18 @@ const sortedAnimations = [...animations].sort((a, b) => {
       <p class="text-gray-600 dark:text-gray-400">{info.description}</p>
     </div>
 
+    <!-- サブカテゴリリストを表示 -->
+    <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-6">このカテゴリに含まれる技術</h2>
+    <SubCategoryList category={categoryId} />
+
     {sortedAnimations.length > 0 ? (
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {sortedAnimations.map(animation => (
-          <AnimationCard animation={animation} />
-        ))}
+      <div>
+        <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-6">実装例</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {sortedAnimations.map(animation => (
+            <AnimationCard animation={animation} />
+          ))}
+        </div>
       </div>
     ) : (
       <div class="text-center py-12">
