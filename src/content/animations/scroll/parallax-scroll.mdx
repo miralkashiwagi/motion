@@ -9,6 +9,9 @@ pubDate: 2023-03-15
 useIframe: true
 ---
 
+import IframeDemo from '../../../components/IframeDemo.astro';
+
+
 # パララックススクロール効果
 
 パララックススクロールは、背景と前景が異なる速度で移動することで、奥行きと立体感を生み出すテクニックです。ウェブサイトに視覚的な深みを加えることができます。
@@ -24,6 +27,7 @@ useIframe: true
 ## 実装方法
 
 このエフェクトは、CSSのperspectiveプロパティとtransformのtranslateZ値を組み合わせることで実現します。
+
 
 ### HTML
 
@@ -107,14 +111,3 @@ useIframe: true
 - モバイルデバイスでは処理負荷が高くなる場合があるため、必要に応じて効果を軽減または無効化することを検討してください。
 - 過度なパララックス効果は、一部のユーザーに不快感や吐き気を引き起こす可能性があります。
 - アクセシビリティを考慮し、`prefers-reduced-motion`メディアクエリを使用して、ユーザーの設定に応じて効果を調整することをお勧めします。
-
-## 直接IframeDemoを使用する例
-
-<IframeDemo 
-title="カスタムパララックスデモ" 
-description="IframeDemoタグを直接使用した例"
-src="demos/scroll/parallax-scroll.html"
-height="350px"
-/>
-
-このように、AnimationDemoとIframeDemoの両方を同じMarkdownファイル内で使用することができます。

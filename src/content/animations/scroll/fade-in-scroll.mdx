@@ -9,6 +9,7 @@ pubDate: 2023-03-05
 useIframe: true
 ---
 
+import IframeDemo from '../../../components/IframeDemo.astro';
 
 # スクロールフェードイン
 
@@ -17,71 +18,6 @@ useIframe: true
 ## デモ
 
 <IframeDemo title="スクロールフェードイン" description="下にスクロールすると要素が徐々に表示されます" height="300px">
-  <div class="scroll-container">
-    <div class="scroll-content">
-      <div class="fade-in-element">最初の要素</div>
-      <div class="fade-in-element">2番目の要素</div>
-      <div class="fade-in-element">3番目の要素</div>
-      <div class="fade-in-element">4番目の要素</div>
-    </div>
-  </div>
-  
-  <style>
-    .scroll-container {
-      height: 250px;
-      overflow-y: auto;
-      border: 1px solid #e5e7eb;
-      border-radius: 0.5rem;
-    }
-    
-    .scroll-content {
-      padding: 1rem;
-    }
-    
-    .fade-in-element {
-      opacity: 0;
-      transform: translateY(20px);
-      transition: opacity 0.6s ease, transform 0.6s ease;
-      padding: 2rem;
-      margin-bottom: 1rem;
-      background-color: #f3f4f6;
-      border-radius: 0.5rem;
-      text-align: center;
-    }
-    
-    .fade-in-element.visible {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  </style>
-  
-  <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add('visible');
-          }
-        });
-      }, { threshold: 0.1 });
-      
-      const fadeElements = document.querySelectorAll('.fade-in-element');
-      fadeElements.forEach(element => {
-        observer.observe(element);
-      });
-      
-      // デモリセット時の処理
-      document.querySelector('.demo-content').addEventListener('demo-reset', () => {
-        setTimeout(() => {
-          const newFadeElements = document.querySelectorAll('.fade-in-element');
-          newFadeElements.forEach(element => {
-            element.classList.remove('visible');
-            observer.observe(element);
-          });
-        }, 100);
-      });
-    });
-  </script>
 </IframeDemo>
 
 ## 実装方法
