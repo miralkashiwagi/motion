@@ -1,0 +1,113 @@
+---
+title: 背景色の滑らかな変化
+description: マウスホバー時に背景色が滑らかに変化するエフェクト。CSSのtransitionプロパティを使用した実装例。
+category: ホバーエフェクト
+tags: [CSS, トランジション, 色変化]
+difficulty: beginner
+preview: /images/animations/hover-color.gif
+pubDate: 2023-01-20
+useIframe: true
+---
+
+import IframeDemo from '../../../components/IframeDemo.astro';
+
+# 背景色の滑らかな変化
+
+マウスホバー時に背景色が滑らかに変化するエフェクトです。CSSのtransitionプロパティを使用して簡単に実装できます。
+
+## デモ
+
+<IframeDemo title="背景色の滑らかな変化" description="マウスを乗せると背景色が滑らかに変化します" height="300px">
+</IframeDemo>
+
+## 実装方法
+
+このエフェクトは、CSSの`transition`プロパティを使用して実装します。要素に対して、背景色の変化を滑らかに行うことで、インタラクティブな印象を与えます。
+
+### 基本的な背景色の変化
+
+#### HTML
+```html
+<div class="hover-color-item">ホバーしてください</div>
+```
+
+#### CSS
+```css
+.hover-color-item {
+  background-color: #4f46e5;
+  color: white;
+  padding: 2rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.hover-color-item:hover {
+  background-color: #818cf8;
+}
+```
+
+### グラデーションの変化
+
+#### HTML
+```html
+<div class="hover-color-item gradient">グラデーション変化</div>
+```
+
+#### CSS
+```css
+.hover-color-item.gradient {
+  background: linear-gradient(135deg, #4f46e5 0%, #6366f1 100%);
+  transition: background 0.5s ease;
+}
+
+.hover-color-item.gradient:hover {
+  background: linear-gradient(135deg, #6366f1 0%, #818cf8 100%);
+}
+```
+
+### テキスト色も変化
+
+#### HTML
+```html
+<div class="hover-color-item text-color">テキスト色も変化</div>
+```
+
+#### CSS
+```css
+.hover-color-item.text-color {
+  background-color: #f3f4f6;
+  color: #4f46e5;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.hover-color-item.text-color:hover {
+  background-color: #4f46e5;
+  color: white;
+}
+```
+
+## ポイント
+
+- `transition`プロパティを使用して、背景色の変化を滑らかにアニメーションさせています。
+- 複数のプロパティを同時にアニメーションさせることができます（例：背景色とテキスト色）。
+- グラデーションの変化にはより長い時間（0.5秒）を設定して、視覚的な効果を強調しています。
+- `:hover`疑似クラスを使用して、マウスホバー時のスタイルを定義しています。
+
+## バリエーション
+
+このエフェクトには、以下のようなバリエーションも考えられます：
+
+1. **複数の色の変化**: 複数のプロパティ（背景色、テキスト色、境界線の色など）を同時に変化させる
+2. **異なるタイミング**: 各プロパティの変化に異なるタイミングを設定する
+3. **イージング関数の変更**: `ease`、`ease-in`、`ease-out`などの異なるイージング関数を使用する
+4. **遅延の追加**: `transition-delay`を使用して、変化の開始を遅らせる
+
+## ブラウザ互換性
+
+このエフェクトは、モダンブラウザでよくサポートされています：
+
+- Chrome 26+
+- Firefox 16+
+- Safari 6.1+
+- Edge 12+

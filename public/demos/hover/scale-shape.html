@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ゆるやかな拡大・縮小効果</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: #ffffff;
+      color: #333333;
+      line-height: 1.6;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 1rem;
+    }
+    
+    .scale-shape-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.5rem;
+      justify-content: center;
+    }
+    
+    .scale-item {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 150px;
+      height: 100px;
+      background-color: #4f46e5;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    
+    /* 拡大効果 */
+    .scale-item:hover {
+      transform: scale(1.1);
+      box-shadow: 0 10px 15px rgba(0, 0, 0, 0.2);
+    }
+    
+    /* 縮小効果 */
+    .scale-item.shrink {
+      background-color: #10b981;
+    }
+    
+    .scale-item.shrink:hover {
+      transform: scale(0.9);
+    }
+    
+    /* 角丸化効果 */
+    .scale-item.rounded {
+      background-color: #f59e0b;
+    }
+    
+    .scale-item.rounded:hover {
+      transform: scale(1.05);
+      border-radius: 50px;
+    }
+    
+    /* 傾き効果 */
+    .scale-item.skew {
+      background-color: #ef4444;
+    }
+    
+    .scale-item.skew:hover {
+      transform: scale(1.05) skew(-10deg);
+    }
+    
+    /* ダークモード対応 */
+    @media (prefers-color-scheme: dark) {
+      body {
+        background-color: #1f2937;
+        color: #e5e7eb;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="scale-shape-container">
+    <div class="scale-item">拡大効果</div>
+    <div class="scale-item shrink">縮小効果</div>
+    <div class="scale-item rounded">角丸化</div>
+    <div class="scale-item skew">傾き効果</div>
+  </div>
+</body>
+</html>

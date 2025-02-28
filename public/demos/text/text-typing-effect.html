@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>テキストタイピングエフェクト</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: #ffffff;
+      color: #333333;
+      line-height: 1.6;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 1rem;
+    }
+    
+    .typing-demo-container {
+      display: inline-block;
+      font-family: monospace;
+      font-size: 1.25rem;
+      margin: 1rem 0;
+    }
+    
+    .typing-demo-text {
+      width: 0;
+      overflow: hidden;
+      white-space: nowrap;
+      border-right: 3px solid #4f46e5;
+      animation: 
+        typing 3s steps(30) 1s 1 normal both,
+        blink-caret 0.75s step-end infinite;
+    }
+    
+    .typing-demo-multiline {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      margin-top: 2rem;
+    }
+    
+    .typing-demo-multiline .line {
+      width: 0;
+      overflow: hidden;
+      white-space: nowrap;
+      opacity: 0;
+    }
+    
+    .typing-demo-multiline .line:nth-child(1) {
+      animation: 
+        typing 2s steps(20) 0.5s 1 normal forwards,
+        blink-caret 0.75s step-end 0.5s 2.5s;
+      border-right: 3px solid #4f46e5;
+    }
+    
+    .typing-demo-multiline .line:nth-child(2) {
+      animation: 
+        typing 2s steps(20) 3s 1 normal forwards,
+        blink-caret 0.75s step-end 3s 2.5s;
+      border-right: 3px solid #4f46e5;
+    }
+    
+    .typing-demo-multiline .line:nth-child(3) {
+      animation: 
+        typing 2s steps(20) 5.5s 1 normal forwards,
+        blink-caret 0.75s step-end 5.5s infinite;
+      border-right: 3px solid #4f46e5;
+    }
+    
+    @keyframes typing {
+      from { 
+        width: 0;
+        opacity: 1;
+      }
+      to { 
+        width: 100%;
+        opacity: 1;
+      }
+    }
+    
+    @keyframes blink-caret {
+      from, to { border-color: transparent }
+      50% { border-color: #4f46e5 }
+    }
+    
+    /* ダークモード対応 */
+    @media (prefers-color-scheme: dark) {
+      body {
+        background-color: #1f2937;
+        color: #e5e7eb;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="typing-container">
+    <div class="typing-demo-container">
+      <div class="typing-demo-text">こんにちは、ようこそウェブアニメーションの世界へ</div>
+    </div>
+    
+    <div class="typing-demo-multiline">
+      <div class="line">こんにちは、</div>
+      <div class="line">ウェブアニメーションの</div>
+      <div class="line">世界へようこそ！</div>
+    </div>
+  </div>
+
+  <script>
+    // アニメーションをリセットする関数
+    function resetAnimation() {
+      const elements = document.querySelectorAll('.typing-demo-text, .line');
+      elements.forEach(el => {
+        el.style.animation = 'none';
+        el.offsetHeight; // リフロー
+        el.style.animation = null;
+      });
+    }
+    
+    // メッセージリスナーを追加（親フレームからのリセット指示を受け取る）
+    window.addEventListener('message', (event) => {
+      if (event.data === 'reset-demo') {
+        resetAnimation();
+      }
+    });
+  </script>
+</body>
+</html>

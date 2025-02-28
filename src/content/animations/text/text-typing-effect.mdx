@@ -1,0 +1,155 @@
+---
+title: テキストタイピングエフェクト
+description: テキストが一文字ずつタイプされているように表示されるアニメーション効果。CSSアニメーションを使用した実装例。
+category: テキストアニメーション
+tags: [テキスト, CSS, アニメーション]
+difficulty: intermediate
+preview: /images/animations/text-typing.gif
+pubDate: 2023-02-10
+useIframe: true
+---
+
+import IframeDemo from '../../../components/IframeDemo.astro';
+
+# テキストタイピングエフェクト
+
+テキストが一文字ずつタイプされているように表示されるアニメーション効果です。CSSのアニメーションと`steps()`関数を使用して実装します。
+
+## デモ
+
+テキストが一文字ずつタイプされるように表示されるデモです：
+
+<IframeDemo title="テキストタイピングエフェクト" description="テキストが一文字ずつタイプされるように表示されます" height="300px">
+</IframeDemo>
+
+## 実装方法
+
+このエフェクトは、CSSの`animation`プロパティと`steps()`タイミング関数を使用して実装します。テキストの幅を0から徐々に増やしていくことで、文字が一つずつ表示されるように見せます。
+
+### HTML
+
+```html
+<div class="typing-container">
+  <div class="typing-text">こんにちは、ようこそウェブアニメーションの世界へ</div>
+</div>
+```
+
+### CSS
+
+```css
+.typing-container {
+  display: inline-block;
+  font-family: monospace;
+  font-size: 1.25rem;
+}
+
+.typing-text {
+  width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  border-right: 3px solid #4f46e5;
+  animation: 
+    typing 3s steps(30) 1s 1 normal both,
+    blink-caret 0.75s step-end infinite;
+}
+
+@keyframes typing {
+  from { width: 0 }
+  to { width: 100% }
+}
+
+@keyframes blink-caret {
+  from, to { border-color: transparent }
+  50% { border-color: #4f46e5 }
+}
+```
+
+## 複数行のタイピングエフェクト
+
+複数行のテキストを順番にタイプするエフェクトも実装できます：
+
+### HTML
+
+```html
+<div class="typing-multiline">
+  <div class="line">こんにちは、</div>
+  <div class="line">ウェブアニメーションの</div>
+  <div class="line">世界へようこそ！</div>
+</div>
+```
+
+### CSS
+
+```css
+.typing-multiline {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.typing-multiline .line {
+  width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  opacity: 0;
+}
+
+.typing-multiline .line:nth-child(1) {
+  animation: 
+    typing 2s steps(20) 0.5s 1 normal forwards,
+    blink-caret 0.75s step-end 0.5s 2.5s;
+  border-right: 3px solid #4f46e5;
+}
+
+.typing-multiline .line:nth-child(2) {
+  animation: 
+    typing 2s steps(20) 3s 1 normal forwards,
+    blink-caret 0.75s step-end 3s 2.5s;
+  border-right: 3px solid #4f46e5;
+}
+
+.typing-multiline .line:nth-child(3) {
+  animation: 
+    typing 2s steps(20) 5.5s 1 normal forwards,
+    blink-caret 0.75s step-end 5.5s infinite;
+  border-right: 3px solid #4f46e5;
+}
+
+@keyframes typing {
+  from { 
+    width: 0;
+    opacity: 1;
+  }
+  to { 
+    width: 100%;
+    opacity: 1;
+  }
+}
+```
+
+## ポイント
+
+- `white-space: nowrap`を使用して、テキストが折り返されないようにします。
+- `overflow: hidden`を使用して、表示されていないテキストを隠します。
+- `width: 0`から`width: 100%`へのアニメーションで、テキストが徐々に表示されるようにします。
+- `steps()`関数を使用して、テキストが一文字ずつ表示されるようにします。ステップ数はテキストの文字数に合わせて調整します。
+- `border-right`と`blink-caret`アニメーションで、カーソルの点滅を表現します。
+- 複数行のエフェクトでは、各行に異なるアニメーションの遅延時間を設定して、順番に表示されるようにします。
+
+## バリエーション
+
+このエフェクトには、以下のようなバリエーションも考えられます：
+
+1. **カラフルなテキスト**: 文字ごとに色を変える
+2. **削除エフェクト**: タイプした後に文字を削除するアニメーション
+3. **カーソルのスタイル変更**: 点滅するカーソルのスタイルを変更する
+4. **タイピング音の追加**: JavaScriptを使用してタイピング音を追加する
+
+## ブラウザ互換性
+
+このエフェクトは、モダンブラウザでよくサポートされています：
+
+- Chrome 43+
+- Firefox 44+
+- Safari 9+
+- Edge 12+

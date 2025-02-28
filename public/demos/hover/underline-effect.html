@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>左から右へのアンダーライン</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: #ffffff;
+      color: #333333;
+      line-height: 1.6;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+    
+    .underline-container {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+      align-items: center;
+      padding: 1rem;
+    }
+    
+    .underline-item {
+      position: relative;
+      font-size: 1.25rem;
+      color: #4f46e5;
+      text-decoration: none;
+      padding-bottom: 4px;
+    }
+    
+    /* 左から右へ */
+    .underline-item.left-to-right::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 0;
+      height: 2px;
+      background-color: #4f46e5;
+      transition: width 0.3s ease;
+    }
+    
+    .underline-item.left-to-right:hover::after {
+      width: 100%;
+    }
+    
+    /* 中央から拡大 */
+    .underline-item.center-expand::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      width: 0;
+      height: 2px;
+      background-color: #8b5cf6;
+      transition: width 0.3s ease, left 0.3s ease;
+    }
+    
+    .underline-item.center-expand:hover::after {
+      width: 100%;
+      left: 0;
+    }
+    
+    /* 二重線 */
+    .underline-item.double-line::before,
+    .underline-item.double-line::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 0;
+      height: 2px;
+      background-color: #6366f1;
+      transition: width 0.3s ease;
+    }
+    
+    .underline-item.double-line::before {
+      bottom: 4px;
+      transition-delay: 0.1s;
+    }
+    
+    .underline-item.double-line:hover::before,
+    .underline-item.double-line:hover::after {
+      width: 100%;
+    }
+    
+    /* 点線から実線 */
+    .underline-item.dotted-to-solid {
+      border-bottom: 2px dotted #ec4899;
+      transition: border-bottom 0.3s ease;
+    }
+    
+    .underline-item.dotted-to-solid:hover {
+      border-bottom: 2px solid #ec4899;
+    }
+    
+    /* 塗りつぶし */
+    .underline-item.fill-up::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 0;
+      background-color: rgba(79, 70, 229, 0.1);
+      transition: height 0.3s ease;
+      z-index: -1;
+    }
+    
+    .underline-item.fill-up:hover::after {
+      height: 100%;
+    }
+    
+    /* ダークモード対応 */
+    @media (prefers-color-scheme: dark) {
+      body {
+        background-color: #1f2937;
+        color: #e5e7eb;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="underline-container">
+    <a href="javascript:void(0)" class="underline-item left-to-right">左から右へ</a>
+    <a href="javascript:void(0)" class="underline-item center-expand">中央から拡大</a>
+    <a href="javascript:void(0)" class="underline-item double-line">二重線</a>
+    <a href="javascript:void(0)" class="underline-item dotted-to-solid">点線から実線</a>
+    <a href="javascript:void(0)" class="underline-item fill-up">塗りつぶし</a>
+  </div>
+
+  <script>
+    // メッセージリスナーを追加（親フレームからのリセット指示を受け取る）
+    window.addEventListener('message', (event) => {
+      if (event.data === 'reset-demo') {
+        // リセットの必要がある場合は、ここに処理を追加
+      }
+    });
+  </script>
+</body>
+</html>

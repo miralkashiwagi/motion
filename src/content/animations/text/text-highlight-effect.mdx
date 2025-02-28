@@ -1,0 +1,180 @@
+---
+title: テキストハイライト効果
+description: テキストの背景色を使ったハイライト効果。CSSのtransitionとbackground-positionを使用した実装例。
+category: テキストアニメーション
+tags: [CSS, テキスト, ハイライト]
+difficulty: intermediate
+preview: /images/animations/text-highlight.gif
+pubDate: 2023-02-15
+useIframe: true
+---
+
+import IframeDemo from '../../../components/IframeDemo.astro';
+
+# テキストハイライト効果
+
+テキストの背景色を使ったハイライト効果です。CSSの`transition`と`background-position`プロパティを使用して実装します。
+
+## デモ
+
+<IframeDemo title="テキストハイライト効果" description="テキストにマウスを乗せると背景色でハイライトされます" height="400px">
+</IframeDemo>
+
+## 実装方法
+
+このエフェクトは、CSSの`background-image`、`background-size`、`transition`プロパティを使用して実装します。テキストにマウスを乗せると、背景色が広がってハイライト効果を生み出します。
+
+### 基本的なハイライト効果
+
+#### HTML
+```html
+<p class="highlight-text">基本的なハイライト効果</p>
+```
+
+#### CSS
+```css
+.highlight-text {
+  font-size: 1.25rem;
+  font-weight: 500;
+  display: inline-block;
+  background-image: linear-gradient(transparent 60%, #fef08a 40%);
+  background-size: 0 100%;
+  background-repeat: no-repeat;
+  transition: background-size 0.4s ease;
+  cursor: pointer;
+}
+
+.highlight-text:hover {
+  background-size: 100% 100%;
+}
+```
+
+### 左から右へのハイライト
+
+#### HTML
+```html
+<p class="highlight-left-to-right">左から右へのハイライト</p>
+```
+
+#### CSS
+```css
+.highlight-left-to-right {
+  font-size: 1.25rem;
+  background-image: linear-gradient(transparent 60%, #bae6fd 40%);
+  background-size: 0 100%;
+  background-repeat: no-repeat;
+  background-position: left;
+  transition: background-size 0.4s ease;
+  cursor: pointer;
+}
+
+.highlight-left-to-right:hover {
+  background-size: 100% 100%;
+}
+```
+
+### 右から左へのハイライト
+
+#### HTML
+```html
+<p class="highlight-right-to-left">右から左へのハイライト</p>
+```
+
+#### CSS
+```css
+.highlight-right-to-left {
+  font-size: 1.25rem;
+  background-image: linear-gradient(transparent 60%, #c7d2fe 40%);
+  background-size: 0 100%;
+  background-repeat: no-repeat;
+  background-position: right;
+  transition: background-size 0.4s ease;
+  cursor: pointer;
+}
+
+.highlight-right-to-left:hover {
+  background-size: 100% 100%;
+}
+```
+
+### グラデーションハイライト
+
+#### HTML
+```html
+<p class="highlight-gradient">グラデーションハイライト</p>
+```
+
+#### CSS
+```css
+.highlight-gradient {
+  font-size: 1.25rem;
+  background-image: linear-gradient(transparent 60%, #fecdd3 40%);
+  background-size: 0 100%;
+  background-repeat: no-repeat;
+  transition: background-size 0.4s ease, background-image 0.4s ease;
+  cursor: pointer;
+}
+
+.highlight-gradient:hover {
+  background-size: 100% 100%;
+  background-image: linear-gradient(transparent 60%, #fda4af 40%);
+}
+```
+
+### アンダーラインハイライト
+
+#### HTML
+```html
+<p class="highlight-underline">アンダーラインハイライト</p>
+```
+
+#### CSS
+```css
+.highlight-underline {
+  font-size: 1.25rem;
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+}
+
+.highlight-underline::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 3px;
+  background-color: #a5b4fc;
+  transition: width 0.4s ease;
+}
+
+.highlight-underline:hover::after {
+  width: 100%;
+}
+```
+
+## ポイント
+
+- `background-image`と`linear-gradient`を使用して、ハイライト効果の色と位置を設定します。
+- `background-size`を0から100%に変化させることで、ハイライトの拡大を表現します。
+- `background-position`を変更することで、ハイライトの方向を制御できます。
+- `transition`プロパティを使用して、変化をスムーズにアニメーションさせています。
+- アンダーラインバージョンでは、`::after`疑似要素を使用して下線を表現しています。
+
+## バリエーション
+
+このエフェクトには、以下のようなバリエーションも考えられます：
+
+1. **色の変化**: ハイライト色を変化させる
+2. **高さの変化**: ハイライトの高さを変化させる
+3. **複数色のグラデーション**: 複数の色を使ったグラデーションハイライト
+4. **波線ハイライト**: 直線ではなく波線でハイライトする
+
+## ブラウザ互換性
+
+このエフェクトは、モダンブラウザでよくサポートされています：
+
+- Chrome 26+
+- Firefox 16+
+- Safari 6.1+
+- Edge 12+

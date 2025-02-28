@@ -1,0 +1,71 @@
+---
+title: テキストタイピングエフェクト (ミニマル)
+description: テキストが一文字ずつタイプされているように表示されるアニメーション効果。最小限の実装例。
+category: テキストアニメーション
+tags: [テキスト, CSS, アニメーション]
+difficulty: beginner
+preview: /images/animations/text-typing.gif
+pubDate: 2023-02-10
+useIframe: true
+---
+
+import IframeDemo from '../../../components/IframeDemo.astro';
+
+# テキストタイピングエフェクト (ミニマル)
+
+テキストが一文字ずつタイプされているように表示されるアニメーション効果です。最小限のCSSで実装します。
+
+## デモ
+
+テキストが一文字ずつタイプされるように表示されるデモです：
+<IframeDemo title="テキストタイピングエフェクト (ミニマル)" description="テキストが一文字ずつタイプされるように表示されます" height="300px">
+</IframeDemo>
+
+## 実装方法
+
+このエフェクトは、CSSの`animation`プロパティと`steps()`タイミング関数を使用して実装します。最小限のコードで実現できます。
+
+### HTML
+
+```html
+<div class="typing-container">こんにちは、ようこそウェブアニメーションの世界へ</div>
+```
+
+### CSS
+
+```css
+.typing-container {
+  font-family: monospace;
+  font-size: 1.25rem;
+  border-right: 2px solid #4f46e5;
+  width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  animation: typing 3s steps(30) forwards, blink 0.8s infinite;
+}
+
+@keyframes typing {
+  to { width: 100%; }
+}
+
+@keyframes blink {
+  from, to { border-color: transparent }
+  50% { border-color: #4f46e5; }
+}
+```
+
+## ポイント
+
+- 最小限のCSSで実装するために、必要な要素だけを使用しています。
+- `steps()`関数を使用して、テキストが一文字ずつ表示されるようにします。
+- `animation`プロパティで複数のアニメーションを同時に適用しています。
+- `from`キーフレームを省略することで、コードをさらに短くしています。
+
+## ブラウザ互換性
+
+このエフェクトは、モダンブラウザでよくサポートされています：
+
+- Chrome 43+
+- Firefox 44+
+- Safari 9+
+- Edge 12+

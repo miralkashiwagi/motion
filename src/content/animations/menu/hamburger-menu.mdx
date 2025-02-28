@@ -1,0 +1,159 @@
+---
+title: ハンバーガーメニューアニメーション
+description: クリックするとハンバーガーアイコンが×マークに変化するアニメーション。CSSのtransformとtransitionプロパティを使用した実装例。
+category: メニューアニメーション
+tags: [CSS, メニュー, トランジション]
+difficulty: intermediate
+preview: /images/animations/hamburger-menu.gif
+pubDate: 2023-03-05
+useIframe: true
+---
+
+import IframeDemo from '../../../components/IframeDemo.astro';
+
+# ハンバーガーメニューアニメーション
+
+クリックするとハンバーガーアイコンが×マークに変化するアニメーションです。CSSの`transform`と`transition`プロパティを使用して実装します。
+
+## デモ
+
+<IframeDemo title="ハンバーガーメニューアニメーション" description="アイコンをクリックすると変形します" height="300px">
+</IframeDemo>
+
+## 実装方法
+
+このエフェクトは、CSSの`transform`と`transition`プロパティを使用して実装します。ハンバーガーアイコンの各線を回転・移動させることで、×マークや他の形状に変形させます。
+
+### 基本的なハンバーガーメニュー
+
+#### HTML
+```html
+<button class="hamburger-menu" aria-label="メニュー">
+  <span class="hamburger-line"></span>
+  <span class="hamburger-line"></span>
+  <span class="hamburger-line"></span>
+</button>
+```
+
+#### CSS
+```css
+.hamburger-menu {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 30px;
+  height: 24px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+}
+
+.hamburger-line {
+  width: 100%;
+  height: 3px;
+  background-color: #4f46e5;
+  border-radius: 3px;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+/* ×マークへの変形 */
+.hamburger-menu.active .hamburger-line:nth-child(1) {
+  transform: translateY(10.5px) rotate(45deg);
+}
+
+.hamburger-menu.active .hamburger-line:nth-child(2) {
+  opacity: 0;
+}
+
+.hamburger-menu.active .hamburger-line:nth-child(3) {
+  transform: translateY(-10.5px) rotate(-45deg);
+}
+```
+
+#### JavaScript
+```javascript
+const hamburgerMenu = document.querySelector('.hamburger-menu');
+hamburgerMenu.addEventListener('click', function() {
+  this.classList.toggle('active');
+});
+```
+
+## バリエーション
+
+### 回転する×への変形
+
+```css
+.hamburger-menu.spin .hamburger-line:nth-child(1) {
+  transform-origin: center;
+}
+
+.hamburger-menu.spin.active .hamburger-line:nth-child(1) {
+  transform: translateY(10.5px) rotate(225deg);
+}
+
+.hamburger-menu.spin.active .hamburger-line:nth-child(3) {
+  transform: translateY(-10.5px) rotate(-225deg);
+}
+```
+
+### 折りたたみ変形
+
+```css
+.hamburger-menu.collapse .hamburger-line {
+  transform-origin: right;
+}
+
+.hamburger-menu.collapse.active .hamburger-line:nth-child(1) {
+  transform: rotate(45deg);
+  width: 75%;
+}
+
+.hamburger-menu.collapse.active .hamburger-line:nth-child(2) {
+  opacity: 0;
+}
+
+.hamburger-menu.collapse.active .hamburger-line:nth-child(3) {
+  transform: rotate(-45deg);
+  width: 75%;
+}
+```
+
+### 矢印への変形
+
+```css
+.hamburger-menu.arrow .hamburger-line {
+  transform-origin: center;
+}
+
+.hamburger-menu.arrow.active .hamburger-line:nth-child(1) {
+  transform: translateY(3.5px) rotate(45deg);
+  width: 50%;
+}
+
+.hamburger-menu.arrow.active .hamburger-line:nth-child(2) {
+  transform: translateX(0);
+}
+
+.hamburger-menu.arrow.active .hamburger-line:nth-child(3) {
+  transform: translateY(-3.5px) rotate(-45deg);
+  width: 50%;
+}
+```
+
+## ポイント
+
+- `transform`プロパティを使用して、線の回転と移動を制御しています。
+- `transition`プロパティを使用して、変形をスムーズにアニメーションさせています。
+- 中央の線は、多くの場合、透明にするか非表示にします。
+- `transform-origin`プロパティを変更することで、回転の中心点を調整できます。
+- アクセシビリティのために、`aria-label`属性を追加しています。
+
+## ブラウザ互換性
+
+このエフェクトは、モダンブラウザでよくサポートされています：
+
+- Chrome 26+
+- Firefox 16+
+- Safari 6.1+
+- Edge 12+

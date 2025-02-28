@@ -1,0 +1,120 @@
+---
+title: ゆるやかな拡大・縮小効果
+description: マウスホバー時に要素がゆるやかに拡大・縮小するエフェクト。CSSのtransformとtransitionプロパティを使用した実装例。
+category: ホバーエフェクト
+tags: [CSS, トランジション, 変形]
+difficulty: beginner
+preview: /images/animations/hover-scale.gif
+pubDate: 2023-01-22
+useIframe: true
+---
+
+import IframeDemo from '../../../components/IframeDemo.astro';
+
+# ゆるやかな拡大・縮小効果
+
+マウスホバー時に要素がゆるやかに拡大・縮小するエフェクトです。CSSの`transform`と`transition`プロパティを使用して実装します。
+
+## デモ
+
+<IframeDemo title="ゆるやかな拡大・縮小効果" description="マウスを乗せると要素のサイズと形状が変化します" height="300px">
+</IframeDemo>
+
+## 実装方法
+
+このエフェクトは、CSSの`transform`プロパティと`transition`プロパティを使用して実装します。
+
+### HTML
+
+```html
+<div class="scale-container">
+  <div class="scale-item">拡大効果</div>
+  <div class="scale-item shrink">縮小効果</div>
+  <div class="scale-item rounded">角丸化</div>
+  <div class="scale-item skew">傾き効果</div>
+</div>
+```
+
+### CSS
+
+```css
+.scale-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  justify-content: center;
+}
+
+.scale-item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 150px;
+  height: 100px;
+  background-color: #4f46e5;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* 拡大効果 */
+.scale-item:hover {
+  transform: scale(1.1);
+  box-shadow: 0 10px 15px rgba(0, 0, 0, 0.2);
+}
+
+/* 縮小効果 */
+.scale-item.shrink {
+  background-color: #10b981;
+}
+
+.scale-item.shrink:hover {
+  transform: scale(0.9);
+}
+
+/* 角丸化効果 */
+.scale-item.rounded {
+  background-color: #f59e0b;
+}
+
+.scale-item.rounded:hover {
+  transform: scale(1.05);
+  border-radius: 50px;
+}
+
+/* 傾き効果 */
+.scale-item.skew {
+  background-color: #ef4444;
+}
+
+.scale-item.skew:hover {
+  transform: scale(1.05) skew(-10deg);
+}
+```
+
+## ポイント
+
+- `transition`プロパティを使用して、変化をなめらかにします。
+- `transform`プロパティの`scale()`関数を使用して、要素のサイズを変更します。
+- `box-shadow`プロパティを変更することで、立体感を強調できます。
+- 複数の変形効果を組み合わせることで、より複雑なエフェクトを作成できます。
+
+## バリエーション
+
+このエフェクトには、以下のようなバリエーションも考えられます：
+
+1. **回転効果**: `transform: rotate()`を使用して、ホバー時に要素を回転させる
+2. **3D変形**: `transform: perspective()`と組み合わせて、3D効果を作成する
+3. **色の変化**: 背景色や文字色を変更する
+4. **アニメーション**: `@keyframes`を使用して、より複雑なアニメーションを作成する
+
+## ブラウザ互換性
+
+このエフェクトは、モダンブラウザでよくサポートされています：
+
+- Chrome 26+
+- Firefox 16+
+- Safari 6.1+
+- Edge 12+

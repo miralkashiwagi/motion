@@ -6,7 +6,10 @@ tags: [ボタン, CSS, トランジション]
 difficulty: beginner
 preview: /images/animations/hover-button.gif
 pubDate: 2023-01-15
+useIframe: true
 ---
+
+import IframeDemo from '../../../components/IframeDemo.astro';
 
 # ホバーボタンエフェクト
 
@@ -14,32 +17,8 @@ pubDate: 2023-01-15
 
 ## デモ
 
-<AnimationDemo title="ホバーボタンエフェクト" description="マウスを乗せると背景色が変化します">
-  <button class="hover-button">ホバーしてください</button>
-  
-  <style>
-    .hover-button {
-      display: inline-block;
-      padding: 12px 24px;
-      background-color: #4f46e5;
-      color: white;
-      border: none;
-      border-radius: 4px;
-      font-size: 16px;
-      cursor: pointer;
-      transition: background-color 0.3s ease, transform 0.2s ease;
-    }
-    
-    .hover-button:hover {
-      background-color: #6366f1;
-      transform: translateY(-2px);
-    }
-    
-    .hover-button:active {
-      transform: translateY(0);
-    }
-  </style>
-</AnimationDemo>
+<IframeDemo title="ホバーボタンエフェクト" description="マウスを乗せると背景色が変化します" height="200px">
+</IframeDemo>
 
 ## 実装方法
 
@@ -65,10 +44,12 @@ pubDate: 2023-01-15
   cursor: pointer;
   transition: background-color 0.3s ease, transform 0.2s ease;
 }
+
 .hover-button:hover {
   background-color: #6366f1;
   transform: translateY(-2px);
 }
+
 .hover-button:active {
   transform: translateY(0);
 }
@@ -76,17 +57,19 @@ pubDate: 2023-01-15
 
 ## ポイント
 
-- `transition`プロパティを使用して、背景色と変形の変化を滑らかにします。
-- `transform: translateY(-2px)`を使用して、ホバー時に要素を少し上に移動させることで、浮き上がる効果を作成します。
-- `:active`擬似クラスを使用して、クリック時の効果も追加しています。
+- `transition`プロパティを使用して、背景色と位置の変化をスムーズにアニメーションさせています。
+- `:hover`疑似クラスを使用して、マウスホバー時のスタイルを定義しています。
+- `:active`疑似クラスを使用して、クリック時のスタイルを定義しています。
+- `transform: translateY()`を使用して、ボタンを上下に移動させています。
 
 ## バリエーション
 
 このエフェクトには、以下のようなバリエーションも考えられます：
 
-1. **境界線の変化**: 背景色の代わりに、境界線の色や太さを変化させる
-2. **影の追加**: ホバー時に`box-shadow`を追加して、立体感を強調する
-3. **テキストの色変更**: 背景色と同時にテキストの色も変更する
+1. **色の変化**: 背景色だけでなく、テキスト色や境界線の色も変化させる
+2. **サイズの変化**: ホバー時にボタンのサイズを大きくする
+3. **影の追加**: ホバー時に影を追加して、浮き上がる印象を強める
+4. **回転**: わずかに回転させて動きを加える
 
 ## ブラウザ互換性
 
@@ -96,5 +79,3 @@ pubDate: 2023-01-15
 - Firefox 16+
 - Safari 6.1+
 - Edge 12+
-
-Internet Explorer 10以降では部分的にサポートされていますが、一部の効果は制限される場合があります。
