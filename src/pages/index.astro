@@ -47,7 +47,7 @@ categories.forEach(category => {
           <div class="mt-12">
             <div class="flex justify-between items-center mb-6">
               <h2 class="text-2xl font-bold text-gray-900 dark:text-white">{category}</h2>
-              <a href={`/categories/${category.toLowerCase().replace(/\s+/g, '-')}`} class="text-indigo-600 dark:text-indigo-400 hover:underline">
+              <a href={`${import.meta.env.BASE_URL}/categories/${category.toLowerCase().replace(/\s+/g, '-')}/`} class="text-indigo-600 dark:text-indigo-400 hover:underline">
                 すべて見る →
               </a>
             </div>
