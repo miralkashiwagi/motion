@@ -23,7 +23,7 @@ interface Props {
 
 const { category } = Astro.props;
 
-// カテゴリ情報を取得
+// カテゴリー情報を取得
 const info = getCategoryInfo(category);
 
 // サブカテゴリー情報を取得
@@ -35,81 +35,77 @@ const parentCategoryName = Object.entries(categoryMapping).find(([_, data]) => d
 // 日本語のカテゴリー名を取得（トップのカテゴリーナビと同じ表示にするため）
 const japaneseCategory = parentCategoryName;
 
-// 説明文もTOPのカードと共通にする
-const categoryDescription = categoryMapping[parentCategoryName]?.description || info.description;
-
-// アニメーションを取得
-const allAnimations: CollectionEntry<'animations'>[] = await getCollection('animations');
-
-// カテゴリに基づいてアニメーションをフィルタリング
+// カテゴリーに属するアニメーションを取得
+const allAnimations = await getCollection('animations');
 const categoryAnimations = allAnimations.filter(animation => {
-  // 親カテゴリー名を取得
-  const parentCat = String(animation.data.parentCategory || '');
-  
-  // カテゴリーIDに基づいて厳密にフィルタリング
-  if (category === 'scroll') {
-    // スクロールカテゴリーの場合は「スクロール関連」を含むものだけを表示
-    return parentCat.includes('スクロール');
-  } else if (category === 'menu') {
-    // メニューカテゴリーの場合は「メニュー」を含むものだけを表示
-    return parentCat.includes('メニュー');
-  } else {
-    // その他のカテゴリーは親カテゴリー名の部分一致で検索（文字化け対策）
-    const isMatch = parentCat.includes(parentCategoryName) || 
-                    parentCategoryName.includes(parentCat);
-    
-    console.log(`${animation.data.title}: "${parentCat}" と "${parentCategoryName}" の比較結果: ${isMatch}`);
-    return isMatch;
+  return animation.data.parentCategory === parentCategoryName;
+});
+
+// カテゴリー名を正規化する関数
+function normalizeCategory(category: string): string {
+  return category.trim().toLowerCase();
+}
+
+// アニメーションから利用可能なサブカテゴリーを抽出
+const availableCategories = new Set<string>();
+categoryAnimations.forEach(animation => {
+  if (animation.data.category) {
+    availableCategories.add(String(animation.data.category));
   }
 });
 
-console.log(`フィルタリング後のアニメーション数: ${categoryAnimations.length}`);
+// サブカテゴリー情報を作成（config.tsから取得したものと、アニメーションから抽出したものを組み合わせる）
+let effectiveSubcategories = subcategories;
 
-// サブカテゴリーごとにアニメーションをグループ化
-const animationsBySubcategory = subcategories.map(subcategory => {
+// config.tsから取得したサブカテゴリーが空の場合は、アニメーションから抽出したサブカテゴリーを使用
+if (subcategories.length === 0 && availableCategories.size > 0) {
+  effectiveSubcategories = Array.from(availableCategories).map(cat => ({
+    id: cat.toLowerCase().replace(/\s+/g, '-'),
+    name: cat
+  }));
+}
+
+// サブカテゴリーごとにアニメーションを直接グループ化
+const animationsBySubcategory = [];
+
+// サブカテゴリーごとにアニメーションを分類
+effectiveSubcategories.forEach(subcategory => {
+  // サブカテゴリー名に完全一致するアニメーションを抽出（正規化して比較）
+  const normalizedSubcategoryName = normalizeCategory(subcategory.name);
+  
   const animations = categoryAnimations.filter(animation => {
     const subCat = String(animation.data.category || '');
-    // サブカテゴリー名の部分一致でフィルタリング（文字化け対策）
-    const isMatch = subCat.includes(subcategory.name) || subcategory.name.includes(subCat);
-    console.log(`サブカテゴリーチェック: ${animation.data.title} - "${subCat}" と "${subcategory.name}" の比較結果: ${isMatch}`);
+    const normalizedSubCat = normalizeCategory(subCat);
+    const isMatch = normalizedSubCat === normalizedSubcategoryName;
     return isMatch;
   }).sort((a, b) => {
     const dateA = a.data.pubDate || new Date(0);
     const dateB = b.data.pubDate || new Date(0);
     return dateB.getTime() - dateA.getTime();
   });
-  
-  console.log(`サブカテゴリー: ${subcategory.name}, アニメーション数: ${animations.length}`);
-  
-  return {
-    ...subcategory,
-    animations
-  };
+
+  // アニメーションがある場合のみ追加
+  if (animations.length > 0) {
+    animationsBySubcategory.push({
+      id: subcategory.id,
+      name: subcategory.name,
+      animations: animations
+    });
+  }
 });
 
 // サブカテゴリーに分類されなかったアニメーションを「その他」として表示
 const uncategorizedAnimations = categoryAnimations.filter(animation => {
-  return !subcategories.some(subcategory => {
+  return !effectiveSubcategories.some(subcategory => {
     const subCat = String(animation.data.category || '');
-    return subCat.includes(subcategory.name) || subcategory.name.includes(subCat);
+    const normalizedSubCat = normalizeCategory(subCat);
+    const normalizedSubcategoryName = normalizeCategory(subcategory.name);
+    return normalizedSubCat === normalizedSubcategoryName;
   });
 });
 
-// 「その他」のサブカテゴリーがある場合は追加
-if (uncategorizedAnimations.length > 0) {
-  animationsBySubcategory.push({
-    id: 'others',
-    name: 'その他',
-    animations: uncategorizedAnimations
-  });
-}
-
-// すべてのアニメーションを表示するセクションを追加
-const allAnimationsSection = {
-  id: 'all',
-  name: 'すべてのアニメーション',
-  animations: categoryAnimations
-};
+// 説明文もTOPのカードと共通にする
+const categoryDescription = categoryMapping[parentCategoryName]?.description || info.description;
 
 ---
 
@@ -146,11 +142,11 @@ const allAnimationsSection = {
       <p class="text-lg text-gray-700 dark:text-gray-300">{categoryDescription}</p>
     </header>
 
-    {subcategories.length > 0 && (
+    {effectiveSubcategories.length > 0 && (
       <div class="mb-10">
         <h2 class="text-xl font-semibold mb-4">サブカテゴリー</h2>
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {subcategories.map((subcategory) => (
+          {effectiveSubcategories.map((subcategory) => (
             <a 
               href={`#${subcategory.id}`}
               class="p-4 rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
@@ -181,8 +177,6 @@ const allAnimationsSection = {
         )}
       </section>
     ))}
-
-
 
     {categoryAnimations.length === 0 && (
       <div class="text-center py-10">
