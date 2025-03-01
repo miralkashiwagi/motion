@@ -27,13 +27,24 @@ import '../styles/global.css';
 						<a href={`${import.meta.env.BASE_URL}/`} class="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">ホーム</a>
 						<a href={`${import.meta.env.BASE_URL}/animations`} class="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">アニメーション</a>
 					</nav>
-					<button id="mobile-menu-button" class="md:hidden p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800">
+					<button 
+						id="mobile-menu-button" 
+						class="md:hidden p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800"
+						aria-expanded="false"
+						aria-controls="mobile-menu"
+						aria-label="メニューを開く"
+					>
 						<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
 							<path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
 						</svg>
 					</button>
 				</div>
-				<div id="mobile-menu" class="hidden md:hidden">
+				<div 
+					id="mobile-menu" 
+					class="hidden md:hidden"
+					aria-labelledby="mobile-menu-button"
+					role="navigation"
+				>
 					<div class="px-4 py-3 space-y-3">
 						<a href={`${import.meta.env.BASE_URL}/`} class="block hover:text-indigo-600 dark:hover:text-indigo-400">ホーム</a>
 						<a href={`${import.meta.env.BASE_URL}/animations`} class="block hover:text-indigo-600 dark:hover:text-indigo-400">アニメーション</a>
@@ -51,15 +62,71 @@ import '../styles/global.css';
 		</div>
 
 		<script>
-			// モバイルメニューの切り替え
-			const mobileMenuButton = document.getElementById('mobile-menu-button');
-			const mobileMenu = document.getElementById('mobile-menu');
-
-			if (mobileMenuButton && mobileMenu) {
-				mobileMenuButton.addEventListener('click', () => {
-					mobileMenu.classList.toggle('hidden');
-				});
-			}
+			// イベント委任パターンを使用したモバイルメニューの切り替え
+			document.addEventListener('DOMContentLoaded', () => {
+				// ヘッダー要素を取得（イベント委任の親要素）
+				const header = document.querySelector('header');
+				
+				if (header) {
+					// ヘッダー内のクリックイベントを委任
+					header.addEventListener('click', (event) => {
+						// イベントの発生元を取得
+						const target = event.target as HTMLElement;
+						// モバイルメニューボタンまたはその子要素がクリックされたかを確認
+						const menuButton = target.closest('#mobile-menu-button');
+						
+						if (menuButton) {
+							const mobileMenu = document.getElementById('mobile-menu');
+							if (mobileMenu) {
+								// メニューの表示/非表示を切り替え
+								const isHidden = mobileMenu.classList.contains('hidden');
+								mobileMenu.classList.toggle('hidden');
+								
+								// アクセシビリティ属性を更新
+								menuButton.setAttribute('aria-expanded', isHidden ? 'true' : 'false');
+								menuButton.setAttribute('aria-label', isHidden ? 'メニューを閉じる' : 'メニューを開く');
+								
+								// SVGアイコンを切り替える（オプション）
+								const buttonIcon = menuButton.querySelector('svg');
+								if (buttonIcon && isHidden) {
+									// メニューが開かれた状態のアイコン（×マーク）
+									buttonIcon.innerHTML = `
+										<path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+									`;
+								} else if (buttonIcon && !isHidden) {
+									// メニューが閉じられた状態のアイコン（ハンバーガーメニュー）
+									buttonIcon.innerHTML = `
+										<path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+									`;
+								}
+							}
+						}
+					});
+					
+					// キーボードアクセシビリティのサポート
+					header.addEventListener('keydown', (event) => {
+						if (event.key === 'Escape') {
+							const mobileMenu = document.getElementById('mobile-menu');
+							const menuButton = document.getElementById('mobile-menu-button');
+							
+							// メニューが開いている場合は閉じる
+							if (mobileMenu && !mobileMenu.classList.contains('hidden') && menuButton) {
+								mobileMenu.classList.add('hidden');
+								menuButton.setAttribute('aria-expanded', 'false');
+								menuButton.setAttribute('aria-label', 'メニューを開く');
+								
+								// SVGアイコンを元に戻す
+								const buttonIcon = menuButton.querySelector('svg');
+								if (buttonIcon) {
+									buttonIcon.innerHTML = `
+										<path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+									`;
+								}
+							}
+						}
+					});
+				}
+			});
 		</script>
 	</body>
 </html>

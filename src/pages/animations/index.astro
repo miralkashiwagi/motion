@@ -1,260 +1,241 @@
 ---
+import { getCollection } from 'astro:content';
 import Layout from '../../layouts/Layout.astro';
 import AnimationCard from '../../components/AnimationCard.astro';
-import { getCollection } from 'astro:content';
-import type { CollectionEntry } from 'astro:content';
+import { categoryMapping } from '../../content/config';
+import { formatDate, compareDates } from '../../utils/dateUtils';
 
 // すべてのアニメーションを取得
-const allAnimations: CollectionEntry<'animations'>[] = await getCollection('animations');
+const animations = await getCollection('animations');
 
-// フィルタリングとソートのための状態
-const categories: string[] = [...new Set(allAnimations.map(animation => animation.data.category))];
-const difficulties: string[] = ['beginner', 'intermediate', 'advanced'];
+// カテゴリーの一覧を取得
+const categories = Object.keys(categoryMapping);
 
-// 初期状態ではすべてのアニメーションを表示
-const filteredAnimations: CollectionEntry<'animations'>[] = [...allAnimations].sort((a, b) => {
-  // 日付でソート（新しい順）
-  const dateA = a.data.pubDate || new Date(0);
-  const dateB = b.data.pubDate || new Date(0);
-  return dateB.getTime() - dateA.getTime();
-});
+// 難易度の一覧
+const difficulties = ['beginner', 'intermediate', 'advanced'];
+
+// 難易度のラベル
+const difficultyLabels = {
+  beginner: '初級',
+  intermediate: '中級',
+  advanced: '上級'
+};
 ---
 
 <Layout title="アニメーション一覧">
-  <div class="max-w-7xl mx-auto">
-    <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-8">アニメーション一覧</h1>
-    
-    <div class="flex flex-col md:flex-row gap-4 mb-8">
-      <div class="md:w-1/4">
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4">
-          <div class="flex justify-between items-center mb-4">
-            <h2 class="text-lg font-semibold text-gray-900 dark:text-white">フィルター</h2>
-            <button 
-              id="reset-filters" 
-              class="text-sm text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300"
-            >
-              リセット
-            </button>
-          </div>
-          
-          <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">
-            複数の条件を組み合わせて、お探しのアニメーションを絞り込むことができます。
-          </p>
-          
-          <div class="mb-4">
-            <label for="category-filter" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">カテゴリ</label>
-            <select id="category-filter" class="w-full rounded-md border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
-              <option value="">すべて</option>
-              {categories.map(category => (
-                <option value={category}>{category}</option>
-              ))}
-            </select>
-          </div>
-          
-          <div class="mb-4">
-            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">難易度</label>
-            <div class="space-y-2">
-              {difficulties.map(difficulty => (
-                <div class="flex items-center">
-                  <input 
-                    type="checkbox" 
-                    id={`difficulty-${difficulty}`} 
-                    name="difficulty" 
-                    value={difficulty}
-                    class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
-                  />
-                  <label for={`difficulty-${difficulty}`} class="ml-2 text-sm text-gray-700 dark:text-gray-300 capitalize">
-                    {difficulty === 'beginner' ? '初級' : difficulty === 'intermediate' ? '中級' : '上級'}
-                  </label>
-                </div>
-              ))}
-            </div>
-          </div>
-          
-          <div class="mt-6 pt-4 border-t border-gray-200 dark:border-gray-700">
-            <p class="text-xs text-gray-500 dark:text-gray-400">
-              ヒント: 複数の条件を選択すると、すべての条件に一致するアニメーションのみが表示されます。
-            </p>
-          </div>
-        </div>
-      </div>
-      
-      <div class="md:w-3/4">
-        <div class="mb-4 flex justify-between items-center">
-          <p class="text-gray-600 dark:text-gray-400"><span id="animation-count">{filteredAnimations.length}</span> 件のアニメーション</p>
-          <div class="flex items-center">
-            <label for="sort-order" class="mr-2 text-sm text-gray-700 dark:text-gray-300">並び順:</label>
-            <select id="sort-order" class="rounded-md border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
-              <option value="newest">新しい順</option>
-              <option value="oldest">古い順</option>
-              <option value="difficulty-asc">難易度（易しい順）</option>
-              <option value="difficulty-desc">難易度（難しい順）</option>
-            </select>
-          </div>
-        </div>
-        
-        <div id="animations-grid" class="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {filteredAnimations.map(animation => (
-            <AnimationCard animation={animation} />
+  <div class="mb-8">
+    <h1 class="text-3xl font-bold mb-4">アニメーション一覧</h1>
+    <p class="text-gray-600 dark:text-gray-400">
+      さまざまなWebアニメーション効果のサンプルコレクションです。カテゴリーや難易度でフィルタリングできます。
+    </p>
+  </div>
+
+  <div class="mb-6 p-4 bg-white dark:bg-gray-800 rounded-lg shadow-sm">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div>
+        <label for="category-filter" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">カテゴリー</label>
+        <select id="category-filter" class="w-full bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-indigo-500 dark:focus:border-indigo-500">
+          <option value="">すべて</option>
+          {categories.map(category => (
+            <option value={category}>{category}</option>
           ))}
-        </div>
-        
-        <div id="no-results" class="hidden py-10 text-center">
-          <p class="text-lg text-gray-700 dark:text-gray-300 mb-2">検索条件に一致するアニメーションが見つかりませんでした</p>
-          <p class="text-sm text-gray-600 dark:text-gray-400">フィルター条件を変更するか、<button id="clear-filters" class="text-indigo-600 dark:text-indigo-400 hover:underline">すべてクリア</button>してください</p>
-        </div>
+        </select>
+      </div>
+      <div>
+        <label for="difficulty-filter" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">難易度</label>
+        <select id="difficulty-filter" class="w-full bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-indigo-500 dark:focus:border-indigo-500">
+          <option value="">すべて</option>
+          {difficulties.map(difficulty => (
+            <option value={difficulty}>{difficultyLabels[difficulty]}</option>
+          ))}
+        </select>
+      </div>
+      <div>
+        <label for="sort-order" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">並び替え</label>
+        <select id="sort-order" class="w-full bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-indigo-500 dark:focus:border-indigo-500">
+          <option value="title">タイトル (A-Z)</option>
+          <option value="title-desc">タイトル (Z-A)</option>
+          <option value="date">更新日 (新しい順)</option>
+          <option value="date-asc">更新日 (古い順)</option>
+          <option value="difficulty">難易度 (易しい順)</option>
+          <option value="difficulty-desc">難易度 (難しい順)</option>
+        </select>
       </div>
     </div>
+  </div>
+
+  <div id="animation-count" class="mb-4 text-sm text-gray-600 dark:text-gray-400">
+    表示中: <span id="count">{animations.length}</span> 件
+  </div>
+
+  <div id="animations-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+    {animations.map(animation => (
+      <div class="animation-card" 
+        data-category={animation.data.parentCategory}
+        data-difficulty={animation.data.difficulty}
+        data-title={animation.data.title}
+        data-date={animation.data.updatedDate}
+      >
+        <AnimationCard animation={animation} />
+      </div>
+    ))}
+  </div>
+
+  <div id="no-results" class="hidden py-8 text-center text-gray-600 dark:text-gray-400">
+    <p>条件に一致するアニメーションがありません。フィルターを変更してください。</p>
   </div>
 </Layout>
 
 <script>
-  // クライアントサイドのフィルタリングとソート機能
+  import { formatDate, compareDates } from '../utils/dateUtils';
+
+  // DOMが読み込まれた後に実行
   document.addEventListener('DOMContentLoaded', () => {
-    const categoryFilter = document.getElementById('category-filter') as HTMLSelectElement;
-    const difficultyCheckboxes = document.querySelectorAll('input[name="difficulty"]') as NodeListOf<HTMLInputElement>;
-    const sortOrder = document.getElementById('sort-order') as HTMLSelectElement;
+    // フィルターコンテナ要素を取得（イベント委任の親要素）
+    const filterContainer = document.querySelector('.mb-6');
     const animationsGrid = document.getElementById('animations-grid');
-    const animationCount = document.getElementById('animation-count');
     const noResults = document.getElementById('no-results');
-    const resetFiltersBtn = document.getElementById('reset-filters');
-    const clearFiltersBtn = document.getElementById('clear-filters');
+    const countElement = document.getElementById('count');
     
-    // アニメーションカードの全データを取得
-    const allAnimationCards = Array.from(document.querySelectorAll('.group'));
+    // すべてのアニメーションカードを取得
+    const allCards = document.querySelectorAll('.animation-card');
     
-    // フィルターをリセットする関数
-    const resetFilters = () => {
-      // カテゴリーをリセット
-      if (categoryFilter) categoryFilter.value = '';
-      
-      // 難易度チェックボックスをリセット
-      difficultyCheckboxes.forEach(checkbox => {
-        checkbox.checked = false;
-      });
-      
-      // ソート順をリセット
-      if (sortOrder) sortOrder.value = 'newest';
-      
-      // フィルターを適用
-      applyFilters();
+    // 現在のフィルター状態
+    const filterState = {
+      category: '',
+      difficulty: '',
+      sortOrder: 'title'
     };
     
-    // フィルタリングとソートを適用する関数
+    // フィルターと並び替えを適用する関数
     const applyFilters = () => {
-      // 選択されたカテゴリー
-      const selectedCategory = categoryFilter.value;
+      if (!animationsGrid || !noResults || !countElement) return;
       
-      // 選択された難易度
-      const selectedDifficulties = Array.from(difficultyCheckboxes)
-        .filter(checkbox => checkbox.checked)
-        .map(checkbox => checkbox.value);
+      // 表示するカードをカウント
+      let visibleCount = 0;
       
-      // 選択されたソート順
-      const selectedSort = sortOrder.value;
-      
-      // フィルタリング
-      let filteredCards = allAnimationCards.filter(card => {
-        let passesFilter = true;
+      // 各カードに対してフィルタリングを適用
+      allCards.forEach(card => {
+        const cardElement = card as HTMLElement;
+        const category = cardElement.dataset.category || '';
+        const difficulty = cardElement.dataset.difficulty || '';
         
-        // カテゴリーフィルター
-        if (selectedCategory) {
-          const cardCategory = card.querySelector('.bg-gray-100.text-gray-800')?.textContent?.trim();
-          if (!cardCategory || !cardCategory.includes(selectedCategory)) {
-            passesFilter = false;
-          }
+        // カテゴリーとレベルのフィルタリング
+        const categoryMatch = !filterState.category || category === filterState.category;
+        const difficultyMatch = !filterState.difficulty || difficulty === filterState.difficulty;
+        
+        // 両方の条件に一致する場合のみ表示
+        const shouldShow = categoryMatch && difficultyMatch;
+        
+        // 表示/非表示を設定
+        cardElement.style.display = shouldShow ? '' : 'none';
+        
+        // 表示されるカードをカウント
+        if (shouldShow) {
+          visibleCount++;
         }
-        
-        // 難易度フィルター
-        if (selectedDifficulties.length > 0) {
-          // 難易度のラベルを取得
-          const difficultyLabels = {
-            'beginner': '初級',
-            'intermediate': '中級',
-            'advanced': '上級'
-          };
-          
-          // 選択された難易度のラベルを取得
-          const selectedLabels = selectedDifficulties.map(d => difficultyLabels[d]);
-          
-          // カードの難易度ラベルを取得
-          const difficultyElement = card.querySelector('.rounded');
-          const difficultyText = difficultyElement?.textContent?.trim();
-          
-          // 選択された難易度に一致するか確認
-          if (!difficultyText || !selectedLabels.includes(difficultyText)) {
-            passesFilter = false;
-          }
-        }
-        
-        return passesFilter;
       });
       
-      // ソート
-      filteredCards.sort((a, b) => {
-        if (selectedSort === 'newest' || selectedSort === 'oldest') {
-          // 日付でソート
-          const dateA = a.querySelector('time')?.getAttribute('datetime');
-          const dateB = b.querySelector('time')?.getAttribute('datetime');
-          
-          if (!dateA || !dateB) return 0;
-          
-          const timeA = new Date(dateA).getTime();
-          const timeB = new Date(dateB).getTime();
-          
-          return selectedSort === 'newest' ? timeB - timeA : timeA - timeB;
-        } else if (selectedSort === 'difficulty-asc' || selectedSort === 'difficulty-desc') {
-          // 難易度でソート
-          const difficultyMap = { '初級': 1, '中級': 2, '上級': 3, '未分類': 0 };
-          
-          const difficultyA = a.querySelector('.rounded')?.textContent?.trim();
-          const difficultyB = b.querySelector('.rounded')?.textContent?.trim();
-          
-          const valueA = difficultyA ? difficultyMap[difficultyA] || 0 : 0;
-          const valueB = difficultyB ? difficultyMap[difficultyB] || 0 : 0;
-          
-          return selectedSort === 'difficulty-asc' ? valueA - valueB : valueB - valueA;
-        }
-        
-        return 0;
-      });
+      // カード数を更新
+      countElement.textContent = visibleCount.toString();
       
-      // 結果を表示
-      if (animationsGrid && noResults) {
-        // 既存のカードを全て削除
-        animationsGrid.innerHTML = '';
-        
-        // フィルタリングされたカードを追加
-        filteredCards.forEach(card => {
-          animationsGrid.appendChild(card.cloneNode(true));
-        });
-        
-        // カウントを更新
-        if (animationCount) {
-          animationCount.textContent = String(filteredCards.length);
-        }
-        
-        // 結果がない場合は「結果なし」メッセージを表示
-        if (filteredCards.length === 0) {
-          noResults.classList.remove('hidden');
-          animationsGrid.classList.add('hidden');
-        } else {
-          noResults.classList.add('hidden');
-          animationsGrid.classList.remove('hidden');
-        }
-      }
+      // 結果がない場合のメッセージを表示/非表示
+      noResults.classList.toggle('hidden', visibleCount > 0);
+      
+      // 並び替えを適用
+      sortCards();
     };
     
-    // イベントリスナーの設定
-    categoryFilter?.addEventListener('change', applyFilters);
-    sortOrder?.addEventListener('change', applyFilters);
+    // カードを並び替える関数
+    const sortCards = () => {
+      if (!animationsGrid) return;
+      
+      // カードの配列を取得（表示されているもののみ）
+      const cards = Array.from(allCards).filter(card => {
+        const cardElement = card as HTMLElement;
+        return cardElement.style.display !== 'none';
+      });
+      
+      // 並び替え関数
+      const getSortValue = (card: Element): string | number | Date => {
+        const cardElement = card as HTMLElement;
+        
+        switch (filterState.sortOrder) {
+          case 'title':
+            return (cardElement.dataset.title || '').toLowerCase();
+          case 'title-desc':
+            return (cardElement.dataset.title || '').toLowerCase();
+          case 'date':
+          case 'date-asc':
+            return cardElement.dataset.date ? new Date(cardElement.dataset.date) : new Date(0);
+          case 'difficulty':
+          case 'difficulty-desc':
+            const difficultyMap: Record<string, number> = {
+              'beginner': 1,
+              'intermediate': 2,
+              'advanced': 3,
+              '': 0
+            };
+            return difficultyMap[cardElement.dataset.difficulty || ''] || 0;
+          default:
+            return '';
+        }
+      };
+      
+      // 並び替え
+      cards.sort((a, b) => {
+        const valueA = getSortValue(a);
+        const valueB = getSortValue(b);
+        
+        // 日付の場合
+        if (valueA instanceof Date && valueB instanceof Date) {
+          return filterState.sortOrder === 'date-asc' 
+            ? compareDates(valueA, valueB) 
+            : compareDates(valueB, valueA);
+        }
+        
+        // 数値の場合
+        if (typeof valueA === 'number' && typeof valueB === 'number') {
+          return filterState.sortOrder.endsWith('-desc') 
+            ? valueB - valueA 
+            : valueA - valueB;
+        }
+        
+        // 文字列の場合
+        const strA = String(valueA);
+        const strB = String(valueB);
+        
+        return filterState.sortOrder.endsWith('-desc') 
+          ? strB.localeCompare(strA) 
+          : strA.localeCompare(strB);
+      });
+      
+      // DOMに並び替えた順序で再挿入
+      cards.forEach(card => {
+        animationsGrid.appendChild(card);
+      });
+    };
     
-    difficultyCheckboxes.forEach(checkbox => {
-      checkbox.addEventListener('change', applyFilters);
-    });
+    // イベント委任を使用してフィルター変更を監視
+    if (filterContainer) {
+      filterContainer.addEventListener('change', (event) => {
+        const target = event.target as HTMLSelectElement;
+        
+        // 変更されたフィルターを特定して状態を更新
+        if (target.id === 'category-filter') {
+          filterState.category = target.value;
+        } else if (target.id === 'difficulty-filter') {
+          filterState.difficulty = target.value;
+        } else if (target.id === 'sort-order') {
+          filterState.sortOrder = target.value;
+        }
+        
+        // フィルターを適用
+        applyFilters();
+      });
+    }
     
-    // リセットボタンのイベントリスナー
-    resetFiltersBtn?.addEventListener('click', resetFilters);
-    clearFiltersBtn?.addEventListener('click', resetFilters);
+    // 初期フィルターを適用
+    applyFilters();
   });
 </script>
