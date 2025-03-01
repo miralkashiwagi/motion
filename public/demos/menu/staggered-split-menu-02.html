@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>スタッガードなスプリットメニュー</title>
+  <link src="https://unpkg.com/browse/destyle.css@4.0.1/destyle.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+  <style>
+    @layer base, demo;
+
+
+    @layer demo {
+
+      .btn{
+        position: fixed;
+        top: 1rem;
+        right: 1rem;
+        z-index: 200;
+        background: #000;
+        color: #fff;
+        border: none;
+        padding: 0.5rem 1rem;
+        cursor: pointer;
+        border-radius: 0.5rem;
+        font-size: 1rem;
+      }
+
+      .menu{
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        position: fixed;
+        inset: 0;
+        z-index: 100;
+        visibility: hidden;
+        transition: visibility 0.3s ease;
+        transition-delay: 0.5s;
+      }
+
+      .menu-left,.menu-right{
+        animation: menuClose 0.3s ease-in both;
+      }
+
+      .menu-left{
+        background: #000;
+        
+      }
+      .menu-right{
+        background: skyblue;
+        animation-delay: 0.1s;
+      }
+
+      .menu.is-active{
+        visibility: visible;
+        transition-delay: 0s;
+      }
+
+      .menu.is-active .menu-left{
+        animation-name: menuOpen;
+      }
+      .menu.is-active .menu-right{
+        animation-name: menuOpen;
+      }
+
+      @keyframes menuOpen{
+        0%{
+          clip-path: inset(100% 0% 0% 0%);
+        }
+        100%{
+          clip-path: inset(0% 0% 0% 0%);
+        }
+      }
+
+      @keyframes menuClose{
+        0%{
+          clip-path: inset(0% 0% 0% 0%);
+        }
+        100%{
+          clip-path: inset(0% 0% 100% 0%);
+        }
+      }
+      
+    }
+
+    @layer base {      
+      .layout{
+        display: grid;
+        place-items: center;
+      }
+      /* スペーサーを追加して十分なスクロール領域を確保 */
+      .spacer {
+        height: 50vh;
+      }
+    }
+
+  </style>
+</head>
+<body>
+  
+  <div class="layout">
+    <div>
+      <button class="btn js-menu-toggle">メニューを開く</button>
+
+      <div class="menu js-menu">
+        <div class="menu-left"></div>
+        <div class="menu-right"></div>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    const menu = document.querySelector('.js-menu');
+    const menuToggle = document.querySelector('.js-menu-toggle');
+
+    menuToggle.addEventListener('click', () => {
+      menu.classList.toggle('is-active');
+    });
+
+
+    // メッセージリスナーを追加（親フレームからのリセット指示を受け取る）
+    window.addEventListener('message', (event) => {
+      if (event.data === 'reset-demo') {
+        // リセットの必要がある場合は、ここに処理を追加
+      }
+    });
+  </script>
+</body>
+</html>

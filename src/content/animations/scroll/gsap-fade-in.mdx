@@ -3,16 +3,13 @@ title: GSAPフェードインアニメーション
 description: GSAPライブラリを使用したスクロールトリガーのフェードインアニメーション。ScrollTriggerプラグインを活用した実装例。
 parentCategory: スクロール関連
 category: スクロールトリガー
-tags: [スクロール, GSAP, JavaScript]
+tags: [GSAP]
 difficulty: intermediate
 preview: /images/animations/gsap-fade.gif
-pubDate: 2023-03-10
+pubDate: 2025-03-01
 ---
 
 import IframeDemo from '../../../components/IframeDemo.astro';
-
-
-GSAPとScrollTriggerプラグインを使用して、スクロールに連動したフェードインアニメーションを実装します。
 
 ## デモ
 
@@ -22,51 +19,16 @@ GSAPとScrollTriggerプラグインを使用して、スクロールに連動し
 ## HTML構造
 
 ```html
-<div class="container">
-  <section class="gsap-section">
-    <h2>GSAPアニメーション 1</h2>
-    <p>スクロールするとフェードイン＆スライドします</p>
-  </section>
-  
-  <section class="gsap-section">
-    <h2>GSAPアニメーション 2</h2>
-    <p>このセクションも同様にアニメーションします</p>
-  </section>
-  
-  <section class="gsap-section">
-    <h2>GSAPアニメーション 3</h2>
-    <p>GSAPを使うと複雑なアニメーションも簡単に実装できます</p>
-  </section>
-</div>
+<div class="element js-fadein">基本的なフェードイン</div>
 ```
 
 ## CSS実装
 
 ```css
-.container {
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 20px;
-}
-
-.gsap-section {
-  height: 300px;
-  margin: 150px 0;
-  padding: 30px;
-  background-color: #f0f9ff;
-  border-radius: 8px;
-  border-left: 4px solid #3b82f6;
+.element {
   /* 初期状態は非表示にしておく必要はありません（GSAPで設定します） */
 }
 
-h2 {
-  margin-bottom: 15px;
-  color: #1e40af;
-}
-
-p {
-  color: #1e3a8a;
-}
 ```
 
 ## JavaScript実装（GSAP）
@@ -80,26 +42,18 @@ document.addEventListener('DOMContentLoaded', function() {
   // ScrollTriggerプラグインを登録
   gsap.registerPlugin(ScrollTrigger);
   
-  // 各セクションに対してアニメーションを設定
-  gsap.utils.toArray('.gsap-section').forEach(section => {
-    // 初期状態を設定
-    gsap.set(section, { 
+
+  // 基本的なフェードイン
+  const fadeElements = document.querySelectorAll('.js-fadein');
+  fadeElements.forEach(element => {
+    gsap.from(element, {
       opacity: 0,
-      y: 50
-    });
-    
-    // スクロールトリガーアニメーションを作成
-    gsap.to(section, {
-      opacity: 1,
-      y: 0,
       duration: 0.8,
-      ease: "power2.out",
       scrollTrigger: {
-        trigger: section,
-        start: "top 80%", // トリガー要素の上端がビューポートの80%位置に来たら開始
-        end: "top 50%",   // トリガー要素の上端がビューポートの50%位置に来たら完了
-        toggleActions: "play none none none", // 入ったら再生、出ても何もしない
-        // markers: true,  // デバッグ用マーカー（開発時のみ有効にする）
+        trigger: element,
+        start: "top 80%",
+        end: "bottom 20%",
+        toggleActions: "play none none none"
       }
     });
   });
@@ -107,14 +61,77 @@ document.addEventListener('DOMContentLoaded', function() {
 ```
 
 ## 解説
+- CSSでは表示後の状態を設定し、GSAPのfromプロパティを使用してフェードインエフェクトを実装できます。
+- ScrollTriggerで、要素の位置を監視し、要素が画面の上部80%まで来たらエフェクトを開始しています。
+- toggleActionsの設定で、要素が画面の上部80%まで来たらエフェクトを開始し、その後はアニメーションを停止させます。
 
-GSAPとScrollTriggerプラグインを使用すると、より高度なスクロールアニメーションを簡単に実装できます。
 
-1. GSAPの`set`メソッドで要素の初期状態を設定します（透明度0、Y軸に50pxオフセット）
-2. `to`メソッドでアニメーションの終了状態を定義します
-3. `scrollTrigger`オプションでスクロール連動の設定を行います
-   - `trigger`: アニメーションのトリガーとなる要素
-   - `start`/`end`: アニメーションの開始/終了位置
-   - `toggleActions`: スクロール時の動作を定義
+## バリエーション
 
-GSAPを使うメリットは、複雑なタイムラインやイージング、複数のプロパティのアニメーションを簡単に制御できることです。
+### JavaScript
+```JavaScript
+
+// 下からのスライドイン
+const bottomElements = document.querySelectorAll('js-slidein');
+bottomElements.forEach(element => {
+  gsap.from(element, {
+    opacity: 0,
+    y: 50,
+    duration: 0.8,
+    scrollTrigger: {
+      trigger: element,
+      start: "top 80%",
+      end: "bottom 20%",
+        toggleActions: "play none none none"
+    }
+  });
+});
+
+// 左からのスライドイン
+const leftElements = document.querySelectorAll('.js-slidein-left');
+leftElements.forEach(element => {
+  gsap.from(element, {
+    opacity: 0,
+    x: -50,
+    duration: 0.8,
+    scrollTrigger: {
+      trigger: element,
+      start: "top 80%",
+      end: "bottom 20%",
+      toggleActions: "play none none none"
+    }
+  });
+});
+
+// ズームイン
+const zoomElements = document.querySelectorAll('.js-zoom-in');
+zoomElements.forEach(element => {
+  gsap.from(element, {
+    opacity: 0,
+    scale: 0.8,
+    duration: 0.8,
+    scrollTrigger: {
+      trigger: element,
+      start: "top 80%",
+      end: "bottom 20%",
+      toggleActions: "play none none none"
+    }
+  });
+});
+
+// 回転しながらのフェードイン
+const rotateElements = document.querySelectorAll('.js-rotate');
+rotateElements.forEach(element => {
+  gsap.from(element, {
+    opacity: 0,
+    rotation: -5,
+    duration: 0.8,
+    scrollTrigger: {
+      trigger: element,
+      start: "top 80%",
+      end: "bottom 20%",
+      toggleActions: "play none none none"
+    }
+  });
+});
+```

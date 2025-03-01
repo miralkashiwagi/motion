@@ -1,0 +1,140 @@
+---
+title: アイコンの移動
+description: マウスホバー時に背景色が滑らかに変化するボタンエフェクト。CSSのtransitionプロパティを使用した実装例。
+parentCategory: インタラクティブ要素
+category: ホバーエフェクト
+tags: [ボタン, CSS]
+difficulty: beginner
+preview: /images/animations/hover-button.gif
+pubDate: 2025-03-01
+---
+
+import IframeDemo from '../../../components/IframeDemo.astro';
+
+## デモ
+
+<IframeDemo height="100px">
+</IframeDemo>
+
+## 実装方法
+
+### HTML
+
+```html
+<a href="#" class="btn">
+  <span class="btn-text">ホバーしてください</span>
+  <span class="btn-icon btn-icon-east"></span>
+</a>
+```
+
+### CSS
+
+```css
+.btn-icon{
+  overflow: hidden;
+  display: block;
+  width: 1em;
+  height: 1em;
+}
+
+.btn-icon-north-east::after{
+  /* 略 */
+}
+
+
+.btn:hover .btn-icon-east::after {
+  animation: move-icon-east 0.3s ease-in-out forwards;
+}
+
+@keyframes move-icon-east {
+  0% {
+    transform: translate(0,0);
+  }
+  50% {
+    transform: translate(100%,0)
+  }
+  51% {
+    transform: translate(-100%,0)
+  }
+  100% {
+    transform: translate(0,0)
+  }
+}
+
+
+```
+
+## ポイント
+- アイコン表示領域を、`overflow: hidden;` でクロップする
+- `transform`プロパティを使用した `@keyframes` で使用して、アイコンを移動させる
+
+## バリエーション
+`@keyframes` の設定を変えると、アイコンの移動方向を変更できます。
+
+### CSS
+
+```css
+//右上に向かって移動
+@keyframes move-icon-north-east {
+  0% {
+    transform: translate(0,0);
+  }
+  50% {
+    transform: translate(100%,-100%)
+  }
+  51% {
+    transform: translate(-100%,100%)
+  }
+  100% {
+    transform: translate(0,0)
+  }
+}
+
+//右に向かって移動
+@keyframes move-icon-east {
+  0% {
+    transform: translate(0,0);
+  }
+  50% {
+    transform: translate(100%,0)
+  }
+  51% {
+    transform: translate(-100%,0)
+  }
+  100% {
+    transform: translate(0,0)
+  }
+}
+
+//下に向かって移動
+@keyframes move-icon-south {
+  0% {
+    transform: translate(0,0);
+  }
+  50% {
+    transform: translate(0,100%)
+  }
+  51% {
+    transform: translate(0,-100%)
+  }
+  100% {
+    transform: translate(0,0)
+  }
+}
+
+//左に向かって移動
+@keyframes move-icon-west {
+  0% {
+    transform: translate(0,0);
+  }
+  50% {
+    transform: translate(-100%,0)
+  }
+  51% {
+    transform: translate(100%,0)
+  }
+  100% {
+    transform: translate(0,0)
+  }
+}
+```

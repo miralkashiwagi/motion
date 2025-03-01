@@ -22,7 +22,11 @@ if (!src) {
     const [, category, name] = match;
     src = `${import.meta.env.BASE_URL}/demos/${category}/${name}.html`;
   }
+}else{
+  src=`${import.meta.env.BASE_URL}${src}`;
 }
+
+
 ---
 
 <div class="iframe-demo my-8 bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden">

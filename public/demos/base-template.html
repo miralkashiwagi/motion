@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>★タイトル★</title>
+  <link src="https://unpkg.com/browse/destyle.css@4.0.1/destyle.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+  <style>
+    @layer base, demo;
+
+
+    @layer demo {
+
+
+    }
+
+    @layer base {      
+      .layout{
+        display: grid;
+        place-items: center;
+      }
+      /* スペーサーを追加して十分なスクロール領域を確保 */
+      .spacer {
+        height: 50vh;
+      }
+    }
+
+  </style>
+</head>
+<body>
+  
+  <div class="layout">
+    <div> 
+      
+
+    </div>
+  </div>
+
+  <script>
+    // メッセージリスナーを追加（親フレームからのリセット指示を受け取る）
+    window.addEventListener('message', (event) => {
+      if (event.data === 'reset-demo') {
+        // リセットの必要がある場合は、ここに処理を追加
+      }
+    });
+  </script>
+</body>
+</html>

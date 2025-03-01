@@ -1,180 +1,169 @@
 <!DOCTYPE html>
 <html lang="ja">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>GSAPを使用したフェードイン</title>
+  <link src="https://unpkg.com/browse/destyle.css@4.0.1/destyle.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-    
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-      background-color: #ffffff;
-      color: #333333;
-      line-height: 1.6;
-      overflow-x: hidden; /* 横スクロールを防止 */
-    }
-    
-    .gsap-scroll-container {
-      padding: 1rem;
-      max-width: 800px;
-      margin: 0 auto;
-    }
-    
-    .gsap-scroll-content {
-      padding: 1rem;
-    }
-    
-    .gsap-fade-element {
-      padding: 2rem;
-      margin-bottom: 1.5rem;
-      background-color: #f3f4f6;
-      border-radius: 0.5rem;
-      text-align: center;
-      font-weight: 500;
-    }
-    
-    /* ダークモード対応 */
-    @media (prefers-color-scheme: dark) {
-      body {
-        background-color: #1f2937;
-        color: #e5e7eb;
+    @layer base, demo;
+
+
+    @layer demo {
+
+
+      .gsap-scroll-container {
+        padding: 1rem;
+        max-width: 800px;
+        margin: 0 auto;
       }
-      
-      .gsap-fade-element {
-        background-color: #374151;
+
+      .gsap-scroll-content {
+        padding: 1rem;
       }
+
+      .element {
+        padding: 2rem;
+        margin-bottom: 1.5rem;
+        background-color: #eee;
+        border-radius: 0.5rem;
+        text-align: center;
+        font-weight: 500;
+      }
+
     }
-    
-    /* スペーサーを追加して十分なスクロール領域を確保 */
-    .spacer {
-      height: 50vh;
+
+    @layer base {
+      .layout {
+        display: grid;
+        place-items: center;
+      }
+
+      /* スペーサーを追加して十分なスクロール領域を確保 */
+      .spacer {
+        height: 50vh;
+      }
     }
   </style>
 </head>
+
 <body>
   <div class="gsap-scroll-container">
-    <div class="gsap-scroll-content">
-      <!-- スクロール用のスペーサーを追加 -->
-      <div class="spacer"></div>
-      
-      <div class="gsap-fade-element">基本的なフェードイン</div>
-      <div class="gsap-fade-element from-bottom">下からのスライドイン</div>
-      <div class="gsap-fade-element from-left">左からのスライドイン</div>
-      <div class="gsap-fade-element zoom-in">ズームイン</div>
-      <div class="gsap-fade-element rotate">回転しながらのフェードイン</div>
-      <div class="gsap-fade-element from-bottom">下からのスライドイン</div>
-      <div class="gsap-fade-element from-left">左からのスライドイン</div>
-      
-      <!-- スクロール用のスペーサーを追加 -->
-      <div class="spacer"></div>
-    </div>
+    <!-- スクロール用のスペーサーを追加 -->
+    <div class="spacer"></div>
+
+    <div class="element js-fadein">基本的なフェードイン</div>
+    <div class="element js-slidein-bottom">下からのスライドイン</div>
+    <div class="element js-slidein-left">左からのスライドイン</div>
+    <div class="element js-zoom-in">ズームイン</div>
+    <div class="element js-rotate">回転しながらのフェードイン</div>
+    <div class="element js-slidein-bottom">下からのスライドイン</div>
+    <div class="element js-slidein-left">左からのスライドイン</div>
+
+    <!-- スクロール用のスペーサーを追加 -->
+    <div class="spacer"></div>
   </div>
 
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       // GSAPとScrollTriggerが読み込まれていることを確認
-      if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
-        // ScrollTriggerプラグインを登録
-        gsap.registerPlugin(ScrollTrigger);
-        
-        // マーカーを表示してデバッグしやすくする（開発時のみ）
-        ScrollTrigger.defaults({
-          // markers: true
+      // ScrollTriggerプラグインを登録
+      gsap.registerPlugin(ScrollTrigger);
+
+      // マーカーを表示してデバッグしやすくする（開発時のみ）
+      // ScrollTrigger.defaults({
+      // markers: true
+      // });
+
+      // 基本的なフェードイン
+      const fadeElements = document.querySelectorAll('.js-fadein');
+      fadeElements.forEach(element => {
+        gsap.from(element, {
+          opacity: 0,
+          duration: 0.8,
+          scrollTrigger: {
+            trigger: element,
+            start: "top 80%",
+            end: "bottom 20%",
+            toggleActions: "play none none none"
+          }
         });
-        
-        // 基本的なフェードイン
-        const fadeElements = document.querySelectorAll('.gsap-fade-element:not(.from-bottom):not(.from-left):not(.zoom-in):not(.rotate)');
-        fadeElements.forEach(element => {
-          gsap.from(element, {
-            opacity: 0,
-            duration: 0.8,
-            scrollTrigger: {
-              trigger: element,
-              start: "top 80%",
-              end: "bottom 20%",
-              toggleActions: "play none none reverse"
-            }
-          });
+      });
+
+      // 下からのスライドイン
+      const bottomElements = document.querySelectorAll('.js-slidein');
+      bottomElements.forEach(element => {
+        gsap.from(element, {
+          opacity: 0,
+          y: 50,
+          duration: 0.8,
+          scrollTrigger: {
+            trigger: element,
+            start: "top 80%",
+            end: "bottom 20%",
+            toggleActions: "play none none none"
+          }
         });
-        
-        // 下からのスライドイン
-        const bottomElements = document.querySelectorAll('.gsap-fade-element.from-bottom');
-        bottomElements.forEach(element => {
-          gsap.from(element, {
-            opacity: 0,
-            y: 50,
-            duration: 0.8,
-            scrollTrigger: {
-              trigger: element,
-              start: "top 80%",
-              end: "bottom 20%",
-              toggleActions: "play none none reverse"
-            }
-          });
+      });
+
+      // 左からのスライドイン
+      const leftElements = document.querySelectorAll('.js-slidein-left');
+      leftElements.forEach(element => {
+        gsap.from(element, {
+          opacity: 0,
+          x: -50,
+          duration: 0.8,
+          scrollTrigger: {
+            trigger: element,
+            start: "top 80%",
+            end: "bottom 20%",
+            toggleActions: "play none none none"
+          }
         });
-        
-        // 左からのスライドイン
-        const leftElements = document.querySelectorAll('.gsap-fade-element.from-left');
-        leftElements.forEach(element => {
-          gsap.from(element, {
-            opacity: 0,
-            x: -50,
-            duration: 0.8,
-            scrollTrigger: {
-              trigger: element,
-              start: "top 80%",
-              end: "bottom 20%",
-              toggleActions: "play none none reverse"
-            }
-          });
+      });
+
+      // ズームイン
+      const zoomElements = document.querySelectorAll('.js-zoom-in');
+      zoomElements.forEach(element => {
+        gsap.from(element, {
+          opacity: 0,
+          scale: 0.8,
+          duration: 0.8,
+          scrollTrigger: {
+            trigger: element,
+            start: "top 80%",
+            end: "bottom 20%",
+            toggleActions: "play none none none"
+          }
         });
-        
-        // ズームイン
-        const zoomElements = document.querySelectorAll('.gsap-fade-element.zoom-in');
-        zoomElements.forEach(element => {
-          gsap.from(element, {
-            opacity: 0,
-            scale: 0.8,
-            duration: 0.8,
-            scrollTrigger: {
-              trigger: element,
-              start: "top 80%",
-              end: "bottom 20%",
-              toggleActions: "play none none reverse"
-            }
-          });
+      });
+
+      // 回転しながらのフェードイン
+      const rotateElements = document.querySelectorAll('.js-rotate');
+      rotateElements.forEach(element => {
+        gsap.from(element, {
+          opacity: 0,
+          rotation: -5,
+          duration: 0.8,
+          scrollTrigger: {
+            trigger: element,
+            start: "top 80%",
+            end: "bottom 20%",
+            toggleActions: "play none none none"
+          }
         });
-        
-        // 回転しながらのフェードイン
-        const rotateElements = document.querySelectorAll('.gsap-fade-element.rotate');
-        rotateElements.forEach(element => {
-          gsap.from(element, {
-            opacity: 0,
-            rotation: -5,
-            duration: 0.8,
-            scrollTrigger: {
-              trigger: element,
-              start: "top 80%",
-              end: "bottom 20%",
-              toggleActions: "play none none reverse"
-            }
-          });
-        });
-      }
-      
+      });
+
       // メッセージリスナーを追加（親フレームからのリセット指示を受け取る）
       window.addEventListener('message', (event) => {
         if (event.data === 'reset-demo') {
           // スクロール位置をリセット
           window.scrollTo(0, 0);
-          
+
           // アニメーションをリセット（ページをリロードする方法が簡単）
           location.reload();
         }
@@ -182,4 +171,5 @@
     });
   </script>
 </body>
+
 </html>
