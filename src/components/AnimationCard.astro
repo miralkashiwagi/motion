@@ -35,6 +35,9 @@ const getParentCategoryColor = (cat: string) => {
 // プレビュー画像のパス
 const previewSrc = preview || '';
 
+// 画像の存在確認（実際には常にプレースホルダーを使用）
+const usePreviewImage = false;
+
 // 技術タグの表示
 const techTags = technologies || [];
 ---
@@ -42,7 +45,7 @@ const techTags = technologies || [];
 <a href={`${import.meta.env.BASE_URL}/animations/${slug.replace(/^\/+/, '')}`} class="group">
   <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
     <div class="aspect-video relative overflow-hidden bg-gray-100 dark:bg-gray-900">
-      {previewSrc ? (
+      {usePreviewImage && previewSrc ? (
         <img 
           src={previewSrc} 
           alt={`Preview of ${title}`} 
