@@ -6,23 +6,9 @@ const parentCategorySchema = z.enum([
   'メニュー展開効果',
   'スクロール関連',
   'テキストアニメーション',
-  'ページ関連',
+  'ページ関連・切り替え効果',
 ]);
 
-// 実装技術を定義
-const technologySchema = z.enum([
-  'CSS',
-  'JavaScript',
-  'GSAP',
-  'ScrollTrigger',
-  'Framer Motion',
-  'SVG',
-  'Canvas',
-  'CSS Animation',
-  'CSS Transition',
-  'Web Animation API',
-  'Intersection Observer',
-]);
 
 // サブカテゴリーの定義
 const subcategorySchema = z.enum([
@@ -36,14 +22,13 @@ const subcategorySchema = z.enum([
   'メガメニュー',
   'スクロールトリガー',
   'パララックス',
-  '順次表示',
   'スクロール連動',
   'テキスト効果',
   'タイピング効果',
   'ハイライト効果',
   '文字アニメーション',
   'ローディングアニメーション',
-  'スケルトンローディング',
+  'スプラッシュページ',
   'ページトランジション',
 ]);
 
@@ -57,13 +42,11 @@ const animationsCollection = defineCollection({
     // サブカテゴリー（従来のcategoryフィールドを流用）
     category: subcategorySchema,
     tags: z.array(z.string()).optional(),
-    technologies: z.array(technologySchema).optional(),
     difficulty: z.enum(['beginner', 'intermediate', 'advanced']).optional(),
     preview: z.string().optional(), // Path to preview GIF/MP4
     order: z.number().optional(),
     pubDate: z.date().optional(),
     updatedDate: z.date().optional(),
-    useIframe: z.boolean().optional(),
     demoHeight: z.string().optional(),
   }),
 });
@@ -103,7 +86,6 @@ export const categoryMapping = {
     subcategories: [
       'スクロールトリガー',
       'パララックス',
-      '順次表示',
       'スクロール連動',
     ],
     icon: 'arrow-down',
@@ -120,17 +102,17 @@ export const categoryMapping = {
     ],
     icon: 'text',
     color: '#0d9488',
-    description: 'タイピング効果、文字ごとのアニメーション、ハイライト効果など、テキストを動的に表示する手法',
+    description: 'タイピング効果、文字ごとのアニメーションなど、テキストを動的に表示する手法',
   },
-  'ページ関連': {
+  'ページ関連・切り替え効果': {
     id: 'page',
     subcategories: [
       'ローディングアニメーション',
-      'スケルトンローディング',
+      'スプラッシュページ',
       'ページトランジション',
     ],
     icon: 'arrow-path',
     color: '#c026d3',
-    description: 'ローディングアニメーション、スケルトンUI、ページ内トランジションなど',
+    description: 'ローディングアニメーション、スプラッシュページ、ページ内トランジションなど',
   },
 };

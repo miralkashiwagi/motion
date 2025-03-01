@@ -2,7 +2,8 @@
 // SubCategoryList.astro
 import { getCollection } from 'astro:content';
 import type { CollectionEntry } from 'astro:content';
-import { getSubcategories, CategoryId } from '../utils/categoryUtils';
+import { getSubcategories } from '../utils/categoryUtils';
+import type { CategoryId } from '../utils/categoryUtils';
 import { categoryMapping } from '../content/config';
 
 interface Props {
