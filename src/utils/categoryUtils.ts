@@ -141,8 +141,8 @@ export function getCategoryIdFromParentCategory(parentCategory: string): Categor
   }
   
   try {
-    const categoryData = categoryMapping[parentCategory];
-    const categoryId = categoryData ? categoryData.id : 'others';
+    const categoryData = categoryMapping[parentCategory as keyof typeof categoryMapping];
+    const categoryId = categoryData ? (categoryData.id as CategoryId) : ('others' as CategoryId);
     
     // キャッシュに保存
     categoryIdCache.set(parentCategory, categoryId);

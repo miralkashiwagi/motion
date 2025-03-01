@@ -49,8 +49,6 @@ const subcategorySchema = z.enum([
 
 const animationsCollection = defineCollection({
   type: 'content',
-  // Explicitly specify that we can use both .md and .mdx files
-  extensions: ['.md', '.mdx'],
   schema: z.object({
     title: z.string(),
     description: z.string(),

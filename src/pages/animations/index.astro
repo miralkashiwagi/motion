@@ -46,7 +46,7 @@ const difficultyLabels = {
         <select id="difficulty-filter" class="w-full bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-indigo-500 dark:focus:border-indigo-500">
           <option value="">すべて</option>
           {difficulties.map(difficulty => (
-            <option value={difficulty}>{difficultyLabels[difficulty]}</option>
+            <option value={difficulty}>{difficultyLabels[difficulty as keyof typeof difficultyLabels]}</option>
           ))}
         </select>
       </div>
@@ -57,8 +57,6 @@ const difficultyLabels = {
           <option value="title-desc">タイトル (Z-A)</option>
           <option value="date">更新日 (新しい順)</option>
           <option value="date-asc">更新日 (古い順)</option>
-          <option value="difficulty">難易度 (易しい順)</option>
-          <option value="difficulty-desc">難易度 (難しい順)</option>
         </select>
       </div>
     </div>
@@ -68,7 +66,7 @@ const difficultyLabels = {
     表示中: <span id="count">{animations.length}</span> 件
   </div>
 
-  <div id="animations-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+  <div id="animations-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
     {animations.map(animation => (
       <div class="animation-card" 
         data-category={animation.data.parentCategory}

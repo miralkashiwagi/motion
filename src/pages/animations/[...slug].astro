@@ -166,60 +166,60 @@ const difficulty = entry.data.difficulty ?
 
 <style is:global>
   /* Markdown コンテンツの見出しスタイル */
-  .prose h2 {
+  :where(.prose)   h2 {
     @apply text-2xl font-bold text-gray-900 dark:text-white mt-10 mb-4;
   }
-  .prose h3 {
+  :where(.prose) h3 {
     @apply text-xl font-semibold text-gray-900 dark:text-white mt-8 mb-3;
   }
-  .prose h4 {
+  :where(.prose) h4 {
     @apply text-lg font-semibold text-gray-900 dark:text-white mt-6 mb-2;
   }
   
   /* リストスタイル */
-  .prose ul {
+  :where(.prose) ul {
     @apply list-disc list-inside mb-4 text-gray-700 dark:text-gray-300;
   }
-  .prose ol {
+  :where(.prose) ol {
     @apply list-decimal list-inside mb-4 text-gray-700 dark:text-gray-300;
   }
   
   /* リンクスタイル */
-  .prose a {
+  :where(.prose) a {
     @apply text-indigo-600 dark:text-indigo-400 hover:underline;
   }
   
   /* コードブロックスタイル */
-  .prose pre {
+  :where(.prose) pre {
     @apply bg-gray-100 dark:bg-gray-900 p-4 rounded-lg overflow-x-auto mb-4;
   }
-  .prose code {
+  :where(.prose) code {
     @apply font-mono text-sm;
   }
   
   /* インラインコードスタイル */
-  .prose :not(pre) > code {
+  :where(.prose) :not(pre) > code {
     @apply bg-gray-100 dark:bg-gray-900 px-1.5 py-0.5 rounded text-sm font-mono text-gray-800 dark:text-gray-200;
   }
   
   /* 引用スタイル */
-  .prose blockquote {
+  :where(.prose) blockquote {
     @apply border-l-4 border-indigo-500 pl-4 italic text-gray-700 dark:text-gray-300 mb-4;
   }
   
   /* 水平線スタイル */
-  .prose hr {
+  :where(.prose) hr {
     @apply border-gray-300 dark:border-gray-700 my-6;
   }
   
   /* テーブルスタイル */
-  .prose table {
+  :where(.prose) table {
     @apply w-full text-left border-collapse mb-4;
   }
-  .prose th {
+  :where(.prose) th {
     @apply bg-gray-100 dark:bg-gray-900 p-2 font-semibold border border-gray-300 dark:border-gray-700;
   }
-  .prose td {
+  :where(.prose) td {
     @apply p-2 border border-gray-300 dark:border-gray-700;
   }
 </style>

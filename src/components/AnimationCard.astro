@@ -30,19 +30,19 @@ const difficultyLabels = {
 // 親カテゴリーの色を取得
 const getParentCategoryColor = (cat: string) => {
   if (!cat) return '#6b7280'; // デフォルト色
-  return categoryMapping[cat]?.color || '#6b7280';
+  return categoryMapping[cat as keyof typeof categoryMapping]?.color || '#6b7280';
 };
 
 // カードのURL生成
 const cardUrl = `${import.meta.env.BASE_URL}/animations/${slug.replace(/^\/+/, '')}`;
 
 // カテゴリーIDの取得（カテゴリーページへのリンク用）
-const categoryId = parentCategory && categoryMapping[parentCategory] ? categoryMapping[parentCategory].id : '';
+const categoryId = parentCategory && categoryMapping[parentCategory as keyof typeof categoryMapping] ? categoryMapping[parentCategory as keyof typeof categoryMapping].id : '';
 
 ---
 
 <a href={cardUrl} class="group">
-  <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-1 focus-within:ring-2 focus-within:ring-indigo-500">
+  <div class="bg-white h-full dark:bg-gray-800 rounded-lg shadow-md overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-1 focus-within:ring-2 focus-within:ring-indigo-500">
     <div class="aspect-video relative overflow-hidden bg-gray-100 dark:bg-gray-900">
       <PlaceholderImage 
         text={title}
@@ -58,7 +58,7 @@ const categoryId = parentCategory && categoryMapping[parentCategory] ? categoryM
     <div class="p-3">
       <div class="flex flex-wrap gap-2 mb-2">
         {categoryId && (
-          <span class="inline-block px-2 py-1 text-xs font-medium bg-indigo-100 text-indigo-800 dark:bg-indigo-900/30 dark:text-indigo-400 rounded-md hover:bg-indigo-200 dark:hover:bg-indigo-800/50 transition-colors">
+          <span class="inline-block px-2 py-1 text-xs font-medium bg-indigo-100 text-indigo-800 dark:bg-indigo-900/30 dark:text-indigo-400 rounded-md">
             {parentCategory}
           </span>
         )}

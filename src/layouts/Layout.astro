@@ -83,7 +83,7 @@ import '../styles/global.css';
 					}
 					
 					// メニューの開閉処理を行う関数
-					const toggleMenu = (isOpen) => {
+					const toggleMenu = (isOpen: boolean) => {
 						mobileMenu.classList.toggle('hidden', !isOpen);
 						menuButton.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
 						menuButton.setAttribute('aria-label', isOpen ? 'メニューを閉じる' : 'メニューを開く');
@@ -100,7 +100,7 @@ import '../styles/global.css';
 					// ヘッダー内のクリックイベントを委任
 					header.addEventListener('click', (event) => {
 						// イベントの発生元を取得
-						const target = event.target;
+						const target = event.target as Element;
 						// モバイルメニューボタンまたはその子要素がクリックされたかを確認
 						const clickedMenuButton = target.closest('#mobile-menu-button');
 						
