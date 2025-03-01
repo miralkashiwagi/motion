@@ -36,7 +36,7 @@ const animationsCollection = defineCollection({
   type: 'content',
   schema: z.object({
     title: z.string(),
-    description: z.string(),
+    description: z.string().optional(),
     // 親カテゴリー
     parentCategory: parentCategorySchema,
     // サブカテゴリー（従来のcategoryフィールドを流用）

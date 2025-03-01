@@ -7,7 +7,7 @@ interface Props {
 }
 
 const { animation } = Astro.props;
-const { title, description, category, tags, difficulty } = animation.data;
+const { title, category, tags, difficulty } = animation.data;
 
 // カテゴリーに基づいたパス
 const categoryPath = `/categories/${category.toLowerCase().replace(/\s+/g, '-')}`;
@@ -20,6 +20,8 @@ const difficultyClasses = {
 };
 
 const difficultyClass = difficulty ? difficultyClasses[difficulty] : '';
+
+const description = `${category}の${title}のページ`;
 ---
 
 <Layout title={title} description={description}>
