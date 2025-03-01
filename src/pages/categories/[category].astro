@@ -3,10 +3,12 @@ import Layout from '../../layouts/Layout.astro';
 import AnimationCard from '../../components/AnimationCard.astro';
 import SubCategoryList from '../../components/SubCategoryList.astro';
 import { getCollection } from 'astro:content';
+import type { CollectionEntry } from 'astro:content';
 import { getCategoryInfo } from '../../utils/categoryUtils';
+import type { CategoryId } from '../../utils/categoryUtils';
 
 export async function getStaticPaths() {
-  const categories = [
+  const categories: CategoryId[] = [
     'interactive-animations',
     'menu-animations',
     'scroll-animations',
@@ -17,18 +19,22 @@ export async function getStaticPaths() {
   
   return categories.map(category => ({
     params: { category },
-    props: { categoryId: category }
+    props: { category },
   }));
 }
 
-const { category } = Astro.params;
+interface Props {
+  category: CategoryId;
+}
+
+const { category } = Astro.props;
 const { categoryId } = Astro.props;
 
 // カテゴリ情報を取得
 const info = getCategoryInfo(category);
 
 // アニメーションを取得
-const allAnimations = await getCollection('animations');
+const allAnimations: CollectionEntry<'animations'>[] = await getCollection('animations');
 
 // カテゴリに基づいてアニメーションをフィルタリング
 const categoryAnimations = allAnimations.filter(animation => {
@@ -49,16 +55,13 @@ const categoryAnimations = allAnimations.filter(animation => {
   return false;
 });
 
-// 難易度でソート
-const difficultyOrder = {
-  'beginner': 1,
-  'intermediate': 2,
-  'advanced': 3
-};
-
+// 日付順にソート（降順）
 const sortedAnimations = [...categoryAnimations].sort((a, b) => {
-  return difficultyOrder[a.data.difficulty] - difficultyOrder[b.data.difficulty];
+  const dateA = a.data.pubDate || new Date(0);
+  const dateB = b.data.pubDate || new Date(0);
+  return dateB.getTime() - dateA.getTime(); // 降順（新しい順）
 });
+
 ---
 
 <Layout title={category}>

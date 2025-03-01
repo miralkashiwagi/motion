@@ -1,11 +1,17 @@
 ---
 // SubCategoryList.astro
 import { getCollection } from 'astro:content';
+import type { CollectionEntry } from 'astro:content';
+import type { CategoryId } from '../utils/categoryUtils';
+
+interface Props {
+  category: CategoryId;
+}
 
 const { category } = Astro.props;
 
 // すべてのアニメーションを取得
-const allAnimations = await getCollection('animations');
+const allAnimations: CollectionEntry<'animations'>[] = await getCollection('animations');
 
 // カテゴリに基づいてアニメーションをフィルタリング
 const categoryAnimations = allAnimations.filter(animation => {
@@ -27,7 +33,13 @@ const categoryAnimations = allAnimations.filter(animation => {
 });
 
 // サブカテゴリを抽出
-const subcategories = [];
+interface Subcategory {
+  id: string;
+  name: string;
+  description: string;
+}
+
+const subcategories: Subcategory[] = [];
 if (category === 'interactive-animations') {
   // ホバーエフェクトのアニメーションがあるか確認
   if (categoryAnimations.some(animation => animation.data.category === 'ホバーエフェクト')) {
@@ -142,6 +154,7 @@ if (category === 'interactive-animations') {
 
 // 現在のカテゴリのサブカテゴリを取得
 const currentSubcategories = subcategories;
+
 ---
 
 {currentSubcategories.length > 0 && (

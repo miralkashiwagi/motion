@@ -2,16 +2,17 @@
 import Layout from '../../layouts/Layout.astro';
 import AnimationCard from '../../components/AnimationCard.astro';
 import { getCollection } from 'astro:content';
+import type { CollectionEntry } from 'astro:content';
 
 // すべてのアニメーションを取得
-const allAnimations = await getCollection('animations');
+const allAnimations: CollectionEntry<'animations'>[] = await getCollection('animations');
 
 // フィルタリングとソートのための状態
-const categories = [...new Set(allAnimations.map(animation => animation.data.category))];
-const difficulties = ['beginner', 'intermediate', 'advanced'];
+const categories: string[] = [...new Set(allAnimations.map(animation => animation.data.category))];
+const difficulties: string[] = ['beginner', 'intermediate', 'advanced'];
 
 // 初期状態ではすべてのアニメーションを表示
-const filteredAnimations = [...allAnimations].sort((a, b) => {
+const filteredAnimations: CollectionEntry<'animations'>[] = [...allAnimations].sort((a, b) => {
   // 日付でソート（新しい順）
   const dateA = a.data.pubDate || new Date(0);
   const dateB = b.data.pubDate || new Date(0);
