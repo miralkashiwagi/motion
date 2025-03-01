@@ -9,32 +9,18 @@ import { categoryMapping } from '../content/config';
 // アニメーションの取得
 const allAnimations = await getCollection('animations');
 
-// カテゴリの一覧を取得
+// 日付順に全アニメーションをソート
+const latestAnimations = allAnimations
+  .sort((a, b) => {
+    const dateA = a.data.pubDate || new Date(0);
+    const dateB = b.data.pubDate || new Date(0);
+    return dateB.getTime() - dateA.getTime();
+  })
+  .slice(0, 24); // 最新24件を表示
+
+// カテゴリの一覧を取得（カテゴリナビゲーション用）
 const categories = [...new Set(allAnimations.map(animation => animation.data.category))];
 
-// カテゴリ名とIDのマッピング - 親カテゴリーのIDを使用
-const categoryIdMap = {};
-Object.entries(categoryMapping).forEach(([parentName, data]) => {
-  data.subcategories.forEach(subcatName => {
-    categoryIdMap[subcatName] = data.id;
-  });
-});
-
-// カテゴリごとにアニメーションを分類
-const animationsByCategory = {};
-categories.forEach(category => {
-  // そのカテゴリのアニメーションを取得して日付順にソート
-  const categoryAnimations = allAnimations
-    .filter(animation => animation.data.category === category)
-    .sort((a, b) => {
-      const dateA = a.data.pubDate || new Date(0);
-      const dateB = b.data.pubDate || new Date(0);
-      return dateB.getTime() - dateA.getTime();
-    })
-    .slice(0, 12); // 最大12件まで表示
-  
-  animationsByCategory[category] = categoryAnimations;
-});
 ---
 
 <Layout title="ホーム">
@@ -51,25 +37,17 @@ categories.forEach(category => {
       <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-6">アニメーションカテゴリ</h2>
       <CategoryNav />
       
-      {categories.map(category => {
-        const categoryAnimations = animationsByCategory[category] || [];
-        return categoryAnimations.length > 0 ? (
-          <div class="mt-12">
-            <div class="flex justify-between items-center mb-6">
-              <h2 class="text-2xl font-bold text-gray-900 dark:text-white">{category}</h2>
-              <a href={`${import.meta.env.BASE_URL}/categories/${categoryIdMap[category]}/`} class="text-indigo-600 dark:text-indigo-400 hover:underline">
-                すべて見る →
-              </a>
-            </div>
-            
-            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-              {categoryAnimations.map(animation => (
-                <AnimationCard animation={animation} />
-              ))}
-            </div>
-          </div>
-        ) : null;
-      })}
+      <div class="mt-12">
+        <div class="flex justify-between items-center mb-6">
+          <h2 class="text-2xl font-bold text-gray-900 dark:text-white">最新のアニメーション</h2>
+        </div>
+        
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          {latestAnimations.map(animation => (
+            <AnimationCard animation={animation} />
+          ))}
+        </div>
+      </div>
     </div>
   </section>
   
