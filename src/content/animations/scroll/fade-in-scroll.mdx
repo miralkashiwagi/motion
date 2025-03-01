@@ -1,6 +1,7 @@
 ---
-title: スクロールフェードイン
+title: スクロールフェードイン効果
 description: 要素がビューポートに入ったときに徐々にフェードインするアニメーション。Intersection Observerを使用した実装例。
+parentCategory: スクロール関連
 category: スクロールトリガー
 tags: [スクロール, JavaScript, フェードイン]
 difficulty: intermediate
@@ -9,95 +10,102 @@ pubDate: 2023-03-05
 useIframe: true
 ---
 
-import IframeDemo from '../../../components/IframeDemo.astro';
+# スクロールフェードイン効果
 
-# スクロールフェードイン
+スクロールしてページ内の要素が画面に入ったときに、徐々にフェードインするエフェクトを実装します。
 
-ページをスクロールして要素がビューポートに入ったときに、徐々にフェードインするアニメーション効果です。モダンなウェブサイトでよく使用されるテクニックで、Intersection Observer APIを使用して実装します。
-
-## デモ
-
-<IframeDemo title="スクロールフェードイン" description="下にスクロールすると要素が徐々に表示されます" height="300px">
-</IframeDemo>
-
-## 実装方法
-
-このエフェクトは、Intersection Observer APIを使用して要素がビューポートに入ったかどうかを検出し、CSSトランジションでフェードイン効果を適用します。
-
-### HTML
+## HTML構造
 
 ```html
-<div class="fade-in-element">コンテンツ1</div>
-<div class="fade-in-element">コンテンツ2</div>
-<div class="fade-in-element">コンテンツ3</div>
-<div class="fade-in-element">コンテンツ4</div>
+<div class="container">
+  <section class="fade-section">
+    <h2>セクション 1</h2>
+    <p>スクロールするとフェードインします</p>
+  </section>
+  
+  <section class="fade-section">
+    <h2>セクション 2</h2>
+    <p>このセクションもフェードインします</p>
+  </section>
+  
+  <section class="fade-section">
+    <h2>セクション 3</h2>
+    <p>最後のセクションです</p>
+  </section>
+</div>
 ```
 
-### CSS
+## CSS実装
 
 ```css
-.fade-in-element {
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.fade-section {
+  height: 300px;
+  margin: 100px 0;
+  padding: 30px;
+  background-color: #f3f4f6;
+  border-radius: 8px;
   opacity: 0;
   transform: translateY(20px);
   transition: opacity 0.6s ease, transform 0.6s ease;
-  /* 他のスタイリング */
-  padding: 2rem;
-  margin-bottom: 1rem;
-  background-color: #f3f4f6;
-  border-radius: 0.5rem;
 }
-.fade-in-element.visible {
+
+.fade-section.visible {
   opacity: 1;
   transform: translateY(0);
 }
+
+h2 {
+  margin-bottom: 15px;
+  color: #1f2937;
+}
+
+p {
+  color: #4b5563;
+}
 ```
 
-### JavaScript
+## JavaScript実装
 
 ```javascript
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', function() {
+  const fadeSections = document.querySelectorAll('.fade-section');
+  
+  // Intersection Observerの設定
   const observer = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
+      // 要素が画面内に入ったらvisibleクラスを追加
       if (entry.isIntersecting) {
         entry.target.classList.add('visible');
-        // 一度表示されたら監視を解除（オプション）
-        // observer.unobserve(entry.target);
+        // 一度表示したら監視を解除（オプション）
+        observer.unobserve(entry.target);
       }
     });
-  }, { 
-    threshold: 0.1 // 要素の10%が見えたらコールバックを実行
+  }, {
+    // 要素が20%以上表示されたらコールバックを実行
+    threshold: 0.2,
+    // ビューポートを基準にする
+    rootMargin: '0px'
   });
   
-  const fadeElements = document.querySelectorAll('.fade-in-element');
-  fadeElements.forEach(element => {
-    observer.observe(element);
+  // 各要素を監視対象に追加
+  fadeSections.forEach(section => {
+    observer.observe(section);
   });
 });
 ```
 
-## ポイント
+## 解説
 
-- Intersection Observer APIを使用することで、スクロールイベントを監視するよりもパフォーマンスが向上します。
-- `threshold`オプションを調整することで、要素がどの程度見えたときにアニメーションを開始するかを制御できます。
-- `transform`と`opacity`の両方を変更することで、より自然な動きを作成できます。
-- 一度表示された要素を再度非表示にしたくない場合は、`observer.unobserve(entry.target)`を使用して監視を解除できます。
+このアニメーションは、モダンなウェブサイトでよく見られるスクロールトリガーエフェクトの一種です。
 
-## バリエーション
+1. 初期状態では要素は透明度0で下に少しずれた位置にあります
+2. Intersection Observerを使って要素が画面内に入ったかを検知します
+3. 要素が画面内に入ると、CSSトランジションによって徐々に表示され、元の位置に移動します
 
-このエフェクトには、以下のようなバリエーションも考えられます：
-
-1. **スライドイン**: 左右からスライドインする効果
-2. **スケールイン**: 小さいサイズから徐々に拡大する効果
-3. **連続アニメーション**: 複数の要素を順番にアニメーションさせる
-4. **パララックス効果**: スクロール速度に応じて異なる速度で移動する効果
-
-## ブラウザ互換性
-
-Intersection Observer APIは、以下のブラウザでサポートされています：
-
-- Chrome 51+
-- Firefox 55+
-- Safari 12.1+
-- Edge 15+
-
-Internet Explorer ではサポートされていないため、ポリフィルが必要です。
+Intersection Observerを使うことで、スクロールイベントを直接監視するよりもパフォーマンスが向上します。

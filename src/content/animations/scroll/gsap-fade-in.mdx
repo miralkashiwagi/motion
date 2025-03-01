@@ -1,160 +1,115 @@
 ---
-title: GSAPを使用したフェードイン
-description: GSAPとScrollTriggerを使用して、要素がビューポートに入ったときに滑らかにフェードインするアニメーション。
+title: GSAPフェードインアニメーション
+description: GSAPライブラリを使用したスクロールトリガーのフェードインアニメーション。ScrollTriggerプラグインを活用した実装例。
+parentCategory: スクロール関連
 category: スクロールトリガー
-tags: [GSAP, ScrollTrigger, フェードイン]
+tags: [スクロール, GSAP, JavaScript]
 difficulty: intermediate
-preview: /images/animations/gsap-fade-in.gif
+preview: /images/animations/gsap-fade.gif
 pubDate: 2023-03-10
 useIframe: true
 ---
 
-import IframeDemo from '../../../components/IframeDemo.astro';
+# GSAPを使ったスクロールフェードイン
 
-# GSAPを使用したフェードイン
+GSAPとScrollTriggerプラグインを使用して、スクロールに連動したフェードインアニメーションを実装します。
 
-GSAPとScrollTriggerプラグインを使用して、要素がビューポートに入ったときに滑らかにフェードインするアニメーションです。Intersection Observerよりも柔軟な制御が可能になります。
-
-## デモ
-
-<IframeDemo title="GSAPフェードイン" description="下にスクロールすると要素が滑らかにフェードインします" height="400px">
-  
-</IframeDemo>
-
-## 実装方法
-
-このエフェクトは、GSAPライブラリとScrollTriggerプラグインを使用して実装します。要素がビューポートに入ったときに、様々なアニメーションを適用できます。
-
-### HTML
+## HTML構造
 
 ```html
-<div class="gsap-fade-element">基本的なフェードイン</div>
-<div class="gsap-fade-element from-bottom">下からのスライドイン</div>
-<div class="gsap-fade-element from-left">左からのスライドイン</div>
-<div class="gsap-fade-element zoom-in">ズームイン</div>
-<div class="gsap-fade-element rotate">回転しながらのフェードイン</div>
+<div class="container">
+  <section class="gsap-section">
+    <h2>GSAPアニメーション 1</h2>
+    <p>スクロールするとフェードイン＆スライドします</p>
+  </section>
+  
+  <section class="gsap-section">
+    <h2>GSAPアニメーション 2</h2>
+    <p>このセクションも同様にアニメーションします</p>
+  </section>
+  
+  <section class="gsap-section">
+    <h2>GSAPアニメーション 3</h2>
+    <p>GSAPを使うと複雑なアニメーションも簡単に実装できます</p>
+  </section>
+</div>
 ```
 
-### CSS
+## CSS実装
 
 ```css
-.gsap-fade-element {
-  opacity: 0; /* 初期状態は非表示 */
-  padding: 2rem;
-  margin-bottom: 1.5rem;
-  background-color: #f3f4f6;
-  border-radius: 0.5rem;
-  text-align: center;
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.gsap-section {
+  height: 300px;
+  margin: 150px 0;
+  padding: 30px;
+  background-color: #f0f9ff;
+  border-radius: 8px;
+  border-left: 4px solid #3b82f6;
+  /* 初期状態は非表示にしておく必要はありません（GSAPで設定します） */
+}
+
+h2 {
+  margin-bottom: 15px;
+  color: #1e40af;
+}
+
+p {
+  color: #1e3a8a;
 }
 ```
 
-### JavaScript (GSAP)
+## JavaScript実装（GSAP）
 
 ```javascript
-// GSAPとScrollTriggerプラグインを登録
-gsap.registerPlugin(ScrollTrigger);
+// CDNからGSAPとScrollTriggerを読み込む
+// <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/gsap.min.js"></script>
+// <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/ScrollTrigger.min.js"></script>
 
-// 基本的なフェードイン
-gsap.utils.toArray('.gsap-fade-element').forEach((element, i) => {
-  // 各要素に対してアニメーションを設定
-  gsap.from(element, {
-    scrollTrigger: {
-      trigger: element,
-      start: 'top 80%', // 要素の上部がビューポートの80%位置に来たとき
-      end: 'bottom 20%', // 要素の下部がビューポートの20%位置に来たとき
-      toggleActions: 'play none none reverse' // 入ったら再生、出たら逆再生
-    },
-    opacity: 0,
-    duration: 0.8,
-    delay: i * 0.2 // 各要素に少しずつ遅延を追加
+document.addEventListener('DOMContentLoaded', function() {
+  // ScrollTriggerプラグインを登録
+  gsap.registerPlugin(ScrollTrigger);
+  
+  // 各セクションに対してアニメーションを設定
+  gsap.utils.toArray('.gsap-section').forEach(section => {
+    // 初期状態を設定
+    gsap.set(section, { 
+      opacity: 0,
+      y: 50
+    });
+    
+    // スクロールトリガーアニメーションを作成
+    gsap.to(section, {
+      opacity: 1,
+      y: 0,
+      duration: 0.8,
+      ease: "power2.out",
+      scrollTrigger: {
+        trigger: section,
+        start: "top 80%", // トリガー要素の上端がビューポートの80%位置に来たら開始
+        end: "top 50%",   // トリガー要素の上端がビューポートの50%位置に来たら完了
+        toggleActions: "play none none none", // 入ったら再生、出ても何もしない
+        // markers: true,  // デバッグ用マーカー（開発時のみ有効にする）
+      }
+    });
   });
-  
-  // 下からのスライドイン
-  if (element.classList.contains('from-bottom')) {
-    gsap.from(element, {
-      scrollTrigger: {
-        trigger: element,
-        start: 'top 80%',
-        end: 'bottom 20%',
-        toggleActions: 'play none none reverse'
-      },
-      y: 50, // 下から50px移動
-      duration: 0.8,
-      delay: i * 0.2
-    });
-  }
-  
-  // 左からのスライドイン
-  if (element.classList.contains('from-left')) {
-    gsap.from(element, {
-      scrollTrigger: {
-        trigger: element,
-        start: 'top 80%',
-        end: 'bottom 20%',
-        toggleActions: 'play none none reverse'
-      },
-      x: -50, // 左から50px移動
-      duration: 0.8,
-      delay: i * 0.2
-    });
-  }
-  
-  // ズームイン
-  if (element.classList.contains('zoom-in')) {
-    gsap.from(element, {
-      scrollTrigger: {
-        trigger: element,
-        start: 'top 80%',
-        end: 'bottom 20%',
-        toggleActions: 'play none none reverse'
-      },
-      scale: 0.8, // 80%のサイズから拡大
-      duration: 0.8,
-      delay: i * 0.2
-    });
-  }
-  
-  // 回転しながらのフェードイン
-  if (element.classList.contains('rotate')) {
-    gsap.from(element, {
-      scrollTrigger: {
-        trigger: element,
-        start: 'top 80%',
-        end: 'bottom 20%',
-        toggleActions: 'play none none reverse'
-      },
-      rotation: -10, // -10度から回転
-      duration: 0.8,
-      delay: i * 0.2
-    });
-  }
 });
 ```
 
-## ポイント
+## 解説
 
-- GSAPの`from`メソッドを使用して、初期状態から最終状態へのアニメーションを定義します。
-- ScrollTriggerの`trigger`オプションで、アニメーションのトリガーとなる要素を指定します。
-- `start`と`end`オプションで、アニメーションの開始と終了のタイミングを制御します。
-- `toggleActions`オプションで、要素がビューポートに入ったときと出たときの動作を指定します。
-- 複数のアニメーションを組み合わせることで、より複雑な効果を作成できます。
+GSAPとScrollTriggerプラグインを使用すると、より高度なスクロールアニメーションを簡単に実装できます。
 
-## バリエーション
+1. GSAPの`set`メソッドで要素の初期状態を設定します（透明度0、Y軸に50pxオフセット）
+2. `to`メソッドでアニメーションの終了状態を定義します
+3. `scrollTrigger`オプションでスクロール連動の設定を行います
+   - `trigger`: アニメーションのトリガーとなる要素
+   - `start`/`end`: アニメーションの開始/終了位置
+   - `toggleActions`: スクロール時の動作を定義
 
-このエフェクトには、以下のようなバリエーションも考えられます：
-
-1. **順次表示**: `stagger`オプションを使用して、複数の要素を順番にアニメーションさせる
-2. **スクロール連動**: `scrub: true`オプションを使用して、スクロール位置に応じてアニメーションを進行させる
-3. **ピン留め**: `pin: true`オプションを使用して、スクロール中に要素を固定する
-4. **タイムライン**: `gsap.timeline()`を使用して、複数のアニメーションを連続して実行する
-
-## 必要なライブラリ
-
-このエフェクトを実装するには、以下のライブラリが必要です：
-
-- GSAP (GreenSock Animation Platform): https://greensock.com/gsap/
-- ScrollTrigger プラグイン: https://greensock.com/scrolltrigger/
-
-```html
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+GSAPを使うメリットは、複雑なタイムラインやイージング、複数のプロパティのアニメーションを簡単に制御できることです。

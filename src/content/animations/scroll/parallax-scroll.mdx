@@ -1,6 +1,7 @@
 ---
 title: パララックススクロール効果
 description: スクロール速度に応じて異なる速度で移動するパララックス効果。CSSのperspectiveプロパティを使用した実装例。
+parentCategory: スクロール関連
 category: パララックス
 tags: [スクロール, CSS, パララックス]
 difficulty: intermediate
@@ -9,105 +10,76 @@ pubDate: 2023-03-15
 useIframe: true
 ---
 
-import IframeDemo from '../../../components/IframeDemo.astro';
-
-
 # パララックススクロール効果
 
-パララックススクロールは、背景と前景が異なる速度で移動することで、奥行きと立体感を生み出すテクニックです。ウェブサイトに視覚的な深みを加えることができます。
+スクロールに合わせて背景と前景が異なる速度で動くパララックス効果を実装します。
 
-## デモ
-
-<IframeDemo 
-  title="パララックススクロール" 
-  description="スクロールすると各レイヤーが異なる速度で移動します" 
-  height="400px"
-/>
-
-## 実装方法
-
-このエフェクトは、CSSのperspectiveプロパティとtransformのtranslateZ値を組み合わせることで実現します。
-
-
-### HTML
+## HTML構造
 
 ```html
 <div class="parallax-container">
-  <div class="parallax-layer layer-back">背景レイヤー</div>
-  <div class="parallax-layer layer-mid">中間レイヤー</div>
-  <div class="parallax-layer layer-front">前面レイヤー</div>
-  
-  <div class="content">
-    <h2>コンテンツタイトル</h2>
-    <p>コンテンツの説明文...</p>
+  <div class="parallax-bg"></div>
+  <div class="parallax-content">
+    <h1>パララックス効果</h1>
+    <p>スクロールすると背景と前景が異なる速度で動きます</p>
   </div>
 </div>
 ```
 
-### CSS
+## CSS実装
 
 ```css
 .parallax-container {
   height: 100vh;
+  overflow-x: hidden;
   overflow-y: auto;
   perspective: 1px;
-  perspective-origin: center top;
 }
 
-.parallax-layer {
-  position: relative;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100px;
-  margin-bottom: 20px;
-}
-
-.layer-back {
-  transform: translateZ(-0.5px) scale(1.5);
-  background-color: #3b82f6;
+.parallax-bg {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  transform: translateZ(-1px) scale(2);
+  background-image: url('https://source.unsplash.com/random/1600x900/?nature');
+  background-size: cover;
+  background-position: center;
   z-index: -1;
 }
 
-.layer-mid {
-  transform: translateZ(-0.25px) scale(1.25);
-  background-color: #8b5cf6;
-  z-index: 0;
-}
-
-.layer-front {
+.parallax-content {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  text-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
   transform: translateZ(0);
-  background-color: #ec4899;
   z-index: 1;
 }
 
-.content {
-  position: relative;
-  padding: 20px;
-  margin: 20px;
-  background-color: rgba(255, 255, 255, 0.9);
-  border-radius: 8px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  z-index: 2;
+h1 {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+
+p {
+  font-size: 1.5rem;
+  max-width: 80%;
+  text-align: center;
 }
 ```
 
-## 仕組みの解説
+## 解説
 
-1. **perspective**: コンテナに3D空間を作成します。値が小さいほど効果が強くなります。
-2. **translateZ**: 要素のZ軸位置を設定します。負の値は要素を「奥」に配置します。
-3. **scale**: translateZで要素が小さくなるのを補正するために使用します。
+このパララックス効果は、CSSの `perspective` プロパティと `transform: translateZ()` を使用して実現しています。
 
-## バリエーション
+1. コンテナに `perspective` を設定して3D空間を作ります
+2. 背景要素を `translateZ(-1px)` で奥に配置し、`scale(2)` で拡大して視野角を補正します
+3. コンテンツ要素は `translateZ(0)` で通常の位置に配置します
 
-パララックス効果にはさまざまなバリエーションがあります：
-
-1. **水平パララックス**: 横スクロール時に効果を適用
-2. **マウス追従パララックス**: マウスの動きに応じて要素を移動
-3. **スティッキーパララックス**: 要素が一定位置に固定されながら他の要素がスクロール
-
-## 注意点
-
-- モバイルデバイスでは処理負荷が高くなる場合があるため、必要に応じて効果を軽減または無効化することを検討してください。
-- 過度なパララックス効果は、一部のユーザーに不快感や吐き気を引き起こす可能性があります。
-- アクセシビリティを考慮し、`prefers-reduced-motion`メディアクエリを使用して、ユーザーの設定に応じて効果を調整することをお勧めします。
+スクロール時に、奥に配置された背景はゆっくりと動き、手前のコンテンツは通常速度で動くため、奥行き感が生まれます。

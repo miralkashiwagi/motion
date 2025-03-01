@@ -2,7 +2,8 @@
 // SubCategoryList.astro
 import { getCollection } from 'astro:content';
 import type { CollectionEntry } from 'astro:content';
-import type { CategoryId } from '../utils/categoryUtils';
+import { getSubcategories, CategoryId } from '../utils/categoryUtils';
+import { categoryMapping } from '../content/config';
 
 interface Props {
   category: CategoryId;
@@ -10,167 +11,50 @@ interface Props {
 
 const { category } = Astro.props;
 
+// サブカテゴリー情報を取得
+const subcategories = getSubcategories(category);
+
 // すべてのアニメーションを取得
 const allAnimations: CollectionEntry<'animations'>[] = await getCollection('animations');
 
+// 親カテゴリー名を取得（カテゴリーIDから逆引き）
+const parentCategoryName = Object.entries(categoryMapping).find(([_, data]) => data.id === category)?.[0] || '';
+
 // カテゴリに基づいてアニメーションをフィルタリング
-const categoryAnimations = allAnimations.filter(animation => {
-  // カテゴリIDに基づいてフィルタリング
-  if (category === 'interactive-animations') {
-    return ['ホバーエフェクト', 'ボタンエフェクト', 'カードエフェクト'].includes(animation.data.category);
-  } else if (category === 'menu-animations') {
-    return ['ハンバーガーメニュー', 'ドロップダウン', 'メガメニュー'].includes(animation.data.category);
-  } else if (category === 'scroll-animations') {
-    return ['スクロールトリガー', 'パララックス'].includes(animation.data.category);
-  } else if (category === 'text-animations') {
-    return ['タイピングエフェクト', 'テキストエフェクト'].includes(animation.data.category);
-  } else if (category === 'page-animations') {
-    return ['ローディングアニメーション', 'ページトランジション'].includes(animation.data.category);
-  } else if (category === 'others') {
-    return ['特殊効果'].includes(animation.data.category);
-  }
-  return false;
+const categoryAnimations = allAnimations.filter(animation => 
+  animation.data.parentCategory === parentCategoryName
+);
+
+// サブカテゴリーごとにアニメーション数をカウント
+const subcategoryWithCounts = subcategories.map(subcategory => {
+  const count = categoryAnimations.filter(animation => 
+    animation.data.category === subcategory.name
+  ).length;
+  
+  return {
+    ...subcategory,
+    count
+  };
 });
-
-// サブカテゴリを抽出
-interface Subcategory {
-  id: string;
-  name: string;
-  description: string;
-}
-
-const subcategories: Subcategory[] = [];
-if (category === 'interactive-animations') {
-  // ホバーエフェクトのアニメーションがあるか確認
-  if (categoryAnimations.some(animation => animation.data.category === 'ホバーエフェクト')) {
-    subcategories.push({
-      id: 'hover',
-      name: 'ホバーエフェクト',
-      description: 'マウスホバー時に要素の見た目や動きが変化するエフェクト'
-    });
-  }
-  // ボタンエフェクトのアニメーションがあるか確認
-  if (categoryAnimations.some(animation => animation.data.category === 'ボタンエフェクト')) {
-    subcategories.push({
-      id: 'button',
-      name: 'ボタンエフェクト',
-      description: 'クリック時やホバー時のボタンの動きや変化を強調するエフェクト'
-    });
-  }
-  // カードエフェクトのアニメーションがあるか確認
-  if (categoryAnimations.some(animation => animation.data.category === 'カードエフェクト')) {
-    subcategories.push({
-      id: 'card',
-      name: 'カードエフェクト',
-      description: 'カードUIの動きや変化を強調するエフェクト'
-    });
-  }
-} else if (category === 'menu-animations') {
-  // ハンバーガーメニューのアニメーションがあるか確認
-  if (categoryAnimations.some(animation => animation.data.category === 'ハンバーガーメニュー')) {
-    subcategories.push({
-      id: 'hamburger',
-      name: 'ハンバーガーメニュー',
-      description: 'モバイル向けのハンバーガーメニューの開閉アニメーション'
-    });
-  }
-  // ドロップダウンのアニメーションがあるか確認
-  if (categoryAnimations.some(animation => animation.data.category === 'ドロップダウン')) {
-    subcategories.push({
-      id: 'dropdown',
-      name: 'ドロップダウン',
-      description: 'クリックやホバーで表示されるドロップダウンメニューのアニメーション'
-    });
-  }
-  // メガメニューのアニメーションがあるか確認
-  if (categoryAnimations.some(animation => animation.data.category === 'メガメニュー')) {
-    subcategories.push({
-      id: 'mega-menu',
-      name: 'メガメニュー',
-      description: '大規模なナビゲーションメニューの表示アニメーション'
-    });
-  }
-} else if (category === 'scroll-animations') {
-  // スクロールトリガーのアニメーションがあるか確認
-  if (categoryAnimations.some(animation => animation.data.category === 'スクロールトリガー')) {
-    subcategories.push({
-      id: 'scroll-trigger',
-      name: 'スクロールトリガー',
-      description: 'スクロール位置に応じて要素が表示・非表示されるアニメーション'
-    });
-  }
-  // パララックスのアニメーションがあるか確認
-  if (categoryAnimations.some(animation => animation.data.category === 'パララックス')) {
-    subcategories.push({
-      id: 'parallax',
-      name: 'パララックス',
-      description: 'スクロール時に複数のレイヤーが異なる速度で動くエフェクト'
-    });
-  }
-} else if (category === 'text-animations') {
-  // タイピングエフェクトのアニメーションがあるか確認
-  if (categoryAnimations.some(animation => animation.data.category === 'タイピングエフェクト')) {
-    subcategories.push({
-      id: 'typing',
-      name: 'タイピングエフェクト',
-      description: 'テキストが1文字ずつタイプされるようなアニメーション'
-    });
-  }
-  // テキストエフェクトのアニメーションがあるか確認
-  if (categoryAnimations.some(animation => animation.data.category === 'テキストエフェクト')) {
-    subcategories.push({
-      id: 'text-effects',
-      name: 'テキストエフェクト',
-      description: 'テキストの変形や色の変化など、様々なテキストアニメーション'
-    });
-  }
-} else if (category === 'page-animations') {
-  // ローディングアニメーションのアニメーションがあるか確認
-  if (categoryAnimations.some(animation => animation.data.category === 'ローディングアニメーション')) {
-    subcategories.push({
-      id: 'loading',
-      name: 'ローディングアニメーション',
-      description: 'ページやコンテンツの読み込み中に表示されるアニメーション'
-    });
-  }
-  // ページトランジションのアニメーションがあるか確認
-  if (categoryAnimations.some(animation => animation.data.category === 'ページトランジション')) {
-    subcategories.push({
-      id: 'transition',
-      name: 'ページトランジション',
-      description: 'ページ間の遷移時に表示されるアニメーション'
-    });
-  }
-} else if (category === 'others') {
-  // 特殊効果のアニメーションがあるか確認
-  if (categoryAnimations.some(animation => animation.data.category === '特殊効果')) {
-    subcategories.push({
-      id: 'special-effects',
-      name: '特殊効果',
-      description: '他のカテゴリに分類されない特殊なアニメーション効果'
-    });
-  }
-}
-
-// 現在のカテゴリのサブカテゴリを取得
-const currentSubcategories = subcategories;
-
 ---
 
-{currentSubcategories.length > 0 && (
-  <div class="mt-8 mb-12">
-    <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">サブカテゴリ</h3>
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-      {currentSubcategories.map(subcategory => (
-        <div class="bg-white dark:bg-gray-800 rounded-lg p-4 border border-gray-200 dark:border-gray-700">
-          <h4 class="font-medium text-gray-900 dark:text-white mb-2">
-            {subcategory.name}
-          </h4>
-          <p class="text-sm text-gray-600 dark:text-gray-400">
-            {subcategory.description}
-          </p>
+{subcategoryWithCounts.length > 0 && (
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
+    {subcategoryWithCounts.map((subcategory) => (
+      <a 
+        href={`#${subcategory.id}`}
+        class="p-4 rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+      >
+        <div class="flex justify-between items-start">
+          <h3 class="font-medium text-lg">{subcategory.name}</h3>
+          <span class="inline-flex items-center justify-center w-6 h-6 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 text-xs font-medium rounded-full">
+            {subcategory.count}
+          </span>
         </div>
-      ))}
-    </div>
+        {subcategory.description && (
+          <p class="text-gray-600 dark:text-gray-400 text-sm mt-1">{subcategory.description}</p>
+        )}
+      </a>
+    ))}
   </div>
 )}

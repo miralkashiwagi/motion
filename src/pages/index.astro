@@ -4,6 +4,7 @@ import CategoryNav from '../components/CategoryNav.astro';
 import { getCollection } from 'astro:content';
 import AnimationCard from '../components/AnimationCard.astro';
 import IframeDemo from '../components/IframeDemo.astro';
+import { categoryMapping } from '../content/config';
 
 // アニメーションの取得
 const allAnimations = await getCollection('animations');
@@ -11,22 +12,13 @@ const allAnimations = await getCollection('animations');
 // カテゴリの一覧を取得
 const categories = [...new Set(allAnimations.map(animation => animation.data.category))];
 
-// カテゴリ名とIDのマッピング
-const categoryIdMap = {
-  'ホバーエフェクト': 'interactive-animations',
-  'ボタンエフェクト': 'interactive-animations',
-  'カードエフェクト': 'interactive-animations',
-  'ハンバーガーメニュー': 'menu-animations',
-  'ドロップダウン': 'menu-animations',
-  'メガメニュー': 'menu-animations',
-  'スクロールトリガー': 'scroll-animations',
-  'パララックス': 'scroll-animations',
-  'タイピングエフェクト': 'text-animations',
-  'テキストエフェクト': 'text-animations',
-  'ローディングアニメーション': 'page-animations',
-  'ページトランジション': 'page-animations',
-  '特殊効果': 'others'
-};
+// カテゴリ名とIDのマッピング - 親カテゴリーのIDを使用
+const categoryIdMap = {};
+Object.entries(categoryMapping).forEach(([parentName, data]) => {
+  data.subcategories.forEach(subcatName => {
+    categoryIdMap[subcatName] = data.id;
+  });
+});
 
 // カテゴリごとにアニメーションを分類
 const animationsByCategory = {};
