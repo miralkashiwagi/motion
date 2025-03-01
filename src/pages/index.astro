@@ -3,8 +3,6 @@ import Layout from '../layouts/Layout.astro';
 import CategoryNav from '../components/CategoryNav.astro';
 import { getCollection } from 'astro:content';
 import AnimationCard from '../components/AnimationCard.astro';
-import IframeDemo from '../components/IframeDemo.astro';
-import { categoryMapping } from '../content/config';
 
 // アニメーションの取得
 const allAnimations = await getCollection('animations');
@@ -17,9 +15,6 @@ const latestAnimations = allAnimations
     return dateB.getTime() - dateA.getTime();
   })
   .slice(0, 24); // 最新24件を表示
-
-// カテゴリの一覧を取得（カテゴリナビゲーション用）
-const categories = [...new Set(allAnimations.map(animation => animation.data.category))];
 
 ---
 

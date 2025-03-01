@@ -8,8 +8,8 @@ import { formatDate, compareDates } from '../../utils/dateUtils';
 // すべてのアニメーションを取得
 const animations = await getCollection('animations');
 
-// カテゴリーの一覧を取得
-const categories = Object.keys(categoryMapping);
+// 親カテゴリーの一覧を取得
+const parentCategories = Object.keys(categoryMapping);
 
 // 難易度の一覧
 const difficulties = ['beginner', 'intermediate', 'advanced'];
@@ -36,7 +36,7 @@ const difficultyLabels = {
         <label for="category-filter" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">カテゴリー</label>
         <select id="category-filter" class="w-full bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-indigo-500 dark:focus:border-indigo-500">
           <option value="">すべて</option>
-          {categories.map(category => (
+          {parentCategories.map(category => (
             <option value={category}>{category}</option>
           ))}
         </select>
@@ -72,6 +72,7 @@ const difficultyLabels = {
     {animations.map(animation => (
       <div class="animation-card" 
         data-category={animation.data.parentCategory}
+        data-subcategory={animation.data.category}
         data-difficulty={animation.data.difficulty}
         data-title={animation.data.title}
         data-date={animation.data.updatedDate}
@@ -87,137 +88,138 @@ const difficultyLabels = {
 </Layout>
 
 <script>
-  import { formatDate, compareDates } from '../utils/dateUtils';
+  import { formatDate, compareDates } from '../../utils/dateUtils';
 
   // DOMが読み込まれた後に実行
   document.addEventListener('DOMContentLoaded', () => {
-    // フィルターコンテナ要素を取得（イベント委任の親要素）
-    const filterContainer = document.querySelector('.mb-6');
-    const animationsGrid = document.getElementById('animations-grid');
-    const noResults = document.getElementById('no-results');
-    const countElement = document.getElementById('count');
-    
-    // すべてのアニメーションカードを取得
-    const allCards = document.querySelectorAll('.animation-card');
-    
-    // 現在のフィルター状態
-    const filterState = {
-      category: '',
-      difficulty: '',
-      sortOrder: 'title'
-    };
-    
-    // フィルターと並び替えを適用する関数
-    const applyFilters = () => {
-      if (!animationsGrid || !noResults || !countElement) return;
+    try {
+      // フィルターコンテナ要素を取得（イベント委任の親要素）
+      const filterContainer = document.querySelector('.mb-6');
+      const animationsGrid = document.getElementById('animations-grid');
+      const noResults = document.getElementById('no-results');
+      const countElement = document.getElementById('count');
       
-      // 表示するカードをカウント
-      let visibleCount = 0;
+      if (!filterContainer || !animationsGrid || !noResults || !countElement) {
+        console.error('フィルタリングに必要な要素が見つかりません');
+        return;
+      }
       
-      // 各カードに対してフィルタリングを適用
-      allCards.forEach(card => {
-        const cardElement = card as HTMLElement;
-        const category = cardElement.dataset.category || '';
-        const difficulty = cardElement.dataset.difficulty || '';
-        
-        // カテゴリーとレベルのフィルタリング
-        const categoryMatch = !filterState.category || category === filterState.category;
-        const difficultyMatch = !filterState.difficulty || difficulty === filterState.difficulty;
-        
-        // 両方の条件に一致する場合のみ表示
-        const shouldShow = categoryMatch && difficultyMatch;
-        
-        // 表示/非表示を設定
-        cardElement.style.display = shouldShow ? '' : 'none';
-        
-        // 表示されるカードをカウント
-        if (shouldShow) {
-          visibleCount++;
-        }
-      });
+      // すべてのアニメーションカードを取得
+      const allCards = document.querySelectorAll('.animation-card');
       
-      // カード数を更新
-      countElement.textContent = visibleCount.toString();
-      
-      // 結果がない場合のメッセージを表示/非表示
-      noResults.classList.toggle('hidden', visibleCount > 0);
-      
-      // 並び替えを適用
-      sortCards();
-    };
-    
-    // カードを並び替える関数
-    const sortCards = () => {
-      if (!animationsGrid) return;
-      
-      // カードの配列を取得（表示されているもののみ）
-      const cards = Array.from(allCards).filter(card => {
-        const cardElement = card as HTMLElement;
-        return cardElement.style.display !== 'none';
-      });
-      
-      // 並び替え関数
-      const getSortValue = (card: Element): string | number | Date => {
-        const cardElement = card as HTMLElement;
-        
-        switch (filterState.sortOrder) {
-          case 'title':
-            return (cardElement.dataset.title || '').toLowerCase();
-          case 'title-desc':
-            return (cardElement.dataset.title || '').toLowerCase();
-          case 'date':
-          case 'date-asc':
-            return cardElement.dataset.date ? new Date(cardElement.dataset.date) : new Date(0);
-          case 'difficulty':
-          case 'difficulty-desc':
-            const difficultyMap: Record<string, number> = {
-              'beginner': 1,
-              'intermediate': 2,
-              'advanced': 3,
-              '': 0
-            };
-            return difficultyMap[cardElement.dataset.difficulty || ''] || 0;
-          default:
-            return '';
-        }
+      // 現在のフィルター状態
+      const filterState = {
+        category: '',
+        difficulty: '',
+        sortOrder: 'title'
       };
       
-      // 並び替え
-      cards.sort((a, b) => {
-        const valueA = getSortValue(a);
-        const valueB = getSortValue(b);
+      // フィルターと並び替えを適用する関数
+      const applyFilters = () => {
+        // 表示するカードをカウント
+        let visibleCount = 0;
         
-        // 日付の場合
-        if (valueA instanceof Date && valueB instanceof Date) {
-          return filterState.sortOrder === 'date-asc' 
-            ? compareDates(valueA, valueB) 
-            : compareDates(valueB, valueA);
-        }
+        // 各カードに対してフィルタリングを適用
+        allCards.forEach(card => {
+          const cardElement = card as HTMLElement;
+          const category = cardElement.dataset.category || '';
+          const difficulty = cardElement.dataset.difficulty || '';
+          
+          // カテゴリーとレベルのフィルタリング
+          const categoryMatch = !filterState.category || category === filterState.category;
+          const difficultyMatch = !filterState.difficulty || difficulty === filterState.difficulty;
+          
+          // 両方の条件に一致する場合のみ表示
+          const shouldShow = categoryMatch && difficultyMatch;
+          
+          // 表示/非表示を設定
+          cardElement.style.display = shouldShow ? '' : 'none';
+          
+          // 表示されるカードをカウント
+          if (shouldShow) {
+            visibleCount++;
+          }
+        });
         
-        // 数値の場合
-        if (typeof valueA === 'number' && typeof valueB === 'number') {
-          return filterState.sortOrder.endsWith('-desc') 
-            ? valueB - valueA 
-            : valueA - valueB;
-        }
+        // カード数を更新
+        countElement.textContent = visibleCount.toString();
         
-        // 文字列の場合
-        const strA = String(valueA);
-        const strB = String(valueB);
+        // 結果がない場合のメッセージを表示/非表示
+        noResults.classList.toggle('hidden', visibleCount > 0);
         
-        return filterState.sortOrder.endsWith('-desc') 
-          ? strB.localeCompare(strA) 
-          : strA.localeCompare(strB);
-      });
+        // 並び替えを適用
+        sortCards();
+      };
       
-      // DOMに並び替えた順序で再挿入
-      cards.forEach(card => {
-        animationsGrid.appendChild(card);
-      });
-    };
-    
-    // イベント委任を使用してフィルター変更を監視
-    if (filterContainer) {
+      // カードを並び替える関数
+      const sortCards = () => {
+        // カードの配列を取得（表示されているもののみ）
+        const cards = Array.from(allCards).filter(card => {
+          const cardElement = card as HTMLElement;
+          return cardElement.style.display !== 'none';
+        });
+        
+        // 並び替え関数
+        const getSortValue = (card: Element): string | number | Date => {
+          const cardElement = card as HTMLElement;
+          
+          switch (filterState.sortOrder) {
+            case 'title':
+              return (cardElement.dataset.title || '').toLowerCase();
+            case 'title-desc':
+              return (cardElement.dataset.title || '').toLowerCase();
+            case 'date':
+            case 'date-asc':
+              return cardElement.dataset.date ? new Date(cardElement.dataset.date) : new Date(0);
+            case 'difficulty':
+            case 'difficulty-desc':
+              const difficultyMap: Record<string, number> = {
+                'beginner': 1,
+                'intermediate': 2,
+                'advanced': 3,
+                '': 0
+              };
+              return difficultyMap[cardElement.dataset.difficulty || ''] || 0;
+            default:
+              return '';
+          }
+        };
+        
+        // 並び替え
+        cards.sort((a, b) => {
+          const valueA = getSortValue(a);
+          const valueB = getSortValue(b);
+          
+          // 日付の場合
+          if (valueA instanceof Date && valueB instanceof Date) {
+            return filterState.sortOrder === 'date-asc' 
+              ? compareDates(valueA, valueB) 
+              : compareDates(valueB, valueA);
+          }
+          
+          // 数値の場合
+          if (typeof valueA === 'number' && typeof valueB === 'number') {
+            return filterState.sortOrder.endsWith('-desc') 
+              ? valueB - valueA 
+              : valueA - valueB;
+          }
+          
+          // 文字列の場合
+          const strA = String(valueA);
+          const strB = String(valueB);
+          
+          return filterState.sortOrder.endsWith('-desc') 
+            ? strB.localeCompare(strA) 
+            : strA.localeCompare(strB);
+        });
+        
+        // DOMに並び替えた順序で再挿入
+        cards.forEach(card => {
+          animationsGrid.appendChild(card);
+        });
+      };
+      
+      // イベント委任を使用してフィルター変更を監視
       filterContainer.addEventListener('change', (event) => {
         const target = event.target as HTMLSelectElement;
         
@@ -233,9 +235,11 @@ const difficultyLabels = {
         // フィルターを適用
         applyFilters();
       });
+      
+      // 初期フィルターを適用
+      applyFilters();
+    } catch (error) {
+      console.error('フィルタリング処理中にエラーが発生しました:', error);
     }
-    
-    // 初期フィルターを適用
-    applyFilters();
   });
 </script>

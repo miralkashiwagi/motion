@@ -64,67 +64,64 @@ import '../styles/global.css';
 		<script>
 			// イベント委任パターンを使用したモバイルメニューの切り替え
 			document.addEventListener('DOMContentLoaded', () => {
-				// ヘッダー要素を取得（イベント委任の親要素）
-				const header = document.querySelector('header');
-				
-				if (header) {
+				try {
+					// ヘッダー要素を取得（イベント委任の親要素）
+					const header = document.querySelector('header');
+					
+					if (!header) {
+						console.error('ヘッダー要素が見つかりません');
+						return;
+					}
+					
+					// モバイルメニューとボタンの要素を取得
+					const mobileMenu = document.getElementById('mobile-menu');
+					const menuButton = document.getElementById('mobile-menu-button');
+					
+					if (!mobileMenu || !menuButton) {
+						console.error('モバイルメニューまたはボタン要素が見つかりません');
+						return;
+					}
+					
+					// メニューの開閉処理を行う関数
+					const toggleMenu = (isOpen) => {
+						mobileMenu.classList.toggle('hidden', !isOpen);
+						menuButton.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+						menuButton.setAttribute('aria-label', isOpen ? 'メニューを閉じる' : 'メニューを開く');
+						
+						// SVGアイコンを切り替える
+						const buttonIcon = menuButton.querySelector('svg');
+						if (buttonIcon) {
+							buttonIcon.innerHTML = isOpen
+								? '<path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />'
+								: '<path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />';
+						}
+					};
+					
 					// ヘッダー内のクリックイベントを委任
 					header.addEventListener('click', (event) => {
 						// イベントの発生元を取得
-						const target = event.target as HTMLElement;
+						const target = event.target;
 						// モバイルメニューボタンまたはその子要素がクリックされたかを確認
-						const menuButton = target.closest('#mobile-menu-button');
+						const clickedMenuButton = target.closest('#mobile-menu-button');
 						
-						if (menuButton) {
-							const mobileMenu = document.getElementById('mobile-menu');
-							if (mobileMenu) {
-								// メニューの表示/非表示を切り替え
-								const isHidden = mobileMenu.classList.contains('hidden');
-								mobileMenu.classList.toggle('hidden');
-								
-								// アクセシビリティ属性を更新
-								menuButton.setAttribute('aria-expanded', isHidden ? 'true' : 'false');
-								menuButton.setAttribute('aria-label', isHidden ? 'メニューを閉じる' : 'メニューを開く');
-								
-								// SVGアイコンを切り替える（オプション）
-								const buttonIcon = menuButton.querySelector('svg');
-								if (buttonIcon && isHidden) {
-									// メニューが開かれた状態のアイコン（×マーク）
-									buttonIcon.innerHTML = `
-										<path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-									`;
-								} else if (buttonIcon && !isHidden) {
-									// メニューが閉じられた状態のアイコン（ハンバーガーメニュー）
-									buttonIcon.innerHTML = `
-										<path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
-									`;
-								}
-							}
+						if (clickedMenuButton) {
+							// メニューの表示/非表示を切り替え
+							const isHidden = mobileMenu.classList.contains('hidden');
+							toggleMenu(isHidden);
 						}
 					});
 					
 					// キーボードアクセシビリティのサポート
 					header.addEventListener('keydown', (event) => {
 						if (event.key === 'Escape') {
-							const mobileMenu = document.getElementById('mobile-menu');
-							const menuButton = document.getElementById('mobile-menu-button');
-							
 							// メニューが開いている場合は閉じる
-							if (mobileMenu && !mobileMenu.classList.contains('hidden') && menuButton) {
-								mobileMenu.classList.add('hidden');
-								menuButton.setAttribute('aria-expanded', 'false');
-								menuButton.setAttribute('aria-label', 'メニューを開く');
-								
-								// SVGアイコンを元に戻す
-								const buttonIcon = menuButton.querySelector('svg');
-								if (buttonIcon) {
-									buttonIcon.innerHTML = `
-										<path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
-									`;
-								}
+							if (!mobileMenu.classList.contains('hidden')) {
+								toggleMenu(false);
 							}
 						}
 					});
+				} catch (error) {
+					console.error('モバイルメニューの初期化中にエラーが発生しました:', error);
 				}
 			});
 		</script>

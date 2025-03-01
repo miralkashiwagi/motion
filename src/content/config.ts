@@ -24,6 +24,29 @@ const technologySchema = z.enum([
   'Intersection Observer',
 ]);
 
+// サブカテゴリーの定義
+const subcategorySchema = z.enum([
+  'ホバーエフェクト',
+  'ボタン効果',
+  'カード効果',
+  'シャドウ効果',
+  'アンダーライン効果',
+  'ハンバーガーメニュー',
+  'ドロップダウン',
+  'メガメニュー',
+  'スクロールトリガー',
+  'パララックス',
+  '順次表示',
+  'スクロール連動',
+  'テキスト効果',
+  'タイピング効果',
+  'ハイライト効果',
+  '文字アニメーション',
+  'ローディングアニメーション',
+  'スケルトンローディング',
+  'ページトランジション',
+]);
+
 const animationsCollection = defineCollection({
   type: 'content',
   // Explicitly specify that we can use both .md and .mdx files
@@ -34,7 +57,7 @@ const animationsCollection = defineCollection({
     // 親カテゴリー
     parentCategory: parentCategorySchema,
     // サブカテゴリー（従来のcategoryフィールドを流用）
-    category: z.string(),
+    category: subcategorySchema,
     tags: z.array(z.string()).optional(),
     technologies: z.array(technologySchema).optional(),
     difficulty: z.enum(['beginner', 'intermediate', 'advanced']).optional(),

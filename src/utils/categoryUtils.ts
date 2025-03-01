@@ -26,8 +26,7 @@ export type CategoryId =
   | 'scroll'
   | 'text'
   | 'page'
-  | 'others'
-  | string;
+  | 'others';
 
 // カテゴリーマッピングをインポート
 import { categoryMapping } from '../content/config';
@@ -154,29 +153,6 @@ export function getCategoryIdFromParentCategory(parentCategory: string): Categor
   }
 }
 
-/**
- * サブカテゴリー名から親カテゴリー名を取得する関数
- * @param subcategory - サブカテゴリー名
- * @returns 親カテゴリー名
- */
-export function getParentCategoryFromSubcategory(subcategory: string): string | null {
-  if (!subcategory) {
-    return null;
-  }
-  
-  try {
-    for (const [parentCategory, data] of Object.entries(categoryMapping)) {
-      if (data.subcategories.includes(subcategory)) {
-        return parentCategory;
-      }
-    }
-  } catch (error) {
-    console.error('getParentCategoryFromSubcategory エラー:', error);
-  }
-  
-  return null;
-}
-
 // アイコンSVGのキャッシュ
 const iconSvgCache = new Map<string, string>();
 
@@ -206,7 +182,7 @@ function getIconSvg(iconName: string): string {
       <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 13.5 12 21m0 0-7.5-7.5M12 21V3" />
     </svg>`,
     'text': `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-8 h-8">
-      <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 4.875c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5A1.125 1.125 0 0 1 3.75 9.375v-4.5ZM3.75 14.625c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5a1.125 1.125 0 0 1-1.125-1.125v-4.5ZM13.5 4.875c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5A1.125 1.125 0 0 1 13.5 9.375v-4.5ZM13.5 14.625c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5a1.125 1.125 0 0 1-1.125-1.125v-4.5Z" />
+      <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 4.875c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5A1.125 1.125 0 0 1 3.75 9.375v-4.5ZM3.75 14.625c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5a1.125 1.125 0 0 1-1.125-1.125v-4.5ZM13.5 4.875c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5A1.125 1.125 0 0 1 13.5 9.375v-4.5Z" />
     </svg>`,
     'arrow-path': `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-8 h-8">
       <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99" />
