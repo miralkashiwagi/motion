@@ -1,243 +1,294 @@
 ---
-import { getCollection } from 'astro:content';
-import Layout from '../../layouts/Layout.astro';
-import AnimationCard from '../../components/AnimationCard.astro';
-import { categoryMapping } from '../../content/config';
-import { formatDate, compareDates } from '../../utils/dateUtils';
+import { getCollection } from "astro:content";
+import Layout from "../../layouts/Layout.astro";
+import AnimationCard from "../../components/AnimationCard.astro";
+import { categoryMapping } from "../../content/config";
+import { formatDate, compareDates } from "../../utils/dateUtils";
 
 // すべてのアニメーションを取得
-const animations = await getCollection('animations');
+const animations = await getCollection("animations");
 
 // 親カテゴリーの一覧を取得
 const parentCategories = Object.keys(categoryMapping);
 
 // 難易度の一覧
-const difficulties = ['beginner', 'intermediate', 'advanced'];
+const difficulties = ["beginner", "intermediate", "advanced"];
 
 // 難易度のラベル
 const difficultyLabels = {
-  beginner: '初級',
-  intermediate: '中級',
-  advanced: '上級'
+  beginner: "初級",
+  intermediate: "中級",
+  advanced: "上級",
 };
 ---
 
 <Layout title="アニメーション一覧">
-  <div class="mb-8">
-    <h1 class="text-3xl font-bold mb-4">アニメーション一覧</h1>
-    <p class="text-gray-600 dark:text-gray-400">
-      さまざまなWebアニメーション効果のサンプルコレクションです。カテゴリーや難易度でフィルタリングできます。
-    </p>
-  </div>
+  <div class="container">
+    <div class="mb-8">
+      <h1 class="text-3xl font-bold mb-4">アニメーション一覧</h1>
+      <p class="text-gray-600 dark:text-gray-400">
+        さまざまなWebアニメーション効果のサンプルコレクションです。カテゴリーや難易度でフィルタリングできます。
+      </p>
+    </div>
 
-  <div class="mb-6 p-4 bg-white dark:bg-gray-800 rounded-lg shadow-sm">
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-      <div>
-        <label for="category-filter" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">カテゴリー</label>
-        <select id="category-filter" class="w-full bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-indigo-500 dark:focus:border-indigo-500">
-          <option value="">すべて</option>
-          {parentCategories.map(category => (
-            <option value={category}>{category}</option>
-          ))}
-        </select>
-      </div>
-      <div>
-        <label for="difficulty-filter" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">難易度</label>
-        <select id="difficulty-filter" class="w-full bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-indigo-500 dark:focus:border-indigo-500">
-          <option value="">すべて</option>
-          {difficulties.map(difficulty => (
-            <option value={difficulty}>{difficultyLabels[difficulty as keyof typeof difficultyLabels]}</option>
-          ))}
-        </select>
-      </div>
-      <div>
-        <label for="sort-order" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">並び替え</label>
-        <select id="sort-order" class="w-full bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-indigo-500 dark:focus:border-indigo-500">
-          <option value="title">タイトル (A-Z)</option>
-          <option value="title-desc">タイトル (Z-A)</option>
-          <option value="date">更新日 (新しい順)</option>
-          <option value="date-asc">更新日 (古い順)</option>
-        </select>
+    <div class="mb-6 p-4 bg-white dark:bg-gray-800 rounded-lg shadow-sm">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div>
+          <label
+            for="category-filter"
+            class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+            >カテゴリー</label
+          >
+          <select
+            id="category-filter"
+            class="w-full bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-indigo-500 dark:focus:border-indigo-500"
+          >
+            <option value="">すべて</option>
+            {
+              parentCategories.map((category) => (
+                <option value={category}>{category}</option>
+              ))
+            }
+          </select>
+        </div>
+        <div>
+          <label
+            for="difficulty-filter"
+            class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+            >難易度</label
+          >
+          <select
+            id="difficulty-filter"
+            class="w-full bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-indigo-500 dark:focus:border-indigo-500"
+          >
+            <option value="">すべて</option>
+            {
+              difficulties.map((difficulty) => (
+                <option value={difficulty}>
+                  {
+                    difficultyLabels[
+                      difficulty as keyof typeof difficultyLabels
+                    ]
+                  }
+                </option>
+              ))
+            }
+          </select>
+        </div>
+        <div>
+          <label
+            for="sort-order"
+            class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+            >並び替え</label
+          >
+          <select
+            id="sort-order"
+            class="w-full bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-indigo-500 dark:focus:border-indigo-500"
+          >
+            <option value="title">タイトル (A-Z)</option>
+            <option value="title-desc">タイトル (Z-A)</option>
+            <option value="date">更新日 (新しい順)</option>
+            <option value="date-asc">更新日 (古い順)</option>
+          </select>
+        </div>
       </div>
     </div>
-  </div>
 
-  <div id="animation-count" class="mb-4 text-sm text-gray-600 dark:text-gray-400">
-    表示中: <span id="count">{animations.length}</span> 件
-  </div>
+    <div
+      id="animation-count"
+      class="mb-4 text-sm text-gray-600 dark:text-gray-400"
+    >
+      表示中: <span id="count">{animations.length}</span> 件
+    </div>
 
-  <div id="animations-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-    {animations.map(animation => (
-      <div class="animation-card" 
-        data-category={animation.data.parentCategory}
-        data-subcategory={animation.data.category}
-        data-difficulty={animation.data.difficulty}
-        data-title={animation.data.title}
-        data-date={animation.data.updatedDate}
-      >
-        <AnimationCard animation={animation} />
-      </div>
-    ))}
-  </div>
+    <div
+      id="animations-grid"
+      class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"
+    >
+      {
+        animations.map((animation) => (
+          <div
+            class="animation-card"
+            data-category={animation.data.parentCategory}
+            data-subcategory={animation.data.category}
+            data-difficulty={animation.data.difficulty}
+            data-title={animation.data.title}
+            data-date={animation.data.updatedDate}
+          >
+            <AnimationCard animation={animation} />
+          </div>
+        ))
+      }
+    </div>
 
-  <div id="no-results" class="hidden py-8 text-center text-gray-600 dark:text-gray-400">
-    <p>条件に一致するアニメーションがありません。フィルターを変更してください。</p>
+    <div
+      id="no-results"
+      class="hidden py-8 text-center text-gray-600 dark:text-gray-400"
+    >
+      <p>
+        条件に一致するアニメーションがありません。フィルターを変更してください。
+      </p>
+    </div>
   </div>
 </Layout>
 
 <script>
-  import { formatDate, compareDates } from '../../utils/dateUtils';
+  import { formatDate, compareDates } from "../../utils/dateUtils";
 
   // DOMが読み込まれた後に実行
-  document.addEventListener('DOMContentLoaded', () => {
+  document.addEventListener("DOMContentLoaded", () => {
     try {
       // フィルターコンテナ要素を取得（イベント委任の親要素）
-      const filterContainer = document.querySelector('.mb-6');
-      const animationsGrid = document.getElementById('animations-grid');
-      const noResults = document.getElementById('no-results');
-      const countElement = document.getElementById('count');
-      
+      const filterContainer = document.querySelector(".mb-6");
+      const animationsGrid = document.getElementById("animations-grid");
+      const noResults = document.getElementById("no-results");
+      const countElement = document.getElementById("count");
+
       if (!filterContainer || !animationsGrid || !noResults || !countElement) {
-        console.error('フィルタリングに必要な要素が見つかりません');
+        console.error("フィルタリングに必要な要素が見つかりません");
         return;
       }
-      
+
       // すべてのアニメーションカードを取得
-      const allCards = document.querySelectorAll('.animation-card');
-      
+      const allCards = document.querySelectorAll(".animation-card");
+
       // 現在のフィルター状態
       const filterState = {
-        category: '',
-        difficulty: '',
-        sortOrder: 'title'
+        category: "",
+        difficulty: "",
+        sortOrder: "title",
       };
-      
+
       // フィルターと並び替えを適用する関数
       const applyFilters = () => {
         // 表示するカードをカウント
         let visibleCount = 0;
-        
+
         // 各カードに対してフィルタリングを適用
-        allCards.forEach(card => {
+        allCards.forEach((card) => {
           const cardElement = card as HTMLElement;
-          const category = cardElement.dataset.category || '';
-          const difficulty = cardElement.dataset.difficulty || '';
-          
+          const category = cardElement.dataset.category || "";
+          const difficulty = cardElement.dataset.difficulty || "";
+
           // カテゴリーとレベルのフィルタリング
-          const categoryMatch = !filterState.category || category === filterState.category;
-          const difficultyMatch = !filterState.difficulty || difficulty === filterState.difficulty;
-          
+          const categoryMatch =
+            !filterState.category || category === filterState.category;
+          const difficultyMatch =
+            !filterState.difficulty || difficulty === filterState.difficulty;
+
           // 両方の条件に一致する場合のみ表示
           const shouldShow = categoryMatch && difficultyMatch;
-          
+
           // 表示/非表示を設定
-          cardElement.style.display = shouldShow ? '' : 'none';
-          
+          cardElement.style.display = shouldShow ? "" : "none";
+
           // 表示されるカードをカウント
           if (shouldShow) {
             visibleCount++;
           }
         });
-        
+
         // カード数を更新
         countElement.textContent = visibleCount.toString();
-        
+
         // 結果がない場合のメッセージを表示/非表示
-        noResults.classList.toggle('hidden', visibleCount > 0);
-        
+        noResults.classList.toggle("hidden", visibleCount > 0);
+
         // 並び替えを適用
         sortCards();
       };
-      
+
       // カードを並び替える関数
       const sortCards = () => {
         // カードの配列を取得（表示されているもののみ）
-        const cards = Array.from(allCards).filter(card => {
+        const cards = Array.from(allCards).filter((card) => {
           const cardElement = card as HTMLElement;
-          return cardElement.style.display !== 'none';
+          return cardElement.style.display !== "none";
         });
-        
+
         // 並び替え関数
         const getSortValue = (card: Element): string | number | Date => {
           const cardElement = card as HTMLElement;
-          
+
           switch (filterState.sortOrder) {
-            case 'title':
-              return (cardElement.dataset.title || '').toLowerCase();
-            case 'title-desc':
-              return (cardElement.dataset.title || '').toLowerCase();
-            case 'date':
-            case 'date-asc':
-              return cardElement.dataset.date ? new Date(cardElement.dataset.date) : new Date(0);
-            case 'difficulty':
-            case 'difficulty-desc':
+            case "title":
+              return (cardElement.dataset.title || "").toLowerCase();
+            case "title-desc":
+              return (cardElement.dataset.title || "").toLowerCase();
+            case "date":
+            case "date-asc":
+              return cardElement.dataset.date
+                ? new Date(cardElement.dataset.date)
+                : new Date(0);
+            case "difficulty":
+            case "difficulty-desc":
               const difficultyMap: Record<string, number> = {
-                'beginner': 1,
-                'intermediate': 2,
-                'advanced': 3,
-                '': 0
+                beginner: 1,
+                intermediate: 2,
+                advanced: 3,
+                "": 0,
               };
-              return difficultyMap[cardElement.dataset.difficulty || ''] || 0;
+              return difficultyMap[cardElement.dataset.difficulty || ""] || 0;
             default:
-              return '';
+              return "";
           }
         };
-        
+
         // 並び替え
         cards.sort((a, b) => {
           const valueA = getSortValue(a);
           const valueB = getSortValue(b);
-          
+
           // 日付の場合
           if (valueA instanceof Date && valueB instanceof Date) {
-            return filterState.sortOrder === 'date-asc' 
-              ? compareDates(valueA, valueB) 
+            return filterState.sortOrder === "date-asc"
+              ? compareDates(valueA, valueB)
               : compareDates(valueB, valueA);
           }
-          
+
           // 数値の場合
-          if (typeof valueA === 'number' && typeof valueB === 'number') {
-            return filterState.sortOrder.endsWith('-desc') 
-              ? valueB - valueA 
+          if (typeof valueA === "number" && typeof valueB === "number") {
+            return filterState.sortOrder.endsWith("-desc")
+              ? valueB - valueA
               : valueA - valueB;
           }
-          
+
           // 文字列の場合
           const strA = String(valueA);
           const strB = String(valueB);
-          
-          return filterState.sortOrder.endsWith('-desc') 
-            ? strB.localeCompare(strA) 
+
+          return filterState.sortOrder.endsWith("-desc")
+            ? strB.localeCompare(strA)
             : strA.localeCompare(strB);
         });
-        
+
         // DOMに並び替えた順序で再挿入
-        cards.forEach(card => {
+        cards.forEach((card) => {
           animationsGrid.appendChild(card);
         });
       };
-      
+
       // イベント委任を使用してフィルター変更を監視
-      filterContainer.addEventListener('change', (event) => {
+      filterContainer.addEventListener("change", (event) => {
         const target = event.target as HTMLSelectElement;
-        
+
         // 変更されたフィルターを特定して状態を更新
-        if (target.id === 'category-filter') {
+        if (target.id === "category-filter") {
           filterState.category = target.value;
-        } else if (target.id === 'difficulty-filter') {
+        } else if (target.id === "difficulty-filter") {
           filterState.difficulty = target.value;
-        } else if (target.id === 'sort-order') {
+        } else if (target.id === "sort-order") {
           filterState.sortOrder = target.value;
         }
-        
+
         // フィルターを適用
         applyFilters();
       });
-      
+
       // 初期フィルターを適用
       applyFilters();
     } catch (error) {
-      console.error('フィルタリング処理中にエラーが発生しました:', error);
+      console.error("フィルタリング処理中にエラーが発生しました:", error);
     }
   });
 </script>
