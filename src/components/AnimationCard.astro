@@ -77,7 +77,7 @@ const categoryId = parentCategory && categoryMapping[parentCategory as keyof typ
           bgColor={getParentCategoryColor(parentCategory)}
         />
       )}
-      <div class="absolute top-2 right-2 flex flex-col gap-1 items-end">
+      <div class="absolute z-10 top-2 right-2 flex flex-col gap-1 items-end">
         <span class={`text-xs font-medium px-2.5 py-0 rounded ${difficultyClass}`}>
           {difficulty && difficultyLabels[difficulty] ? difficultyLabels[difficulty] : '未分類'}
         </span>
