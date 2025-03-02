@@ -3,19 +3,22 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>スタッガードなスプリットメニュー</title>
-  <link src="https://unpkg.com/browse/destyle.css@4.0.1/destyle.min.css" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+  <title>時間差で展開するスプリットレイアウト</title>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
   <style>
-    @layer base, demo;
+    @import url('https://unpkg.com/destyle.css@4.0.1/destyle.min.css') layer(destyle);
 
+    @layer destyle, base, demo;
 
     @layer demo {
 
-      .btn{
+      .btn {
         position: fixed;
         top: 1rem;
-        right: 1rem;
+        left: 0;
+        right: 0;
+        margin: auto;
+        width: fit-content;
         z-index: 200;
         background: #000;
         color: #fff;
@@ -26,7 +29,7 @@
         font-size: 1rem;
       }
 
-      .menu{
+      .menu {
         display: grid;
         grid-template-columns: 1fr 1fr;
         position: fixed;
@@ -37,42 +40,45 @@
         transition-delay: 0.1s;
       }
 
-      .menu-left,.menu-right{
+      .menu-left, .menu-right {
         clip-path: inset(100% 0% 0% 0%);
         transition: clip-path 0.3s ease-in;
       }
 
-      .menu-left{
-        background: #000;
-        transition-delay: 0.1s;
-      }
-      .menu-right{
-        background: skyblue;
+      .menu-left {
+        background: url('../../images/img-sample-02.jpg') no-repeat center center / cover;
         transition-delay: 0s;
       }
 
-      .menu.is-active{
+      .menu-right {
+
+        background: skyblue;
+        transition-delay: 0.1s;
+      }
+
+      .menu.is-active {
         visibility: visible;
         transition-delay: 0s;
       }
 
-      .menu.is-active .menu-left{
+      .menu.is-active .menu-left {
         clip-path: inset(0% 0% 0% 0%);
-        transition-delay: 0s;
-      }
-      .menu.is-active .menu-right{
-        clip-path: inset(0% 0% 0% 0%);
-        transition-delay: 0.1s;
       }
 
-      
+      .menu.is-active .menu-right {
+        clip-path: inset(0% 0% 0% 0%);
+      }
+
+
     }
 
-    @layer base {      
-      .layout{
+    @layer base {
+
+      .layout {
         display: grid;
         place-items: center;
       }
+
       /* スペーサーを追加して十分なスクロール領域を確保 */
       .spacer {
         height: 50vh;
@@ -82,34 +88,34 @@
   </style>
 </head>
 <body>
-  
-  <div class="layout">
-    <div>
-      <button class="btn js-menu-toggle">メニューを開く</button>
 
-      <div class="menu js-menu">
-        <div class="menu-left"></div>
-        <div class="menu-right"></div>
-      </div>
+<div class="layout">
+  <div>
+    <button class="btn js-menu-toggle">メニューを開く</button>
 
+    <div class="menu js-menu">
+      <div class="menu-left"></div>
+      <div class="menu-right"></div>
     </div>
+
   </div>
+</div>
 
-  <script>
-    const menu = document.querySelector('.js-menu');
-    const menuToggle = document.querySelector('.js-menu-toggle');
+<script>
+  const menu = document.querySelector('.js-menu');
+  const menuToggle = document.querySelector('.js-menu-toggle');
 
-    menuToggle.addEventListener('click', () => {
-      menu.classList.toggle('is-active');
-    });
+  menuToggle.addEventListener('click', () => {
+    menu.classList.toggle('is-active');
+  });
 
 
-    // メッセージリスナーを追加（親フレームからのリセット指示を受け取る）
-    window.addEventListener('message', (event) => {
-      if (event.data === 'reset-demo') {
-        // リセットの必要がある場合は、ここに処理を追加
-      }
-    });
-  </script>
+  // メッセージリスナーを追加（親フレームからのリセット指示を受け取る）
+  window.addEventListener('message', (event) => {
+    if (event.data === 'reset-demo') {
+      // リセットの必要がある場合は、ここに処理を追加
+    }
+  });
+</script>
 </body>
 </html>

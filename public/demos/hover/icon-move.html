@@ -1,177 +1,184 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>アイコンの移動</title>
-  <link src="https://unpkg.com/browse/destyle.css@4.0.1/destyle.min.css" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
-  <style>
-    
-    .btn{
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 12px 16px;
-      border-radius: 8px;
-      background-color: #4f46e5;
-      color: #ffffff;
-      font-size: 16px;
-      cursor: pointer;
-      text-decoration: none;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>アイコンの移動</title>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+    <style>
+        @import url('https://unpkg.com/destyle.css@4.0.1/destyle.min.css') layer(destyle);
 
-    .btn-icon{
-      overflow: hidden;
-      display: block;
-      width: 1em;
-      height: 1em;
-    }
+        @layer destyle, base, demo;
 
-    .btn-icon::after{
-      font-family: 'Material Symbols Outlined';
-      line-height: 1;
-      display: block;
-    }
+        @layer demo {
 
-    .btn-icon-north-east::after{
-      content: 'north_east';
-    }
 
-    .btn-icon-east::after{
-      content: 'east';
-    }
+            .btn {
+                display: inline-flex;
+                align-items: center;
+                gap: 8px;
+                padding: 12px 16px;
+                border-radius: 8px;
+                background-color: #4f46e5;
+                color: #ffffff;
+                font-size: 16px;
+                cursor: pointer;
+                text-decoration: none;
+            }
 
-    .btn-icon-south::after{
-      content: 'south';
-    }
+            .btn-icon {
+                overflow: hidden;
+                display: block;
+                width: 1em;
+                height: 1em;
+            }
 
-    .btn-icon-west::after{
-      content: 'west';
-    }
-    
+            .btn-icon::after {
+                font-family: 'Material Symbols Outlined';
+                line-height: 1;
+                display: block;
+            }
 
-    /* ボタンのアニメーション */
-    .btn:hover .btn-icon-north-east::after {
-      animation: move-icon-north-east 0.3s ease-in-out forwards;
-    }
+            .btn-icon-north-east::after {
+                content: 'north_east';
+            }
 
-    .btn:hover .btn-icon-east::after {
-      animation: move-icon-east 0.3s ease-in-out forwards;
-    }
+            .btn-icon-east::after {
+                content: 'east';
+            }
 
-    .btn:hover .btn-icon-south::after {
-      animation: move-icon-south 0.3s ease-in-out forwards;
-    }
+            .btn-icon-south::after {
+                content: 'south';
+            }
 
-    .btn:hover .btn-icon-west::after {
-      animation: move-icon-west 0.3s ease-in-out forwards;
-    }
+            .btn-icon-west::after {
+                content: 'west';
+            }
 
-    @keyframes move-icon-north-east {
-      0% {
-        transform: translate(0,0);
-      }
-      50% {
-        transform: translate(100%,-100%)
-      }
-      51% {
-        transform: translate(-100%,100%)
-      }
-      100% {
-        transform: translate(0,0)
-      }
-    }
 
-    @keyframes move-icon-east {
-      0% {
-        transform: translate(0,0);
-      }
-      50% {
-        transform: translate(100%,0)
-      }
-      51% {
-        transform: translate(-100%,0)
-      }
-      100% {
-        transform: translate(0,0)
-      }
-    }
+            /* ボタンのアニメーション */
+            .btn:hover .btn-icon-north-east::after {
+                animation: move-icon-north-east 0.3s ease-in-out forwards;
+            }
 
-    @keyframes move-icon-south {
-      0% {
-        transform: translate(0,0);
-      }
-      50% {
-        transform: translate(0,100%)
-      }
-      51% {
-        transform: translate(0,-100%)
-      }
-      100% {
-        transform: translate(0,0)
-      }
-    }
+            .btn:hover .btn-icon-east::after {
+                animation: move-icon-east 0.3s ease-in-out forwards;
+            }
 
-    @keyframes move-icon-west {
-      0% {
-        transform: translate(0,0);
-      }
-      50% {
-        transform: translate(-100%,0)
-      }
-      51% {
-        transform: translate(100%,0)
-      }
-      100% {
-        transform: translate(0,0)
-      }
-    }
+            .btn:hover .btn-icon-south::after {
+                animation: move-icon-south 0.3s ease-in-out forwards;
+            }
 
-    .layout{
-      display: grid;
-      place-items: center;
-    }
+            .btn:hover .btn-icon-west::after {
+                animation: move-icon-west 0.3s ease-in-out forwards;
+            }
 
-  </style>
+            @keyframes move-icon-north-east {
+                0% {
+                    transform: translate(0, 0);
+                }
+                50% {
+                    transform: translate(100%, -100%)
+                }
+                51% {
+                    transform: translate(-100%, 100%)
+                }
+                100% {
+                    transform: translate(0, 0)
+                }
+            }
+
+            @keyframes move-icon-east {
+                0% {
+                    transform: translate(0, 0);
+                }
+                50% {
+                    transform: translate(100%, 0)
+                }
+                51% {
+                    transform: translate(-100%, 0)
+                }
+                100% {
+                    transform: translate(0, 0)
+                }
+            }
+
+            @keyframes move-icon-south {
+                0% {
+                    transform: translate(0, 0);
+                }
+                50% {
+                    transform: translate(0, 100%)
+                }
+                51% {
+                    transform: translate(0, -100%)
+                }
+                100% {
+                    transform: translate(0, 0)
+                }
+            }
+
+            @keyframes move-icon-west {
+                0% {
+                    transform: translate(0, 0);
+                }
+                50% {
+                    transform: translate(-100%, 0)
+                }
+                51% {
+                    transform: translate(100%, 0)
+                }
+                100% {
+                    transform: translate(0, 0)
+                }
+            }
+        }
+
+        @layer base {
+            .layout {
+                display: grid;
+                place-items: center;
+            }
+        }
+
+    </style>
 </head>
 <body>
-  
-  <div class="layout">
-    <div> 
+
+<div class="layout">
+    <div>
 
 
+        <a href="#" class="btn">
+            <span class="btn-text">ホバーしてください</span>
+            <span class="btn-icon btn-icon-west"></span>
+        </a>
 
-      <a href="#" class="btn">
-        <span class="btn-text">ホバーしてください</span>
-        <span class="btn-icon btn-icon-west"></span>
-      </a>
-    
-      <a href="#" class="btn">
-        <span class="btn-text">ホバーしてください</span>
-        <span class="btn-icon btn-icon-north-east"></span>
-      </a>
-      
-      <a href="#" class="btn">
-        <span class="btn-text">ホバーしてください</span>
-        <span class="btn-icon btn-icon-east"></span>
-      </a>
-    
-      <a href="#" class="btn">
-        <span class="btn-text">ホバーしてください</span>
-        <span class="btn-icon btn-icon-south"></span>
-      </a>
+        <a href="#" class="btn">
+            <span class="btn-text">ホバーしてください</span>
+            <span class="btn-icon btn-icon-north-east"></span>
+        </a>
+
+        <a href="#" class="btn">
+            <span class="btn-text">ホバーしてください</span>
+            <span class="btn-icon btn-icon-east"></span>
+        </a>
+
+        <a href="#" class="btn">
+            <span class="btn-text">ホバーしてください</span>
+            <span class="btn-icon btn-icon-south"></span>
+        </a>
     </div>
 
-  </div>
+</div>
 
-  <script>
+<script>
     // メッセージリスナーを追加（親フレームからのリセット指示を受け取る）
     window.addEventListener('message', (event) => {
-      if (event.data === 'reset-demo') {
-        // リセットの必要がある場合は、ここに処理を追加
-      }
+        if (event.data === 'reset-demo') {
+            // リセットの必要がある場合は、ここに処理を追加
+        }
     });
-  </script>
+</script>
 </body>
 </html>

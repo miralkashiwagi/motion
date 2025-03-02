@@ -5,10 +5,10 @@ interface Props {
   controls?: boolean;
 }
 
-const { 
+const {
   src: providedSrc,
-  height = '300px', 
-  controls = true 
+  height = '300px',
+  controls = true
 } = Astro.props;
 
 // 現在のパスからデモファイルのパスを自動生成
@@ -22,27 +22,26 @@ if (!src) {
     const [, category, name] = match;
     src = `${import.meta.env.BASE_URL}/demos/${category}/${name}.html`;
   }
-}else{
-  src=`${import.meta.env.BASE_URL}${src}`;
+} else {
+  src = `${import.meta.env.BASE_URL}${src}`;
 }
-
-
 ---
 
-<div class="iframe-demo my-8 bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden">
+<div class="iframe-demo my-8 bg-white dark:bg-gray-800 rounded-lg shadow-sm border-2 overflow-hidden">
   <div class="demo-container relative">
-    <iframe 
-      src={src} 
-      class="w-full border-0" 
+    <iframe
+      src={src}
+      class="w-full border-0"
       style={`height: ${height};`}
       loading="lazy"
       title="デモ"
     ></iframe>
-    
+
     {controls && (
-      <div class="demo-controls absolute bottom-0 right-0 p-2 bg-gray-100 dark:bg-gray-900 rounded-tl-md border-t border-l border-gray-200 dark:border-gray-700">
-        <button 
-          id="reset-iframe-demo" 
+      <div
+        class="demo-controls absolute bottom-0 right-0 p-2 bg-gray-100 dark:bg-gray-900 rounded-tl-md border-t border-l border-gray-200 dark:border-gray-700">
+        <button
+          id="reset-iframe-demo"
           class="text-xs px-2 py-1 bg-indigo-100 hover:bg-indigo-200 dark:bg-indigo-900/30 dark:hover:bg-indigo-800/50 text-indigo-700 dark:text-indigo-400 rounded"
           aria-label="デモをリセット"
         >
@@ -57,7 +56,7 @@ if (!src) {
   // iframeデモのリセット機能
   document.addEventListener('DOMContentLoaded', () => {
     const resetButtons = document.querySelectorAll('#reset-iframe-demo');
-    
+
     resetButtons.forEach(button => {
       button.addEventListener('click', () => {
         const iframe = button.closest('.demo-container')?.querySelector('iframe');
