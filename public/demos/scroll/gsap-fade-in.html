@@ -10,8 +10,9 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
   <style>
     @import url('https://unpkg.com/destyle.css@4.0.1/destyle.min.css') layer(destyle);
+    @import url('../assets/css/common.css') layer(common);
 
-    @layer destyle, base, demo;
+    @layer destyle, common, base, demo;
 
 
     @layer demo {
@@ -33,7 +34,7 @@
       .element {
         padding: 2rem;
         margin-bottom: 1.5rem;
-        background-color: #eee;
+        background-color: #ccc;
         border-radius: 0.5rem;
         text-align: center;
         font-weight: 500;
@@ -42,15 +43,7 @@
     }
 
     @layer base {
-      .layout {
-        display: grid;
-        place-items: center;
-      }
 
-      /* スペーサーを追加して十分なスクロール領域を確保 */
-      .spacer {
-        height: 70vh;
-      }
     }
   </style>
 </head>

@@ -1,0 +1,15 @@
+
+body{
+  background: #f0f0f0;
+}
+
+.layout {
+  display: grid;
+  place-items: center;
+  min-height: 100vh;
+}
+
+/* スペーサーを追加して十分なスクロール領域を確保 */
+.spacer {
+  height: 70vh;
+}

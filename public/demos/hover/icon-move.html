@@ -7,8 +7,9 @@
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
   <style>
     @import url('https://unpkg.com/destyle.css@4.0.1/destyle.min.css') layer(destyle);
+    @import url('../assets/css/common.css') layer(common);
 
-    @layer destyle, base, demo;
+    @layer destyle, common, base, demo;
 
     @layer demo {
 
@@ -135,11 +136,6 @@
     }
 
     @layer base {
-      .layout {
-        display: grid;
-        place-items: center;
-        min-height: 100vh;
-      }
     }
 
   </style>

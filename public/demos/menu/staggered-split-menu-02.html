@@ -7,9 +7,9 @@
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
   <style>
     @import url('https://unpkg.com/destyle.css@4.0.1/destyle.min.css') layer(destyle);
+    @import url('../assets/css/common.css') layer(common);
 
-    @layer destyle, base, demo;
-
+    @layer destyle, common, base, demo;
 
     @layer demo {
 
@@ -46,7 +46,7 @@
       }
 
       .menu-left{
-        background: url('../../images/img-sample-02.jpg') no-repeat center center / cover;
+        background: url('../assets/images/img-sample-02.jpg') no-repeat center center / cover;
       }
       .menu-right{
         background: skyblue;
@@ -85,15 +85,7 @@
       
     }
 
-    @layer base {      
-      .layout{
-        display: grid;
-        place-items: center;
-      }
-      /* スペーサーを追加して十分なスクロール領域を確保 */
-      .spacer {
-        height: 50vh;
-      }
+    @layer base {
     }
 
   </style>
