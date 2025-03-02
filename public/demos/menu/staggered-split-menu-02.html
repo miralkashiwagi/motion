@@ -104,6 +104,7 @@
     </div>
   </div>
 
+  <script src="../assets/js/utils.js"></script>
   <script>
     const menu = document.querySelector('.js-menu');
     const menuToggle = document.querySelector('.js-menu-toggle');
@@ -116,7 +117,9 @@
     // メッセージリスナーを追加（親フレームからのリセット指示を受け取る）
     window.addEventListener('message', (event) => {
       if (event.data === 'reset-demo') {
-        // リセットの必要がある場合は、ここに処理を追加
+        // スクロール位置をリセット
+        window.scrollTo(0, 0);
+        location.reload();
       }
     });
   </script>

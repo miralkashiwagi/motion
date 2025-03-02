@@ -1,0 +1,168 @@
+---
+title: テキストの移動（GSAP）
+parentCategory: インタラクティブ要素
+category: ホバーエフェクト
+tags: [ボタン, GSAP]
+difficulty: intermediate
+pubDate: 2025-03-02
+---
+
+import IframeDemo from '../../../components/IframeDemo.astro';
+
+## デモ
+
+<IframeDemo/>
+
+## 実装方法
+
+- HTMLのとりまわしのしやすさの都合上、動作まですべてJavaScriptで処理
+
+
+### HTML
+
+```html
+<a href="#" class="btn js-text-move">
+  テキスト
+</a>
+<a href="#" class="btn js-text-move" data-text-after="変化後の文字">
+  テキスト
+</a>
+```
+
+### CSS
+
+```css
+.btn__text-wrapper {
+  overflow: hidden;
+  height: 1lh; /* 1em * line-height */
+  display: block;
+}
+
+.btn__text-group {
+  display: flex;
+  flex-direction: column;
+}
+```
+```javascript
+//HTML整形関数
+  function htmlForming(btn) {
+    btn.innerHTML = `
+      <span class="btn__text-wrapper">
+        <span class="btn__text-group js-text-group">
+          <span class="btn__text--before">${btn.textContent}</span>
+          <span class="btn__text--after">${btn.dataset.textAfter || btn.textContent}</span>
+        </span>
+      </span>
+    `;
+    btn.classList.add('is-text-move-init');
+  }
+
+  // ボタンへのアニメーション適用
+  const btns = document.querySelectorAll('.js-text-move');
+  btns.forEach((btn) => {
+    htmlForming(btn);
+
+    // hoverで文字を上方向に移動
+    btn.addEventListener('mouseenter', () => {
+      const textGroup = btn.querySelector('.js-text-group');
+
+      gsap.to(textGroup, {
+        duration: 0.3,
+        y: '-50%',
+        ease: 'power2.out',
+      });
+    });
+
+    // hoverを外したら元に戻す
+    btn.addEventListener('mouseleave', () => {
+      const textGroup = btn.querySelector('.js-text-group');
+
+      gsap.to(textGroup, {
+        duration: 0.3,
+        delay: 0.1,
+        y: '0%',
+        ease: 'power2.out',
+      });
+    });
+  });
+```
+
+
+
+## ポイント
+- 元のHTMLはシンプルに、JSでHTMLを整形する
+- 整形後のHTMLをGSAPでアニメーションさせる
+
+## バリエーション
+- ホバーを外したとき下方向に戻さずに、次にホバーしたときまた上方向に移動させる事もできる
+- テキストをホバーで変更するパターンは、細かい調整の難易度が高い
+
+### JavaScript
+
+```javascript
+const btnsInfinite = document.querySelectorAll('.js-text-move-infinite');
+
+btnsInfinite.forEach((btn) => {
+  htmlForming(btn);
+  //文字が変わるパターンはbeforeをafterの後にもう一つ複製
+  if (btn.dataset.textAfter) {
+    const textGroup = btn.querySelector('.js-text-group');
+    const textBefore = textGroup.querySelector('.btn__text--before');
+    textGroup.appendChild(textBefore.cloneNode(true));
+  }
+
+
+  // hoverで文字を上方向に移動
+  btn.addEventListener('mouseenter', () => {
+    const textGroup = btn.querySelector('.js-text-group');
+    const animationNormal = gsap.timeline({ease: 'power2.out', paused: true})
+      .to(textGroup, {
+        duration: 0.3,
+        y: '-50%'
+      })
+      .to(textGroup, {
+        duration: 0,
+        y: '0%'
+      });
+
+    const animationChangeText = gsap.to(textGroup,
+      {
+        duration: 0.3,
+        y: '-33.333%',
+        ease: 'power2.out',
+        paused: true,
+      })
+
+    if (btn.dataset.textAfter) {
+      //文字が変わるパターン
+      animationChangeText.restart();
+      return;
+    }
+    animationNormal.restart();
+  });
+
+  // hoverを外したら元に戻す（文字の形が変わるパターンだけ）
+  btn.addEventListener('mouseleave', () => {
+    const textGroup = btn.querySelector('.js-text-group');
+    const animationChangeTextEnd = gsap.timeline({paused: true, ease: 'power2.out'})
+      .to(textGroup,
+        {
+          duration: 0.3,
+          delay: 0.1,
+          y: '-66.666%',
+        })
+      .to(textGroup, {
+        duration: 0,
+        y: '0%',
+      });
+
+
+    if (btn.dataset.textAfter) {
+      //文字が変わるパターン
+      animationChangeTextEnd.restart();
+    }
+  });
+});
+
+
+```
