@@ -67,7 +67,7 @@ const categoryId = parentCategory && categoryMapping[parentCategory as keyof typ
     class="bg-white h-full dark:bg-gray-800 rounded-lg shadow-md overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-1 focus-within:ring-2 focus-within:ring-indigo-500">
     <div class="aspect-video relative overflow-hidden bg-gray-100 dark:bg-gray-900">
       {isPreviewExist ? (
-        <img src={PreviewURL} alt={title} class="object-cover w-full h-full"/>
+        <img src={PreviewURL} alt={title} class="object-cover w-full h-full" width="600" height="300" loading="lazy"/>
       ) : (
         <PlaceholderImage
           text={title}
