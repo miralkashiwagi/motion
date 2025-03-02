@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>アイコンの移動</title>
+  <title>テキストの移動（GSAP）</title>
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
   <style>
     @import url('https://unpkg.com/destyle.css@4.0.1/destyle.min.css') layer(destyle);
@@ -23,116 +23,23 @@
         background-color: #4f46e5;
         color: #ffffff;
         font-size: 16px;
+        line-height: 1.2;
         cursor: pointer;
         text-decoration: none;
       }
 
-      .btn-icon {
+      .btn__text-wrapper {
         overflow: hidden;
-        display: block;
-        width: 1em;
-        height: 1em;
-      }
-
-      .btn-icon::after {
-        font-family: 'Material Symbols Outlined';
-        line-height: 1;
+        height: 1lh; /* 1em * line-height */
         display: block;
       }
 
-      .btn-icon-north-east::after {
-        content: 'north_east';
-      }
-
-      .btn-icon-east::after {
-        content: 'east';
-      }
-
-      .btn-icon-south::after {
-        content: 'south';
-      }
-
-      .btn-icon-west::after {
-        content: 'west';
+      .btn__text-group {
+        display: flex;
+        flex-direction: column;
       }
 
 
-      /* ボタンのアニメーション */
-      .btn:hover .btn-icon-north-east::after {
-        animation: move-icon-north-east 0.3s ease-in-out forwards;
-      }
-
-      .btn:hover .btn-icon-east::after {
-        animation: move-icon-east 0.3s ease-in-out forwards;
-      }
-
-      .btn:hover .btn-icon-south::after {
-        animation: move-icon-south 0.3s ease-in-out forwards;
-      }
-
-      .btn:hover .btn-icon-west::after {
-        animation: move-icon-west 0.3s ease-in-out forwards;
-      }
-
-      @keyframes move-icon-north-east {
-        0% {
-          transform: translate(0, 0);
-        }
-        50% {
-          transform: translate(100%, -100%)
-        }
-        51% {
-          transform: translate(-100%, 100%)
-        }
-        100% {
-          transform: translate(0, 0)
-        }
-      }
-
-      @keyframes move-icon-east {
-        0% {
-          transform: translate(0, 0);
-        }
-        50% {
-          transform: translate(100%, 0)
-        }
-        51% {
-          transform: translate(-100%, 0)
-        }
-        100% {
-          transform: translate(0, 0)
-        }
-      }
-
-      @keyframes move-icon-south {
-        0% {
-          transform: translate(0, 0);
-        }
-        50% {
-          transform: translate(0, 100%)
-        }
-        51% {
-          transform: translate(0, -100%)
-        }
-        100% {
-          transform: translate(0, 0)
-        }
-      }
-
-      @keyframes move-icon-west {
-        0% {
-          transform: translate(0, 0);
-        }
-        50% {
-          transform: translate(-100%, 0)
-        }
-        51% {
-          transform: translate(100%, 0)
-        }
-        100% {
-          transform: translate(0, 0)
-        }
-      }
     }
 
     @layer base {
@@ -144,36 +51,145 @@
 
 <div class="layout">
   <div>
+    <p>
+      <a href="#" class="btn js-text-move">
+        上に移動・下に戻る
+      </a>
 
+      <a href="#" class="btn js-text-move" data-text-after="変化後の文字">
+        上に移動・下に戻る
+      </a>
+    </p>
+    <hr>
+    <p>
+      <a href="#" class="btn js-text-move-infinite">
+        上に移動しっぱなし
+      </a>
 
-    <a href="#" class="btn">
-      <span class="btn-text">ホバー</span>
-      <span class="btn-icon btn-icon-west"></span>
-    </a>
-
-    <a href="#" class="btn">
-      <span class="btn-text">ホバー</span>
-      <span class="btn-icon btn-icon-north-east"></span>
-    </a>
-
-    <a href="#" class="btn">
-      <span class="btn-text">ホバー</span>
-      <span class="btn-icon btn-icon-east"></span>
-    </a>
-
-    <a href="#" class="btn">
-      <span class="btn-text">ホバー</span>
-      <span class="btn-icon btn-icon-south"></span>
-    </a>
+      <a href="#" class="btn js-text-move-infinite" data-text-after="変化後の文字">
+        上に移動しっぱなし
+      </a>
+    </p>
   </div>
+
 
 </div>
 
+<script src="../assets/js/utils.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.4/gsap.min.js"></script>
 <script>
+  const btns = document.querySelectorAll('.js-text-move');
+  btns.forEach((btn) => {
+    htmlForming(btn);
+
+    // hoverで文字を上方向に移動
+    btn.addEventListener('mouseenter', () => {
+      const textGroup = btn.querySelector('.js-text-group');
+
+      gsap.to(textGroup, {
+        duration: 0.3,
+        y: '-50%',
+        ease: 'power2.out',
+      });
+    });
+    // hoverを外したら元に戻す
+    btn.addEventListener('mouseleave', () => {
+      const textGroup = btn.querySelector('.js-text-group');
+      gsap.to(textGroup, {
+        duration: 0.3,
+        delay: 0.1,
+        y: '0%',
+        ease: 'power2.out',
+      });
+    });
+  });
+
+  const btnsInfinite = document.querySelectorAll('.js-text-move-infinite');
+
+
+  btnsInfinite.forEach((btn) => {
+    htmlForming(btn);
+    //文字が変わるパターンはbeforeをafterの後にもう一つ複製
+    if (btn.dataset.textAfter) {
+      const textGroup = btn.querySelector('.js-text-group');
+      const textBefore = textGroup.querySelector('.btn__text--before');
+      textGroup.appendChild(textBefore.cloneNode(true));
+    }
+
+
+    // hoverで文字を上方向に移動
+    btn.addEventListener('mouseenter', () => {
+      const textGroup = btn.querySelector('.js-text-group');
+      const animationNormal = gsap.timeline({ease: 'power2.out', paused: true})
+        .to(textGroup, {
+          duration: 0.3,
+          y: '-50%'
+        })
+        .to(textGroup, {
+          duration: 0,
+          y: '0%'
+        });
+
+      const animationChangeText = gsap.to(textGroup,
+        {
+          duration: 0.3,
+          y: '-33.333%',
+          ease: 'power2.out',
+          paused: true,
+        })
+
+      if (btn.dataset.textAfter) {
+        //文字が変わるパターン
+        animationChangeText.restart();
+        return;
+      }
+      animationNormal.restart();
+    });
+
+    // hoverを外したら元に戻す（文字の形が変わるパターンだけ）
+    btn.addEventListener('mouseleave', () => {
+      const textGroup = btn.querySelector('.js-text-group');
+      const animationChangeTextEnd = gsap.timeline({paused: true, ease: 'power2.out'})
+        .to(textGroup,
+          {
+            duration: 0.3,
+            delay: 0.1,
+            y: '-66.666%',
+          })
+        .to(textGroup, {
+          duration: 0,
+          y: '0%',
+        });
+
+
+      if (btn.dataset.textAfter) {
+        //文字が変わるパターン
+        animationChangeTextEnd.restart();
+      }
+    });
+  });
+
+
+  //HTML整形関数
+  function htmlForming(btn) {
+    btn.innerHTML = `
+      <span class="btn__text-wrapper">
+        <span class="btn__text-group js-text-group">
+          <span class="btn__text--before">${btn.textContent}</span>
+          <span class="btn__text--after">${btn.dataset.textAfter || btn.textContent}</span>
+        </span>
+      </span>
+    `;
+    btn.classList.add('is-text-move-init');
+  }
+
+
   // メッセージリスナーを追加（親フレームからのリセット指示を受け取る）
   window.addEventListener('message', (event) => {
     if (event.data === 'reset-demo') {
-      // リセットの必要がある場合は、ここに処理を追加
+      // スクロール位置をリセット
+      window.scrollTo(0, 0);
+      location.reload();
     }
   });
 </script>
