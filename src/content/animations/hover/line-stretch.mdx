@@ -1,0 +1,127 @@
+---
+title: 伸びるライン（ボタン）
+parentCategory: インタラクティブ要素
+category: ホバーエフェクト
+tags: [ボタン, CSS]
+difficulty: beginner
+pubDate: 2025-03-02
+---
+
+import IframeDemo from '../../../components/IframeDemo.astro';
+
+## デモ
+
+<IframeDemo/>
+
+## 実装方法
+
+- HTMLのとりまわしのしやすさの都合上、動作まですべてJavaScriptで処理
+
+
+### HTML
+
+```html
+<a href="#" class="btn">
+  テキスト
+</a>
+```
+
+### CSS
+
+```css
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  background-color: #ccc;
+  color: #000;
+  font-size: 16px;
+  cursor: pointer;
+  text-decoration: none;
+  position: relative;
+}
+
+.btn::after {
+  content: '';
+  display: block;
+  width: 100%;
+  height: 2px;
+  background-color: #000;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  transform: scaleX(0);
+  transition: transform 0.3s ease;
+  transform-origin: left;
+}
+
+.btn:hover::after {
+  transform: scaleX(1);
+}
+
+```
+
+
+
+
+## ポイント
+- ボタン要素の::after擬似要素を使って、アンダーラインを作成
+- テキストの改行有無に関わらず要素の下部に1本だけラインが引かれる
+
+## バリエーション
+- ラインの伸びる方向を transform-origin で変更可能
+- ::before擬似要素も使うことで、線を2本に分割することも可能
+
+## CSS
+
+```css
+
+/* 左から右へ出て、右へ消える */
+.btn--end-right::after {
+  transform-origin: right;
+}
+.btn--end-right:hover::after {
+  transform-origin: left;
+}
+
+/* 中央から左右へ */
+.btn--center::after {
+  transform-origin: center;
+}
+
+
+/* before も利用して、中央から伸びて、左右に分かれて消える */
+.btn--center-split::after,
+.btn--center-split::before {
+  content: '';
+  display: block;
+  width: 50%;
+  height: 2px;
+  background-color: #000;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  transform: scaleX(0);
+  transition: transform 0.3s ease;
+  transform-origin: left;
+}
+
+.btn--center-split::after {
+  right: 0;
+  left: auto;
+  transform-origin: right;
+}
+
+.btn--center-split:hover::after,
+.btn--center-split:hover::before {
+  transform: scaleX(1);
+  transform-origin: right;
+}
+
+.btn--center-split:hover::after {
+  transform-origin: left;
+}
+
+```

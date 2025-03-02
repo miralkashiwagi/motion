@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>伸びるアンダーライン（ボタン）</title>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+  <style>
+    @import url('https://unpkg.com/destyle.css@4.0.1/destyle.min.css') layer(destyle);
+    @import url('../assets/css/common.css') layer(common);
+
+    @layer destyle, common, base, demo;
+
+    @layer demo {
+
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 12px 16px;
+        background-color: #ccc;
+        color: #000;
+        font-size: 16px;
+        cursor: pointer;
+        text-decoration: none;
+        position: relative;
+      }
+
+      .btn::after {
+        content: '';
+        display: block;
+        width: 100%;
+        height: 2px;
+        background-color: #000;
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        transform: scaleX(0);
+        transition: transform 0.3s ease;
+        transform-origin: left;
+      }
+
+      .btn:hover::after {
+        transform: scaleX(1);
+      }
+
+      .btn--end-right::after {
+        transform-origin: right;
+      }
+      .btn--end-right:hover::after {
+        transform-origin: left;
+      }
+
+      .btn--center::after {
+        transform-origin: center;
+      }
+
+
+      .btn--center-split::after,
+      .btn--center-split::before {
+        content: '';
+        display: block;
+        width: 50%;
+        height: 2px;
+        background-color: #000;
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        transform: scaleX(0);
+        transition: transform 0.3s ease;
+        transform-origin: left;
+      }
+
+      .btn--center-split::after {
+        right: 0;
+        left: auto;
+        transform-origin: right;
+      }
+
+      .btn--center-split:hover::after,
+      .btn--center-split:hover::before {
+        transform: scaleX(1);
+        transform-origin: right;
+      }
+
+      .btn--center-split:hover::after {
+        transform-origin: left;
+      }
+
+
+
+      .btn--up::after,.btn--up::before {
+        bottom: auto;
+        top: 0;
+
+      }
+    }
+
+    @layer base {
+    }
+
+  </style>
+</head>
+<body>
+
+<div class="layout">
+  <div>
+    <p>
+      <a href="#" class="btn ">
+        左から<br>右へ伸びる
+      </a>
+      <a href="#" class="btn btn--end-right">
+        左から伸びて<br>右に消える
+      </a>
+      <a href="#" class="btn btn--center">
+        中央から<br>左右へ伸びる
+      </a>
+      <a href="#" class="btn btn--center-split">
+        中央から伸びて、<br>左右に分かれて消える
+      </a>
+    </p>
+
+    <hr>
+
+    <p>
+      <a href="#" class="btn btn--up ">
+        （上）<br>左から<br>右へ伸びる
+      </a>
+      <a href="#" class="btn btn--up btn--end-right">
+        （上）<br>左から伸びて<br>右に消える
+      </a>
+      <a href="#" class="btn btn--up btn--center">
+        （上）<br>中央から<br>左右へ伸びる
+      </a>
+      <a href="#" class="btn btn--up btn--center-split">
+        （上）<br>中央から伸びて、<br>左右に分かれて消える
+      </a>
+    </p>
+
+  </div>
+</div>
+
+<script src="../assets/js/utils.js"></script>
+<script>
+  // メッセージリスナーを追加（親フレームからのリセット指示を受け取る）
+  window.addEventListener('message', (event) => {
+    if (event.data === 'reset-demo') {
+      // スクロール位置をリセット
+      window.scrollTo(0, 0);
+      location.reload();
+    }
+  });
+</script>
+</body>
+</html>
