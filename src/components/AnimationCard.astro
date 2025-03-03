@@ -111,23 +111,25 @@ const categoryId = parentCategory && categoryMapping[parentCategory as keyof typ
 <script>
   import Freezeframe from 'freezeframe';
 
-  // freezeframeのインスタンスを作成
-  const freezeframeInstance = new Freezeframe('.freezeframe');
-
-  // Freezeframeをすべて初期化
-  freezeframeInstance.start();
-
-  // 全てのカードにホバーイベントを関連付け
+  // 全てのカードに対して初期化
   document.querySelectorAll('.js-unfreeze').forEach((card) => {
     const gifImage = card.querySelector('.freezeframe');
 
-    card.addEventListener('mouseenter', () => {
-      if (gifImage) freezeframeInstance.unfreeze(gifImage);
-    });
+    if (gifImage) {
+      // freezeframeのインスタンスを作成（特定の要素でのみ動作）
+      const freezeframeInstance = new Freezeframe(gifImage);
+      freezeframeInstance.start();
 
-    card.addEventListener('mouseleave', () => {
-      if (gifImage) freezeframeInstance.freeze(gifImage);
-    });
+      // ホバーイベントを設定
+      card.addEventListener('mouseenter', () => {
+        freezeframeInstance.start();
+      });
+
+      card.addEventListener('mouseleave', () => {
+        freezeframeInstance.stop();
+      });
+    }
   });
+
 
 </script>
