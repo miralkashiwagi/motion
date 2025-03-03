@@ -1,0 +1,113 @@
+---
+title: 複数行テキスト対応伸びるアンダーライン（CSS）
+parentCategory: インタラクティブ要素
+category: ホバーエフェクト
+tags: [ボタン, CSS]
+difficulty: beginner
+pubDate: 2025-03-03
+---
+
+import IframeDemo from '../../../components/IframeDemo.astro';
+
+## デモ
+
+<IframeDemo/>
+
+## 実装方法
+
+### HTML
+
+```html
+<a href="#" class="text">
+  <span class="text-decoration">
+    左から右へ伸びて<br>マウスを外すと右に消える
+  </span>
+</a>
+```
+
+### CSS
+
+```css
+.text{
+  line-height: 1.5;
+}
+
+.text-decoration {
+  display: inline; /* inlineでないと改行に対応できない */
+  background-image: linear-gradient(90deg, currentColor, currentColor);
+  background-repeat: no-repeat;
+  background-position: bottom right;
+  transition: background-size 0.3s ease-in-out;
+  background-size: 0 1px;
+}
+
+.text:hover .text-decoration {
+  background-size: 100% 1px;
+  background-position: bottom left;
+}
+```
+
+
+
+
+## ポイント
+- 線を引く部分は必ず`display: inline`にする必要がある。
+- 線は1つのbackground-imageで引くので、線を角丸にはできない。
+
+## バリエーション
+- `@property` と `@keyframes` を組み合わせれば、マウスを外したら線がフェードアウトする実装も可能。
+
+## CSS
+
+```css
+
+
+@property --border-color {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: transparent;
+}
+
+.text-decoration-end-fadeout{
+  display: inline; /* inlineでないと改行に対応できない */
+  --border-color:transparent;
+  background-image: linear-gradient(90deg, var(--border-color),  var(--border-color));
+  animation: fadeout 0.3s ease-in-out forwards;
+  background-repeat: no-repeat;
+  background-size: 0 1px;
+  background-position: bottom left;
+}
+
+.text:hover .text-decoration-end-fadeout {
+  --border-color:currentColor;
+  animation: fadein 0.3s ease-in-out forwards;
+}
+
+
+@keyframes fadein{
+  0% {
+    background-size: 0 1px;
+    --border-color:transparent;
+  }
+  1% {
+    --border-color:currentColor;
+  }
+  100% {
+    background-size: 100% 1px;
+  }
+}
+@keyframes fadeout {
+  0% {
+    background-size: 100% 1px;
+    --border-color:currentColor;
+  }
+  99% {
+    --border-color:transparent;
+    background-size: 100% 1px;
+  }
+  100% {
+    background-size: 0 1px;
+  }
+}
+
+```

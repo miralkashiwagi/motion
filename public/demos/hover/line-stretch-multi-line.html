@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>複数行テキスト対応伸びるアンダーライン（CSS）</title>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+  <style>
+    @import url('https://unpkg.com/destyle.css@4.0.1/destyle.min.css') layer(destyle);
+    @import url('../assets/css/common.css') layer(common);
+
+    @layer destyle, common, base, demo;
+
+    @layer demo {
+
+      .text{
+        line-height: 1.5;
+      }
+
+      .text-decoration {
+        display: inline; /* inlineでないと改行に対応できない */
+        background-image: linear-gradient(90deg, currentColor, currentColor);
+        background-repeat: no-repeat;
+        background-position: bottom right;
+        transition: background-size 0.3s ease-in-out;
+        background-size: 0 1px;
+      }
+
+      .text:hover .text-decoration {
+        background-size: 100% 1px;
+        background-position: bottom left;
+      }
+
+
+
+      @property --border-color {
+        syntax: '<color>';
+        inherits: true;
+        initial-value: transparent;
+      }
+
+      .text-decoration-end-fadeout{
+        display: inline; /* inlineでないと改行に対応できない */
+        --border-color:transparent;
+        background-image: linear-gradient(90deg, var(--border-color),  var(--border-color));
+        animation: fadeout 0.3s ease-in-out forwards;
+        background-repeat: no-repeat;
+        background-size: 0 1px;
+        background-position: bottom left;
+      }
+
+      .text:hover .text-decoration-end-fadeout {
+        --border-color:currentColor;
+        animation: fadein 0.3s ease-in-out forwards;
+      }
+
+
+      @keyframes fadein{
+        0% {
+          background-size: 0 1px;
+          --border-color:transparent;
+        }
+        1% {
+          --border-color:currentColor;
+        }
+        100% {
+          background-size: 100% 1px;
+        }
+      }
+      @keyframes fadeout {
+        0% {
+          background-size: 100% 1px;
+          --border-color:currentColor;
+        }
+        99% {
+          --border-color:transparent;
+          background-size: 100% 1px;
+        }
+        100% {
+          background-size: 0 1px;
+        }
+      }
+    }
+
+    @layer base {
+    }
+
+  </style>
+</head>
+<body>
+
+<div class="layout">
+  <div class="items">
+    <a href="#" class="text">
+      <span class="text-decoration">
+        左から右へ伸びて<br>マウスを外すと右に消える
+      </span>
+    </a>
+    <a href="#" class="text">
+      <span class="text-decoration-end-fadeout">
+        左から右へ伸びて<br>マウスを外すとフェードアウト
+      </span>
+    </a>
+  </div>
+</div>
+
+<script src="../assets/js/utils.js"></script>
+<script>
+  // メッセージリスナーを追加（親フレームからのリセット指示を受け取る）
+  window.addEventListener('message', (event) => {
+    if (event.data === 'reset-demo') {
+      // スクロール位置をリセット
+      window.scrollTo(0, 0);
+      location.reload();
+    }
+  });
+</script>
+</body>
+</html>
