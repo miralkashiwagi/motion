@@ -1,0 +1,55 @@
+---
+title: 疑似全幅パララックス（CSS）
+parentCategory: スクロール関連
+category: パララックス
+tags: [CSS]
+difficulty: beginner
+pubDate: 2025-03-03
+---
+
+import IframeDemo from '../../../components/IframeDemo.astro';
+
+※画像を画面の縦横いっぱいまで広げる前提のときしか使えません（画像とテキストが横並びの時などは不適）
+
+## デモ
+
+<IframeDemo/>
+
+## HTML構造
+
+```html
+<div class="fullwidth">
+  <img src="img-sample-01.jpg" alt="">
+  <div class="fullwidth-content">
+      コンテンツ
+  </div>
+</div>
+```
+
+## CSS実装
+
+```css
+.fullwidth {
+  width: 100%;
+  height: 50vh;/* 任意の高さ */
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+}
+.fullwidth img{
+  /* 画像は画面いっぱいのサイズで配置 */
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+```
+
+## 解説
+- 画像は画面いっぱいのサイズで固定（position:fixed）しておきます。
+- clip-pathで `.fullwidth` の要素の範囲でだけ画像を表示させています。
+
+
+
+## バリエーション
+- 画像だけでなく、コンテンツ部分まで固定（position:fixed）しても動作します。
