@@ -48,6 +48,7 @@
       .btn--end-right::after {
         transform-origin: right;
       }
+
       .btn--end-right:hover::after {
         transform-origin: left;
       }
@@ -89,8 +90,7 @@
       }
 
 
-
-      .btn--up::after,.btn--up::before {
+      .btn--up::after, .btn--up::before {
         bottom: auto;
         top: 0;
 
@@ -105,39 +105,34 @@
 <body>
 
 <div class="layout">
-  <div>
-    <p>
-      <a href="#" class="btn ">
-        左から<br>右へ伸びる
-      </a>
-      <a href="#" class="btn btn--end-right">
-        左から伸びて<br>右に消える
-      </a>
-      <a href="#" class="btn btn--center">
-        中央から<br>左右へ伸びる
-      </a>
-      <a href="#" class="btn btn--center-split">
-        中央から伸びて、<br>左右に分かれて消える
-      </a>
-    </p>
+  <div class="items">
+    <a href="#" class="btn ">
+      左から<br>右へ伸びる
+    </a>
+    <a href="#" class="btn btn--end-right">
+      左から伸びて<br>右に消える
+    </a>
+    <a href="#" class="btn btn--center">
+      中央から<br>左右へ伸びる
+    </a>
+    <a href="#" class="btn btn--center-split">
+      中央から伸びて、<br>左右に分かれて消える
+    </a>
+  </div>
 
-    <hr>
-
-    <p>
-      <a href="#" class="btn btn--up ">
-        （上）<br>左から<br>右へ伸びる
-      </a>
-      <a href="#" class="btn btn--up btn--end-right">
-        （上）<br>左から伸びて<br>右に消える
-      </a>
-      <a href="#" class="btn btn--up btn--center">
-        （上）<br>中央から<br>左右へ伸びる
-      </a>
-      <a href="#" class="btn btn--up btn--center-split">
-        （上）<br>中央から伸びて、<br>左右に分かれて消える
-      </a>
-    </p>
-
+  <div class="items">
+    <a href="#" class="btn btn--up ">
+      （上）<br>左から<br>右へ伸びる
+    </a>
+    <a href="#" class="btn btn--up btn--end-right">
+      （上）<br>左から伸びて<br>右に消える
+    </a>
+    <a href="#" class="btn btn--up btn--center">
+      （上）<br>中央から<br>左右へ伸びる
+    </a>
+    <a href="#" class="btn btn--up btn--center-split">
+      （上）<br>中央から伸びて、<br>左右に分かれて消える
+    </a>
   </div>
 </div>
 

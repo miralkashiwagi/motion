@@ -6,12 +6,25 @@ body{
 .layout {
   display: grid;
   place-items: center;
+  place-content: center;
   min-height: 100vh;
 }
 
 /* スペーサーを追加して十分なスクロール領域を確保 */
 .spacer {
   height: 70vh;
+}
+
+.items{
+  justify-content: center;
+  max-width: 600px;
+  margin: 0 auto;
+  display: flex;
+  gap: 8px;
+}
+
+.items + .items{
+  margin-top: 16px;
 }
 
 hr{
