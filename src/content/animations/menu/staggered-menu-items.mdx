@@ -1,0 +1,74 @@
+---
+title: 時間差で表示されるメニュー項目（GSAP）
+parentCategory: メニュー展開効果
+category: ドロワーメニュー
+tags: [CSS]
+difficulty: intermediate
+pubDate: 2025-03-04
+---
+
+import IframeDemo from '../../../components/IframeDemo.astro';
+
+## デモ
+
+<IframeDemo />
+
+## 実装
+### HTML
+
+```html
+<button class="btn js-menu-toggle">メニューを開く</button>
+<div class="menu js-menu">
+  <div class="menu-content">
+    <a href="" class="menu-item js-menu-item">メニュー項目</a>
+    <a href="" class="menu-item js-menu-item">メニュー項目</a>
+    <a href="" class="menu-item js-menu-item">メニュー項目</a>
+    <a href="" class="menu-item js-menu-item">メニュー項目</a>
+    <a href="" class="menu-item js-menu-item">メニュー項目</a>
+    <a href="" class="menu-item js-menu-item">メニュー項目</a>
+    <a href="" class="menu-item js-menu-item">メニュー項目</a>
+  </div>
+</div>
+```
+
+### CSS
+
+```css
+/* .menu全体の表示非表示以外は特別なCSS無し */
+.menu {
+  opacity: 0;
+  visibility: hidden;
+}
+
+.menu.is-active {
+  visibility: visible;
+  opacity: 1;
+}
+```
+
+### JavaScript
+
+```javascript
+// GSAPを読み込んでおく
+
+const menu = document.querySelector('.js-menu');
+const menuToggle = document.querySelector('.js-menu-toggle');
+
+/*
+  メニュー項目のアニメーション定義
+*/
+const animation = gsap.from('.js-menu-item', {
+  opacity: 0,
+  y: 20,
+  duration: 0.5,
+  stagger: 0.1,
+  paused: true
+});
+
+menuToggle.addEventListener('click', () => {
+  menu.classList.toggle('is-active');
+  if (menu.classList.contains('is-active')) {
+    animation.restart();
+  }
+});
+```

@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>時間差で表示されるメニュー項目（GSAP）</title>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+  <style>
+    @import url('https://unpkg.com/destyle.css@4.0.1/destyle.min.css') layer(destyle);
+    @import url('../assets/css/common.css') layer(common);
+
+    @layer destyle, common, base, demo;
+
+    @layer demo {
+
+      .btn {
+        position: fixed;
+        top: 1rem;
+        left: 0;
+        right: 0;
+        margin: auto;
+        width: fit-content;
+        z-index: 200;
+        background: #000;
+        color: #fff;
+        border: none;
+        padding: 0.5rem 1rem;
+        cursor: pointer;
+        border-radius: 0.5rem;
+        font-size: 1rem;
+      }
+
+      .menu {
+        display: grid;
+        place-content: center;
+        position: fixed;
+        inset: 0;
+        z-index: 100;
+        opacity: 0;
+        visibility: hidden;
+        background: #ccc;
+      }
+
+      .menu.is-active {
+        visibility: visible;
+        opacity: 1;
+      }
+
+      .menu-content{
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+        height: 100%;
+      }
+
+      .menu-item{
+        font-size: 2rem;
+      }
+
+
+    }
+
+    @layer base {
+    }
+
+  </style>
+</head>
+<body>
+
+<div class="layout">
+  <div>
+    <button class="btn js-menu-toggle">メニューを開く</button>
+
+    <div class="menu js-menu">
+      <div class="menu-content">
+        <a href="" class="menu-item js-menu-item">メニュー項目</a>
+        <a href="" class="menu-item js-menu-item">メニュー項目</a>
+        <a href="" class="menu-item js-menu-item">メニュー項目</a>
+        <a href="" class="menu-item js-menu-item">メニュー項目</a>
+        <a href="" class="menu-item js-menu-item">メニュー項目</a>
+        <a href="" class="menu-item js-menu-item">メニュー項目</a>
+        <a href="" class="menu-item js-menu-item">メニュー項目</a>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script src="../assets/js/utils.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.4/gsap.min.js"></script>
+<script>
+  const menu = document.querySelector('.js-menu');
+  const menuToggle = document.querySelector('.js-menu-toggle');
+  const animation = gsap.from('.js-menu-item', {
+    opacity: 0,
+    y: 20,
+    duration: 0.5,
+    stagger: 0.1,
+    paused: true
+  });
+
+  menuToggle.addEventListener('click', () => {
+    menu.classList.toggle('is-active');
+    if (menu.classList.contains('is-active')) {
+      animation.restart();
+    }
+  });
+
+
+  // メッセージリスナーを追加（親フレームからのリセット指示を受け取る）
+  window.addEventListener('message', (event) => {
+    if (event.data === 'reset-demo') {
+      // スクロール位置をリセット
+      window.scrollTo(0, 0);
+      location.reload();
+    }
+  });
+</script>
+</body>
+</html>
