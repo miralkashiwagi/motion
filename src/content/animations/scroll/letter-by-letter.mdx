@@ -1,0 +1,109 @@
+---
+title: 1文字ずつ文字を出現させる＆テキスト自動分割（GSAP）
+parentCategory: スクロール関連
+category: スクロールトリガー
+tags: [GSAP]
+difficulty: intermediate
+pubDate: 2025-03-04
+---
+
+import IframeDemo from '../../../components/IframeDemo.astro';
+
+## デモ
+
+<IframeDemo/>
+
+## HTML構造
+
+```html
+<div class="js-text-animation-01">
+    テキストが画面の中央に来たら一気に再生。<br>一文字ずつ文字が出現する。<strong>strong等で囲まれた文字があってもいける。</strong>長文のテキストが入ります。長文のテキストが入ります。長文のテキストが入ります。長文のテキストが入ります。長文のテキストが入ります。長文のテキストが入ります。長文のテキストが入ります。長文のテキストが入ります。長文のテキストが入ります。
+</div>
+```
+
+## CSS
+
+```css
+/* CSSは特になし */
+
+```
+
+## JavaScript実装（GSAP）
+
+```javascript
+// CDNからGSAPとScrollTriggerを読み込む
+// <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/gsap.min.js"></script>
+// <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/ScrollTrigger.min.js"></script>
+
+letterSplit(document.querySelector('.js-text-animation-01'), 'splitted-text-01');
+
+/* アニメーション定義 */
+const animation01 = gsap.from('.splitted-text-01', {
+  opacity: 0,
+  duration: 0.5,
+  stagger: 0.02,//1文字ずつ順番に処理
+  paused: true
+});
+
+/* スクロールトリガー */
+ScrollTrigger.create({
+  trigger: '.js-text-animation-01',
+  start: 'top 50%',
+  end: 'bottom 50%',
+  // markers: true,
+  onEnter: () => animation01.play()
+});
+
+/* テキスト分割関数 */
+function letterSplit(target,className) {
+  //テキストを一文字ずつ分割<br>やstrongなどはそのまま維持
+  const text = target.innerHTML;
+  const splitText = text.split(/(<[^>]+>)/g);
+  target.innerHTML = splitText.map((item) => {
+    if (item.match(/<[^>]+>/)) {
+      return item;
+    } else {
+      return `${item.split('').map((letter) => {
+        //ホワイトスペースはそのまま
+        if (letter.match(/^\s$/)) {
+          return letter;
+        }
+        return `<span class="${className}">${letter}</span>`
+      }).join('')}`;
+    }
+  }).join('');
+}
+
+```
+
+## 解説
+- letterSplit関数でテキストを分割。GSAPのSplitTextPluginを使うともっと簡単にできるが、有料なので簡易的なものを自作。
+- gsap.fromでアニメーションを定義。staggerで1文字ずつ順番に処理させている。
+
+
+
+## バリエーション
+同様のアニメーションを、ScrollTriggerでスクロールの位置に合わせて進捗させることも可能。
+
+### JavaScript
+```javascript
+letterSplit(document.querySelector('.js-text-animation-02'), 'splitted-text-02');
+
+/* アニメーション定義（上部の例と一緒） */
+const animation02 = gsap.from('.splitted-text-02', {
+  opacity: 0,
+  duration: 0.5,
+  stagger: 0.02,
+  paused: true
+});
+
+/* スクロールトリガー */
+ScrollTrigger.create({
+  trigger: '.js-text-animation-02',
+  start: 'top 50%',
+  end: 'bottom 50%',
+  scrub: 1, //スクロール位置に応じてアニメーションを進捗させる
+  animation: animation02, //進捗させるアニメーションの指定
+  // markers: true,
+});
+```

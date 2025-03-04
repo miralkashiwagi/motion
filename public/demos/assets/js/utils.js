@@ -16,3 +16,16 @@ const responsiveMatch = (onMatch,onUnMatch,media = 'max-width: 768px') => {
   //ページ読み込み時にも発火させる
   mediaChange(mql);
 }
+
+
+const debounce = (func, wait) => {
+  let timeout;
+  return function executedFunction(...args) {
+    const later = () => {
+      clearTimeout(timeout);
+      func(...args);
+    };
+    clearTimeout(timeout);
+    timeout = setTimeout(later, wait);
+  };
+}

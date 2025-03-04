@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>1文字ずつ文字を出現させる＆テキスト自動分割（GSAP）</title>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+  <style>
+    @import url('https://unpkg.com/destyle.css@4.0.1/destyle.min.css') layer(destyle);
+    @import url('../assets/css/common.css') layer(common);
+
+    @layer destyle, common, base, demo;
+
+
+    @layer demo {
+
+      .texts {
+        max-width: 500px;
+        line-height: 2;
+      }
+
+
+    }
+
+    @layer base {
+    }
+
+  </style>
+</head>
+<body>
+
+<div class="layout">
+  <p>スクロールしてね</p>
+  <div class="spacer"></div>
+  <div class="texts js-text-animation-01">
+    テキストが画面の中央に来たら一気に再生。<br>一文字ずつ文字が出現する。<strong>strong等で囲まれた文字があってもいける。</strong>長文のテキストが入ります。長文のテキストが入ります。長文のテキストが入ります。長文のテキストが入ります。長文のテキストが入ります。長文のテキストが入ります。長文のテキストが入ります。長文のテキストが入ります。長文のテキストが入ります。
+  </div>
+
+  <div class="spacer-half"></div>
+  <div class="texts js-text-animation-02">
+    スクロール位置とアニメーションの進捗を同期させる再生。<br>一文字ずつ文字が出現する。<strong>strong等で囲まれた文字があってもいける。</strong>長文のテキストが入ります。長文のテキストが入ります。長文のテキストが入ります。長文のテキストが入ります。長文のテキストが入ります。長文のテキストが入ります。長文のテキストが入ります。長文のテキストが入ります。長文のテキストが入ります。
+  </div>
+  <div class="spacer"></div>
+</div>
+
+<script src="../assets/js/utils.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.4/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.4/ScrollTrigger.min.js"></script>
+
+<script>
+  gsap.registerPlugin(ScrollTrigger);
+
+  letterSplit(document.querySelector('.js-text-animation-01'), 'splitted-text-01');
+
+  const animation01 = gsap.from('.splitted-text-01', {
+    opacity: 0,
+    duration: 0.5,
+    stagger: 0.02,
+    paused: true
+  });
+
+  ScrollTrigger.create({
+    trigger: '.js-text-animation-01',
+    start: 'top 50%',
+    end: 'bottom 50%',
+    // markers: true,
+    onEnter: () => animation01.play(),
+  });
+
+
+  letterSplit(document.querySelector('.js-text-animation-02'), 'splitted-text-02');
+  const animation02 = gsap.from('.splitted-text-02', {
+    opacity: 0,
+    duration: 0.5,
+    stagger: 0.02,
+    paused: true
+  });
+
+  ScrollTrigger.create({
+    trigger: '.js-text-animation-02',
+    start: 'top 50%',
+    end: 'bottom 50%',
+    scrub: 1,
+    animation: animation02,
+    // markers: true,
+  });
+
+
+  function letterSplit(target,className) {
+    //テキストを一文字ずつ分割<br>やstrongなどはそのまま維持
+    const text = target.innerHTML;
+    const splitText = text.split(/(<[^>]+>)/g);
+    target.innerHTML = splitText.map((item) => {
+      if (item.match(/<[^>]+>/)) {
+        return item;
+      } else {
+        return `${item.split('').map((letter) => {
+          //ホワイトスペースはそのまま
+          if (letter.match(/^\s$/)) {
+            return letter;
+          }
+          return `<span class="${className}">${letter}</span>`
+        }).join('')}`;
+      }
+    }).join('');
+  }
+
+
+  // メッセージリスナーを追加（親フレームからのリセット指示を受け取る）
+  window.addEventListener('message', (event) => {
+    if (event.data === 'reset-demo') {
+      // スクロール位置をリセット
+      window.scrollTo(0, 0);
+      location.reload();
+    }
+  });
+</script>
+</body>
+</html>
