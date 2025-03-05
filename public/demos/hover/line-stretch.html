@@ -90,10 +90,80 @@
       }
 
 
+
+      .btn-keyframes {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 12px 16px;
+        background-color: #ccc;
+        color: #000;
+        font-size: 16px;
+        cursor: pointer;
+        text-decoration: none;
+        position: relative;
+      }
+
+      .btn-keyframes::before,
+      .btn-keyframes::after {
+        content: '';
+        display: block;
+        width: 100%;
+        height: 2px;
+        background-color: #000;
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        transform: scaleX(1);
+        transform-origin: left;
+      }
+      .btn-keyframes:hover::before {
+        animation: before 0.5s ease forwards;
+      }
+      .btn-keyframes:hover::after {
+        animation: after 0.5s ease forwards;
+      }
+
+
+
+
       .btn--up::after, .btn--up::before {
         bottom: auto;
         top: 0;
+      }
+    }
 
+
+    @keyframes before{
+      0% {
+        transform: scaleX(1);
+        transform-origin: right;
+      }
+      50% {
+        transform: scaleX(0);
+      }
+      99% {
+        transform: scaleX(0);
+      }
+      100% {
+        transform: scaleX(1);
+        transform-origin: right;
+      }
+    }
+    @keyframes after {
+      0% {
+        transform: scaleX(0);
+        transform-origin: left;
+      }
+      30%{
+        transform: scaleX(0);
+      }
+      99% {
+        transform: scaleX(1);
+      }
+      100% {
+        transform: scaleX(0);
+        transform-origin: left;
       }
     }
 
@@ -119,6 +189,11 @@
       中央から伸びて、<br>左右に分かれて消える
     </a>
   </div>
+  <div class="items">
+    <a href="#" class="btn-keyframes">
+      右に消えて<br>左から出る
+    </a>
+  </div>
 
   <div class="items">
     <a href="#" class="btn btn--up ">
@@ -132,6 +207,11 @@
     </a>
     <a href="#" class="btn btn--up btn--center-split">
       （上）<br>中央から伸びて、<br>左右に分かれて消える
+    </a>
+  </div>
+  <div class="items">
+    <a href="#" class="btn-keyframes btn--up">
+      右に消えて<br>左から出る
     </a>
   </div>
 </div>
