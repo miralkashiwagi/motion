@@ -29,3 +29,33 @@ const debounce = (func, wait) => {
     timeout = setTimeout(later, wait);
   };
 }
+
+function throttle(func, wait) {
+  let isWaiting = false;
+  let lastArgs = null;
+  let lastThis = null;
+
+  return function (...args) {
+    if (isWaiting) {
+      // 待機中の場合は、最新の引数とthisコンテキストを保存
+      lastArgs = args;
+      lastThis = this;
+      return;
+    }
+
+    // 関数を実行
+    func.apply(this, args);
+    isWaiting = true;
+
+    setTimeout(() => {
+      isWaiting = false;
+
+      // 待機中に新しい呼び出しがあった場合は、その内容で再度実行
+      if (lastArgs) {
+        func.apply(lastThis, lastArgs);
+        lastArgs = null;
+        lastThis = null;
+      }
+    }, wait);
+  };
+}

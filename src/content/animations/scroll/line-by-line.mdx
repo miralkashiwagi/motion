@@ -1,0 +1,226 @@
+---
+title: 1行ずつ文字を出現させる＆テキスト自動分割（GSAP）
+parentCategory: スクロール関連
+category: スクロールトリガー
+tags: [GSAP]
+difficulty: advanced
+pubDate: 2025-03-05
+---
+
+import IframeDemo from '../../../components/IframeDemo.astro';
+
+## デモ
+
+<IframeDemo/>
+
+## HTML構造
+
+```html
+<div class="js-text-animation-01">
+  <strong>strong等で囲まれた文字があってもいける。</strong>
+  長文のテキストが入ります。<em>途中でemタグ</em>も入ります。
+  長文のテキストが入ります。<strong>さらにstrongタグ</strong>が続きます。<br>
+  長文のテキストが入ります。長文のテキストが入ります。長文のテキストが入ります。長文のテキストが入ります。長文のテキストが入ります。長文のテキストが入ります。長文のテキストが入ります。
+</div>
+```
+
+## CSS
+
+```css
+/* CSSは特になし */
+
+```
+
+## JavaScript実装（GSAP）
+
+```javascript
+let textSplit;
+let ScrollTriggers = [];
+
+function init(){
+  textSplit = new TextSplit('.js-text-animation-01');
+  document.querySelectorAll('.js-text-animation-01 .line').forEach(line => {
+    const animation01 = gsap.from(line, {
+      opacity: 0,
+      y: 5,
+      duration: 1,
+      paused: true
+    });
+
+    ScrollTriggers.push(ScrollTrigger.create({
+      trigger: line,
+      start: 'top 50%',
+      end: 'bottom 50%',
+      // markers: true,
+      onEnter: () => animation01.play(),
+      onLeaveBack: () => animation01.reverse(),
+    }));
+  })
+}
+init();
+
+
+// window resize時に再度分割処理を実行(throttleでイベントを間引く）
+window.addEventListener('resize', throttle(() => {
+  textSplit.revert();
+  ScrollTriggers.forEach(trigger => trigger.kill());
+  init();
+}, 250));
+```
+
+## 解説
+- 日本語をテキストを見かけの行ごとに分割する事が非常に困難でTextSplitを自作している
+- 画面の幅が変わったとき、見かけの行が変わるので、それに対応するために以下を実行している
+  - textSplitを元に戻す＆ScrollTriggerをkillする
+  - textSplitとScrollTriggerを再度実行する
+
+
+
+## テキスト分割用class
+- 日本語テキストを見かけの行ごとに分割することが非常に困難（GSAPの有料テキスト分割プラグインでも出来ない）。
+- テキストを1字ずつ分割した後、それらの位置から行を計算する方法で分割するしかない。
+- パフォーマンス上はあまり良くないので、長文のテキストに対しては行わないように。
+
+### JavaScript
+```javascript
+class TextSplit {
+  constructor(selector) {
+    this.container = document.querySelector(selector);
+    if (!this.container) {
+      throw new Error('Element not found');
+    }
+    this.originalContent = this.container.innerHTML;
+    this.init();
+  }
+
+  init() {
+    const linesFragment = this.splitIntoLines();
+    this.container.innerHTML = "";
+    this.container.appendChild(linesFragment);
+  }
+
+  wrapTextNodesInCharSpans(node) {
+    if (node.nodeType === Node.TEXT_NODE) {
+      const text = node.textContent;
+      if (!text) return;
+      const frag = document.createDocumentFragment();
+      for (const ch of text) {
+        const span = document.createElement('span');
+        span.className = 'char';
+        span.textContent = ch;
+        frag.appendChild(span);
+      }
+      node.parentNode.replaceChild(frag, node);
+    } else if (node.nodeType === Node.ELEMENT_NODE) {
+      Array.from(node.childNodes).forEach(child => this.wrapTextNodesInCharSpans(child));
+    }
+  }
+
+  assignLineIndexes() {
+    const chars = this.container.querySelectorAll('.char');
+    let lastTop = null, currentLine = 0;
+    const map = new Map();
+
+    // パフォーマンス最適化: DOMアクセスを最小限に抑える
+    const measurements = Array.from(chars).map(char => ({
+      element: char,
+      top: Math.round(char.getBoundingClientRect().top)
+    }));
+
+    measurements.forEach(({ element, top }) => {
+      if (lastTop === null) {
+        lastTop = top;
+      } else if (Math.abs(top - lastTop) > 1) {
+        currentLine++;
+        lastTop = top;
+      }
+      map.set(element, currentLine);
+    });
+
+    // 不要なデータをクリア
+    measurements.length = 0;
+
+    return { map, lineCount: currentLine + 1 };
+  }
+
+  cloneStructureForLine(node, lineIndex, map) {
+    if (node.nodeType === Node.ELEMENT_NODE) {
+      if (node.classList.contains('char')) {
+        if (map.get(node) === lineIndex) {
+          return node.cloneNode(true);
+        } else {
+          return null;
+        }
+      }
+      const cloned = node.cloneNode(false);
+      let hasChild = false;
+      node.childNodes.forEach(child => {
+        const childClone = this.cloneStructureForLine(child, lineIndex, map);
+        if (childClone) {
+          cloned.appendChild(childClone);
+          hasChild = true;
+        }
+      });
+      return hasChild ? cloned : null;
+    }
+    return null;
+  }
+
+  unwrapCharSpans(node) {
+    if (node.nodeType === Node.ELEMENT_NODE) {
+      if (node.classList.contains('char')) {
+        return document.createTextNode(node.textContent);
+      } else {
+        const frag = document.createDocumentFragment();
+        Array.from(node.childNodes).forEach(child => {
+          const unwrapped = this.unwrapCharSpans(child);
+          if (unwrapped) {
+            frag.appendChild(unwrapped);
+          }
+        });
+        const cloned = node.cloneNode(false);
+        cloned.appendChild(frag);
+        return cloned;
+      }
+    }
+    return node.cloneNode(true);
+  }
+
+  splitIntoLines() {
+    this.wrapTextNodesInCharSpans(this.container);
+    const { map, lineCount } = this.assignLineIndexes();
+
+    const linesFragment = document.createDocumentFragment();
+    for (let i = 0; i < lineCount; i++) {
+      const lineDiv = document.createElement('div');
+      lineDiv.className = 'line';
+      Array.from(this.container.childNodes).forEach(child => {
+        const clonedChild = this.cloneStructureForLine(child, i, map);
+        if (clonedChild) {
+          lineDiv.appendChild(clonedChild);
+        }
+      });
+      const unwrapped = this.unwrapCharSpans(lineDiv);
+      linesFragment.appendChild(unwrapped);
+    }
+
+    // メモリリーク防止のためmapをクリア
+    map.clear();
+
+    return linesFragment;
+  }
+
+  revert() {
+    this.container.innerHTML = this.originalContent;
+  }
+
+  // メモリ管理改善のための新しいメソッド
+  destroy() {
+    this.revert();
+    // 参照を解放
+    this.container = null;
+    this.originalContent = null;
+  }
+}
+
+```

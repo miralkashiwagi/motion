@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>1行ずつ文字を出現させる＆テキスト自動分割（GSAP）</title>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+  <style>
+    @import url('https://unpkg.com/destyle.css@4.0.1/destyle.min.css') layer(destyle);
+    @import url('../assets/css/common.css') layer(common);
+
+    @layer destyle, common, base, demo;
+
+
+    @layer demo {
+
+      .texts {
+        max-width: 500px;
+        line-height: 3;
+      }
+
+
+    }
+
+    @layer base {
+    }
+
+  </style>
+</head>
+<body>
+
+<div class="layout">
+  <p>スクロールしてね</p>
+  <div class="spacer"></div>
+  <div class="texts js-text-animation-01">
+    <strong>strong等で囲まれた文字があってもいける。</strong>
+    長文のテキストが入ります。<em>途中でemタグ</em>も入ります。
+    長文のテキストが入ります。<strong>さらにstrongタグ</strong>が続きます。<br>
+    長文のテキストが入ります。長文のテキストが入ります。長文のテキストが入ります。長文のテキストが入ります。長文のテキストが入ります。長文のテキストが入ります。長文のテキストが入ります。
+  </div>
+
+  <div class="spacer"></div>
+</div>
+
+<script src="../assets/js/utils.js"></script>
+<script src="../assets/js/text-split.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.4/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.4/ScrollTrigger.min.js"></script>
+
+
+<script>
+  // gsap.registerPlugin(ScrollTrigger);
+
+  let textSplit;
+  let ScrollTriggers = [];
+
+  function init(){
+    // インスタンスを作成（自動的に分割処理が実行されます）
+    textSplit = new TextSplit('.js-text-animation-01');
+    document.querySelectorAll('.js-text-animation-01 .line').forEach(line => {
+      const animation01 = gsap.from(line, {
+        opacity: 0,
+        y: 5,
+        duration: 1,
+        paused: true
+      });
+
+      ScrollTriggers.push(ScrollTrigger.create({
+        trigger: line,
+        start: 'top 50%',
+        end: 'bottom 50%',
+        // markers: true,
+        onEnter: () => animation01.play(),
+        onLeaveBack: () => animation01.reverse(),
+      }));
+    })
+  }
+  init();
+
+
+  // window resize時に再度分割処理を実行(debounceでイベントを間引く）
+  window.addEventListener('resize', throttle(() => {
+    textSplit.revert();
+    ScrollTriggers.forEach(trigger => trigger.kill());
+    init();
+  }, 250));
+
+
+
+  // メッセージリスナーを追加（親フレームからのリセット指示を受け取る）
+  window.addEventListener('message', (event) => {
+    if (event.data === 'reset-demo') {
+      // スクロール位置をリセット
+      window.scrollTo(0, 0);
+      location.reload();
+    }
+  });
+</script>
+</body>
+</html>
