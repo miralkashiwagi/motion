@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>正円のラインを引く（CSS）</title>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+  <style>
+    @import url('https://unpkg.com/destyle.css@4.0.1/destyle.min.css') layer(destyle);
+    @import url('../assets/css/common.css') layer(common);
+
+    @layer destyle, common, base, demo;
+
+    @layer demo {
+
+      .btn{
+        display: grid;
+        place-items: center;
+        width: 40px;
+        height: 40px;
+        border-radius:50%;
+        border:solid 1px #ccc;
+        transition: border-color 0.3s;
+      }
+      .btn::after{
+        grid-area: 1/1;
+        content: "→";
+      }
+      .btn::before{
+        grid-area: 1/1;
+        display: block;
+        content: "";
+        width:calc(100% + 2px);
+        height:calc(100% + 2px);
+        border-radius:50%;
+        background: conic-gradient(from 0deg, #000 var(--deg1,0deg), #000 var(--deg2,0deg), rgba(0, 0, 0, 0.00)  var(--deg3,0deg), rgba(0, 0, 0, 0.00) var(--deg4,360deg));
+
+        /*40pxの95% = 38px。40px - 38px = 2px。2px/2 = 1px で1pxの線が描画される */
+        mask: radial-gradient(50% 50% at 50% 50%, transparent 94%, black 96%);
+      }
+
+      .btn:hover{
+        border-color: #000;
+        transition: border-color 0s 1s;
+      }
+      .btn:hover::before{
+        opacity: 1;
+        transition: opacity 0s;
+        animation: conic 1s cubic-bezier(.49,0,1,.99) forwards;
+      }
+
+      @property --deg1 {
+        syntax: "<angle>";
+        initial-value: 0deg;
+        inherits: false;
+      }
+      @property --deg2 {
+        syntax: "<angle>";
+        initial-value: 0deg;
+        inherits: false;
+      }
+      @property --deg3 {
+        syntax: "<angle>";
+        initial-value: 0deg;
+        inherits: false;
+      }
+      @property --deg4 {
+        syntax: "<angle>";
+        initial-value: 0deg;
+        inherits: false;
+      }
+
+
+      @keyframes conic{
+        from{
+          --deg1:0deg;
+          --deg2:0deg;
+          --deg3:0deg;
+          --deg4:361deg;
+        }
+        to{
+          --deg1:0deg;
+          --deg2:361deg;
+          --deg3:361deg;
+          --deg4:361deg;
+        }
+      }
+    }
+
+    @layer base {
+    }
+
+  </style>
+</head>
+<body>
+
+<div class="layout">
+  <div class="items">
+    <a href="#" class="btn"></a>
+  </div>
+
+</div>
+
+<script src="../assets/js/utils.js"></script>
+<script>
+  // メッセージリスナーを追加（親フレームからのリセット指示を受け取る）
+  window.addEventListener('message', (event) => {
+    if (event.data === 'reset-demo') {
+      // スクロール位置をリセット
+      window.scrollTo(0, 0);
+      location.reload();
+    }
+  });
+</script>
+</body>
+</html>
