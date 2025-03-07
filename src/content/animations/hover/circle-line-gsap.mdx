@@ -1,0 +1,202 @@
+---
+title: 正円のラインを引く（GSAP）
+parentCategory: インタラクティブ要素
+category: ホバーエフェクト
+tags: [ボタン, GSAP]
+difficulty: intermediate
+pubDate: 2025-03-07
+---
+
+import IframeDemo from '../../../components/IframeDemo.astro';
+
+## デモ
+
+<IframeDemo/>
+
+## 実装方法
+
+### HTML
+
+```html
+<a href="#" class="btn">
+  ホバーで線が引かれる円
+  <span class="btn-icon js-btn-icon"></span>
+</a>
+```
+
+### CSS
+
+```css
+.btn-icon{
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius:50%;
+  border:solid 1px #ccc;
+  transition: border-color 0.3s;
+}
+.btn-icon::after {
+  grid-area: 1/1;
+  font-family: 'Material Symbols Outlined';
+  line-height: 1;
+  display: block;
+  content: 'east';
+}
+.btn-icon-inner{
+  grid-area: 1/1;
+  display: block;
+  content: "";
+  width:calc(100% + 2px);
+  height:calc(100% + 2px);
+  border-radius:50%;
+
+  /*40pxの95% = 38px。40px - 38px = 2px。2px/2 = 1px で1pxの線が描画される */
+  mask: radial-gradient(50% 50% at 50% 50%, transparent 94%, black 96%);
+}
+
+```
+
+### JavaScript
+
+```javascript
+// 再生・フェードアウトパターン
+const btnIcons = document.querySelectorAll('.js-btn-icon');
+if(btnIcons){
+  // btnIconsのなかに　.btn-icon-inner を生成
+  btnIcons.forEach((btnIcon) => {
+    btnIcon.innerHTML = '<span class="btn-icon-inner"></span>';
+    const btn = btnIcon.closest('a');
+    const btnIconInner = btnIcon.querySelector('.btn-icon-inner');
+
+    const animation = gsap.fromTo(btnIconInner,   {
+        background:
+          "conic-gradient(black 0deg, black 0deg, transparent 0deg, transparent 360deg)",
+        opacity:1,
+      },
+      {
+        background:
+          "conic-gradient(black 0deg, black 360deg, transparent 360deg, transparent 360deg)",
+        ease: "power2.out",
+        duration: 0.3,
+        opacity:1,
+        paused: true,
+      });
+
+    // ホバー時のアニメーション
+    btn.addEventListener('mouseenter', () => {
+      animation.restart();
+    });
+
+    // ホバー解除時のアニメーション
+    btn.addEventListener('mouseleave', () => {
+      gsap.to(btnIconInner, {
+        duration: 0.3,
+        opacity: 0,
+        ease: "power2.out",
+      });
+    });
+  });
+}
+```
+
+
+## ポイント
+- `conic-gradient` と`mask` の組み合わせで、円形に線が引かれているように見せる。
+- CSS単体でもほぼ同じ動作を作れるが、アニメーションをすべてGSAPで管理することで、マウスオーバー・マウスアウト時の動作を自由に制御できる。
+
+## バリエーション
+- マウスアウトで逆再生する場合は、`animation.play()`で再生、`animation.reverse()`で逆再生することができる。
+- reverse()を使わない場合は、マウスオーバー時に `animation.restart()` にしないと、2回目のマウスオーバー時にアニメーションが再生されないので注意。
+
+### JavaScript
+```javascript
+
+// 再生・逆再生パターン
+const btnIcons02 = document.querySelectorAll('.js-btn-icon-02');
+if(btnIcons02){
+  // btnIconsのなかに　.btn-icon-inner を生成
+  btnIcons02.forEach((btnIcon) => {
+    btnIcon.innerHTML = '<span class="btn-icon-inner"></span>';
+    const btn = btnIcon.closest('a');
+    const btnIconInner = btnIcon.querySelector('.btn-icon-inner');
+
+    const animation = gsap.fromTo(btnIconInner,   {
+        background:
+          "conic-gradient(black 0deg, black 0deg, transparent 0deg, transparent 360deg)",
+        opacity:1,
+      },
+      {
+        background:
+          "conic-gradient(black 0deg, black 360deg, transparent 360deg, transparent 360deg)",
+        ease: "power2.out",
+        duration: 0.3,
+        paused: true,
+      });
+
+    // ホバー時のアニメーション
+    btn.addEventListener('mouseenter', () => {
+      animation.play()
+    });
+
+    // ホバー解除時のアニメーション
+    btn.addEventListener('mouseleave', () => {
+      animation.reverse();
+    });
+  });
+}
+
+
+
+// 再生・黒塗り・フェードアウトパターン
+const btnIcons03 = document.querySelectorAll('.js-btn-icon-03');
+if(btnIcons03){
+  // btnIconsのなかに　.btn-icon-inner を生成
+  btnIcons03.forEach((btnIcon) => {
+    btnIcon.innerHTML = '<span class="btn-icon-inner"></span>';
+    const btn = btnIcon.closest('a');
+    const btnIconInner = btnIcon.querySelector('.btn-icon-inner');
+
+
+    const animation = gsap.timeline({paused:true})
+    .fromTo(btnIconInner,   {
+        background:
+          "conic-gradient(black 0deg, black 0deg, transparent 0deg, transparent 360deg)",
+        opacity:1,
+      },
+      {
+        background:
+          "conic-gradient(black 0deg, black 360deg, transparent 360deg, transparent 360deg)",
+        ease: "power2.out",
+        opacity:1,
+        duration: 0.3,
+      })
+      .to(btnIcon, {
+        duration: 0.2,
+        background: '#000',
+        color: '#fff',
+        ease: "none",
+      },"=-0.05")
+
+    // ホバー時のアニメーション
+    btn.addEventListener('mouseenter', () => {
+      animation.restart()
+    });
+
+    // ホバー解除時のアニメーション
+    btn.addEventListener('mouseleave', () => {
+      gsap.to(btnIconInner, {
+        duration: 0.3,
+        opacity: 0,
+        ease: "power2.out",
+      });
+      gsap.to(btnIcon, {
+        duration: 0.3,
+        background: 'transparent',
+        color: '#000',
+        ease: "power2.out",
+      });
+    });
+  });
+}
+```

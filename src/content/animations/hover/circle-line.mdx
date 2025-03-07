@@ -1,10 +1,10 @@
 ---
-title: 【追加作業中】正円のラインを引く（CSS）
+title: 正円のラインを引く（CSS）
 parentCategory: インタラクティブ要素
 category: ホバーエフェクト
 tags: [ボタン, CSS]
 difficulty: intermediate
-pubDate: 2025-03-06
+pubDate: 2025-03-07
 ---
 
 import IframeDemo from '../../../components/IframeDemo.astro';
@@ -18,14 +18,16 @@ import IframeDemo from '../../../components/IframeDemo.astro';
 ### HTML
 
 ```html
- <a href="#" class="btn"></a>
+<a href="#" class="btn">
+  テキスト
+  <span class="btn-icon"></span>
+</a>
 ```
 
 ### CSS
 
 ```css
-
-.btn{
+.btn-icon{
   display: grid;
   place-items: center;
   width: 40px;
@@ -34,11 +36,14 @@ import IframeDemo from '../../../components/IframeDemo.astro';
   border:solid 1px #ccc;
   transition: border-color 0.3s;
 }
-.btn::after{
+.btn-icon::after {
   grid-area: 1/1;
-  content: "→";
+  font-family: 'Material Symbols Outlined';
+  line-height: 1;
+  display: block;
+  content: 'east';
 }
-.btn::before{
+.btn-icon::before{
   grid-area: 1/1;
   display: block;
   content: "";
@@ -51,14 +56,14 @@ import IframeDemo from '../../../components/IframeDemo.astro';
   mask: radial-gradient(50% 50% at 50% 50%, transparent 94%, black 96%);
 }
 
-.btn:hover{
+a:hover .btn-icon{
   border-color: #000;
-  transition: border-color 0s 1s;
+  transition: border-color 0s 0.3s;
 }
-.btn:hover::before{
+a:hover .btn-icon::before{
   opacity: 1;
   transition: opacity 0s;
-  animation: conic 1s cubic-bezier(.49,0,1,.99) forwards;
+  animation: conic 0.3s ease-out forwards;
 }
 
 @property --deg1 {
@@ -105,3 +110,30 @@ import IframeDemo from '../../../components/IframeDemo.astro';
 - `conic-gradient` と`mask` の組み合わせで、円形に線が引かれているように見せる。
 - グラデーションをアニメーションさせるために `@property` を使う。
 - 表示された線がフェードアウトするように見せかけるため、.btnの`border-color` をタイミングよくtransitionさせる。
+
+
+※「マウスアウト時の動作を逆再生をしたい」「線を引いている途中でマウスアウトしたときもフェードアウトしたい」場合は、GSAPで管理する必要あり
+
+## バリエーション
+- 円形に線を引いた後、アイコン側の背景色や文字色をタイミングよくtransitionさせることで、「線が引かれた後、色が反転する」ようにできる。
+
+
+### CSS
+```css
+/* 最後に塗りになるパターン */
+.btn-icon--to-black{
+  transition:  border-color 0.3s, background 0.3s, color 0.3s;
+}
+
+a:hover .btn-icon--to-black{
+  background: #000;
+  color: #fff;
+  transition:  border-color 0s 0.3s, background 0.2s 0.25s, color 0.2s 0.25s;
+}
+
+a:hover .btn-icon--to-black::before{
+  opacity: 1;
+  transition: opacity 0s;
+  animation: conic 0.3s ease-out forwards;
+}
+```

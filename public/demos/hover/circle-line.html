@@ -12,8 +12,7 @@
     @layer destyle, common, base, demo;
 
     @layer demo {
-
-      .btn{
+      .btn-icon{
         display: grid;
         place-items: center;
         width: 40px;
@@ -22,11 +21,14 @@
         border:solid 1px #ccc;
         transition: border-color 0.3s;
       }
-      .btn::after{
+      .btn-icon::after {
         grid-area: 1/1;
-        content: "→";
+        font-family: 'Material Symbols Outlined';
+        line-height: 1;
+        display: block;
+        content: 'east';
       }
-      .btn::before{
+      .btn-icon::before{
         grid-area: 1/1;
         display: block;
         content: "";
@@ -39,15 +41,33 @@
         mask: radial-gradient(50% 50% at 50% 50%, transparent 94%, black 96%);
       }
 
-      .btn:hover{
+      a:hover .btn-icon{
         border-color: #000;
-        transition: border-color 0s 1s;
+        transition: border-color 0s 0.3s;
       }
-      .btn:hover::before{
+      a:hover .btn-icon::before{
         opacity: 1;
         transition: opacity 0s;
-        animation: conic 1s cubic-bezier(.49,0,1,.99) forwards;
+        animation: conic 0.3s ease-out forwards;
       }
+
+
+      /* 最後に塗りになるパターン */
+      .btn-icon--to-black{
+        transition:  border-color 0.3s, background 0.3s, color 0.3s;
+      }
+      a:hover .btn-icon--to-black{
+        background: #000;
+        color: #fff;
+        transition:  border-color 0s 0.3s, background 0.2s 0.25s, color 0.2s 0.25s;
+
+      }
+      a:hover .btn-icon--to-black::before{
+        opacity: 1;
+        transition: opacity 0s;
+        animation: conic 0.3s ease-out forwards;
+      }
+
 
       @property --deg1 {
         syntax: "<angle>";
@@ -85,6 +105,14 @@
           --deg4:361deg;
         }
       }
+
+
+
+      .btn{
+        display: inline-flex;
+        gap: 8px;
+        align-items: center;
+      }
     }
 
     @layer base {
@@ -96,7 +124,16 @@
 
 <div class="layout">
   <div class="items">
-    <a href="#" class="btn"></a>
+    <a href="#" class="btn">
+      ホバーで線が引かれる円
+      <span class="btn-icon"></span>
+    </a>
+  </div>
+  <div class="items">
+    <a href="#" class="btn">
+      ホバーで線が引かれ塗りになる
+      <span class="btn-icon btn-icon--to-black"></span>
+    </a>
   </div>
 
 </div>
