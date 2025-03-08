@@ -1,0 +1,115 @@
+---
+title: ボタン背景色がアイコン背景色になる（CSS）
+parentCategory: インタラクティブ要素
+category: ホバーエフェクト
+tags: [ボタン, CSS]
+difficulty: intermediate
+pubDate: 2025-03-08
+---
+
+import IframeDemo from '../../../components/IframeDemo.astro';
+
+## デモ
+
+<IframeDemo/>
+
+## 実装方法
+
+### HTML
+
+```html
+<a href="#" class="btn">
+  <span class="btn-text">テキスト</span>
+  <span class="btn-icon"></span>
+</a>
+```
+
+### CSS
+
+```css
+.btn {
+  border: solid 2px #000;
+  border-radius: 100px;
+  padding: 10px 8px 10px 32px;
+  display: inline-flex;
+  align-items: center;
+  gap: 16px;
+  overflow: hidden;
+  position: relative;
+  /* 背景色をアニメーションさせることで、ボタンの長さが長いときの処理をごまかす */
+  background: linear-gradient(90deg, #fff 50%, #000 50%) no-repeat right center / 200% 100%;
+  color: #fff;
+  transition: color 0.2s ease-out, background 0.15s ease-out 0.05s;
+}
+
+.btn-text {
+  position: relative;
+  z-index: 2;
+}
+
+.btn-icon {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  color: #fff;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 1;
+}
+
+.btn-icon::after {
+  grid-area: 1/1;
+  /* （略：アイコンの描画） */
+}
+
+.btn-icon::before {
+  grid-area: 1/1;
+  display: block;
+  content: "";
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: #000;
+  scale: 10;/* ボタンの背景色になるところまで拡大 */
+  transition: scale 0.2s ease-out;
+  position: relative;
+  z-index: -1;
+}
+
+.btn:hover {
+  color: #000;
+  background-position: left center;
+  transition: color 0.2s ease-out, background 0.15s ease-out;
+}
+
+.btn:hover .btn-icon::before {
+  scale: 1;
+}
+
+```
+
+## ポイント
+- `.btn-icon::before`の`scale`を使って、アイコンの背景をボタンの背景色に見せかけている
+- ボタンの幅が想定を超えると、`.btn-icon::before`のサイズが足りなくなるので、.btnの`background`をアニメーションさせてごまかしている
+
+
+## バリエーション
+- `.btn-icon::before`に clip-pathを書けることで形状を変えることができる
+- ただし、幅をごまかすためのbackgroundのアニメーションと整合性をとる難易度が高いので、ボタンの幅が可変する場合は避けた方が無難
+
+
+### CSS
+```css
+.btn-icon--clip-path::before {
+ /* backgroundのアニメーションと整合性を取るため正方形からひし形への形状変更アニメーションさせる */
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+  transition: scale 0.2s ease-out, clip-path 0.2s ease-out;
+}
+
+.btn:hover .btn-icon--clip-path::before {
+  background: #000;
+  clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+}
+```

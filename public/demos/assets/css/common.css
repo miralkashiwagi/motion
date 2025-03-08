@@ -8,6 +8,7 @@ body{
   place-items: center;
   place-content: center;
   min-height: 100vh;
+  padding: 16px;
 }
 
 /* スペーサーを追加して十分なスクロール領域を確保 */

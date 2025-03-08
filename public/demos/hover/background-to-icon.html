@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ボタン背景色がアイコン背景色になる（CSS）</title>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+  <style>
+    @import url('https://unpkg.com/destyle.css@4.0.1/destyle.min.css') layer(destyle);
+    @import url('../assets/css/common.css') layer(common);
+
+    @layer destyle, common, base, demo;
+
+    @layer demo {
+
+      .btn {
+        border: solid 2px #000;
+        border-radius: 100px;
+        padding: 10px 8px 10px 32px;
+        display: inline-flex;
+        align-items: center;
+        gap: 16px;
+        overflow: hidden;
+        position: relative;
+        /* 背景色をアニメーションさせることで、ボタンの長さが長いときの処理をごまかす */
+        background: linear-gradient(90deg, #fff 50%, #000 50%) no-repeat right center / 200% 100%;
+        color: #fff;
+        transition: color 0.2s ease-out, background 0.15s ease-out 0.05s;
+      }
+
+      .btn-text {
+        position: relative;
+        z-index: 2;
+      }
+
+      .btn-icon {
+        display: grid;
+        place-items: center;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        color: #fff;
+        flex-shrink: 0;
+        position: relative;
+        z-index: 1;
+      }
+
+      .btn-icon::after {
+        grid-area: 1/1;
+        font-family: 'Material Symbols Outlined';
+        line-height: 1;
+        display: block;
+        content: 'east';
+      }
+
+      .btn-icon::before {
+        grid-area: 1/1;
+        display: block;
+        content: "";
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        background: #000;
+        scale: 10;/* ボタンの背景色になるところまで拡大 */
+        transition: scale 0.2s ease-out;
+        position: relative;
+        z-index: -1;
+      }
+
+      .btn:hover {
+        color: #000;
+        background-position: left center;
+        transition: color 0.2s ease-out, background 0.15s ease-out;
+      }
+
+      .btn:hover .btn-icon::before {
+        scale: 1;
+      }
+
+
+      .btn-icon--clip-path::before {
+        clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+        transition: scale 0.2s ease-out, clip-path 0.2s ease-out;
+      }
+
+      .btn:hover .btn-icon--clip-path::before {
+        background: #000;
+        clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+      }
+    }
+
+    @layer base {
+    }
+
+  </style>
+</head>
+<body>
+
+<div class="layout">
+  <div class="items">
+    <a href="#" class="btn">
+      <span class="btn-text">背景が円になる</span>
+      <span class="btn-icon"></span>
+    </a>
+  </div>
+  <div class="items">
+    <a href="#" class="btn">
+      <span class="btn-text">ボタンの長さがCSS上の想定より長くなった時にごまかす</span>
+      <span class="btn-icon"></span>
+    </a>
+  </div>
+  <div class="items">
+    <a href="#" class="btn">
+      <span class="btn-text">背景がひし形になる</span>
+      <span class="btn-icon btn-icon--clip-path"></span>
+    </a>
+  </div>
+
+  <div class="items">
+    <a href="#" class="btn">
+      <span class="btn-text">ボタンの長さがCSS上の想定より長くなった時にごまかす</span>
+      <span class="btn-icon btn-icon--clip-path"></span>
+    </a>
+  </div>
+
+</div>
+
+<script src="../assets/js/utils.js"></script>
+<script>
+  // メッセージリスナーを追加（親フレームからのリセット指示を受け取る）
+  window.addEventListener('message', (event) => {
+    if (event.data === 'reset-demo') {
+      // スクロール位置をリセット
+      window.scrollTo(0, 0);
+      location.reload();
+    }
+  });
+</script>
+</body>
+</html>
