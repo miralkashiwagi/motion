@@ -18,7 +18,7 @@ const responsiveMatch = (onMatch,onUnMatch,media = 'max-width: 768px') => {
 }
 
 
-const debounce = (func, wait) => {
+const debounce = (func, wait = 100) => {
   let timeout;
   return function executedFunction(...args) {
     const later = () => {
@@ -30,7 +30,7 @@ const debounce = (func, wait) => {
   };
 }
 
-function throttle(func, wait) {
+function throttle(func, wait = 250) {
   let isWaiting = false;
   let lastArgs = null;
   let lastThis = null;

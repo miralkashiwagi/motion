@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ボタン背景色がアイコン背景色になる（GSAP）</title>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+  <style>
+    @import url('https://unpkg.com/destyle.css@4.0.1/destyle.min.css') layer(destyle);
+    @import url('../assets/css/common.css') layer(common);
+
+    @layer destyle, common, base, demo;
+
+    @layer demo {
+
+      .btn {
+        border: solid 2px #000;
+        border-radius: 100px;
+        padding: 10px 8px 10px 32px;
+        display: inline-flex;
+        align-items: center;
+        gap: 16px;
+        overflow: hidden;
+        position: relative;
+        color: #000;
+      }
+
+      .btn-text {
+        position: relative;
+        z-index: 2;
+      }
+
+      .btn-icon {
+        display: grid;
+        place-items: center;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        color: #fff;
+        flex-shrink: 0;
+        position: relative;
+        z-index: 1;
+      }
+
+      .btn-icon::after {
+        grid-area: 1/1;
+        font-family: 'Material Symbols Outlined';
+        line-height: 1;
+        display: block;
+        content: 'east';
+      }
+
+      .btn-icon::before {
+        grid-area: 1/1;
+        display: block;
+        content: "";
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        background: #000;
+        position: relative;
+        z-index: -1;
+        scale: var(--_scale, 1);
+      }
+
+
+      .btn--icon-clip .btn-icon::before {
+        clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+      }
+
+    }
+
+    @layer base {
+    }
+
+  </style>
+</head>
+<body>
+
+<div class="layout">
+  <div class="items">
+    <a href="#" class="btn js-button">
+      背景が円になる
+    </a>
+  </div>
+  <div class="items">
+    <a href="#" class="btn  js-button">
+      ボタンの長さがとても長いときもJSで背景の処理を自動調整
+    </a>
+  </div>
+
+  <div class="items">
+    <a href="#" class="btn btn--icon-clip js-button">
+      背景がひし形になる
+    </a>
+  </div>
+  <div class="items">
+    <a href="#" class="btn btn--icon-clip js-button">
+      ボタンの長さがとても長いときもJSで背景の処理を自動調整
+    </a>
+  </div>
+
+</div>
+
+<script src="../assets/js/utils.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.4/gsap.min.js"></script>
+<script>
+  // ボタンの要素を取得
+  const button = document.querySelectorAll('.js-button');
+
+  button.forEach((btn) => {
+    // HTML整形
+    const text = btn.innerHTML;
+    btn.innerHTML = `
+      <span class="btn-text">${text}</span>
+      <span class="btn-icon"></span>
+    `;
+
+    // スケールを計算する関数
+    const btnIcon = btn.querySelector('.btn-icon');
+    const calculateScale = () => {
+      return btn.offsetWidth / btnIcon.offsetWidth * 2;
+    };
+
+    // Tween
+    const animation = gsap.timeline({paused: true})
+      .fromTo(btnIcon, {
+        "--_scale": calculateScale, // 関数として渡すとTweenの再計算時に値が再計算される
+        duration: 0.2,
+        ease: 'power2.out',
+      }, {
+        "--_scale": 1,
+        duration: 0.2,
+        ease: 'power2.out',
+      })
+      .fromTo(btn, {
+        color: '#fff',
+      }, {
+        color: '#000',
+        duration: 0.2,
+        ease: 'power2.out',
+      }, "<")
+    ;
+
+    // イベントリスナーを追加
+    btn.addEventListener('mouseenter', () => {
+      animation.play();
+    });
+    btn.addEventListener('mouseleave', () => {
+      animation.reverse();
+    });
+
+
+    // 画面リサイズ時にボタンのサイズから--_scaleを再計算
+    window.addEventListener("resize", debounce(() => {
+      // tweenを初期化（再計算）してからplayheadを0に戻して止める
+      animation.invalidate().time(0).pause();
+    }));
+
+  });
+
+
+  // メッセージリスナーを追加（親フレームからのリセット指示を受け取る）
+  window.addEventListener('message', (event) => {
+    if (event.data === 'reset-demo') {
+      // スクロール位置をリセット
+      window.scrollTo(0, 0);
+      location.reload();
+    }
+  });
+</script>
+</body>
+</html>

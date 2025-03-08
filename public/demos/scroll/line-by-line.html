@@ -78,7 +78,7 @@
   init();
 
 
-  // window resize時に再度分割処理を実行(debounceでイベントを間引く）
+  // window resize時に再度分割処理を実行(throttleでイベントを間引く）
   window.addEventListener('resize', throttle(() => {
     textSplit.revert();
     ScrollTriggers.forEach(trigger => trigger.kill());
