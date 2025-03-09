@@ -1,0 +1,78 @@
+---
+title: 動き続ける波紋（CSS）
+parentCategory: 常時再生
+category: 未分類
+tags: [ボタン, CSS]
+difficulty: beginner
+pubDate: 2025-03-09
+---
+
+import IframeDemo from '../../../components/IframeDemo.astro';
+
+## デモ
+
+<IframeDemo/>
+
+## 実装方法
+
+### HTML
+
+```html
+<div class="ripples">
+  <img src="../assets/images/img-ripple-circle.png" alt="">
+  <img src="../assets/images/img-ripple-circle.png" alt="">
+  <img src="../assets/images/img-ripple-circle.png" alt="">
+  <img src="../assets/images/img-ripple-circle.png" alt="">
+  <img src="../assets/images/img-ripple-circle.png" alt="">
+</div>
+```
+
+### CSS
+
+```css
+.ripples {
+  display: grid;
+  width: 200px;
+}
+.ripples img{
+  width: 100%;
+  grid-area: 1/1;
+  animation: ripple 5s linear infinite;
+}
+
+/* animationを5秒で再生するので、5秒の間に等間隔で再生開始させる*/
+.ripples img:nth-child(1) {
+  animation-delay: 0s;
+}
+.ripples img:nth-child(2) {
+  animation-delay: -1s;
+}
+.ripples img:nth-child(3) {
+  animation-delay: -2s;
+}
+.ripples img:nth-child(4) {
+  animation-delay: -3s;
+}
+.ripples img:nth-child(5) {
+  animation-delay: -4s;
+}
+
+
+@keyframes ripple {
+  0% {
+    opacity: 0;
+    scale: .1;
+  }
+  10%, 90% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    scale: 1;
+  }
+}
+```
+
+## ポイント
+- 同じ大きさの波紋の線の画像を重ねて配置し、時間差を付けてanimation再生している。
+- animationの継続時間に対して、時間差を均等に付けることで、波紋が途切れずに動いているように見える。

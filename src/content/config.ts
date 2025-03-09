@@ -7,7 +7,7 @@ const parentCategorySchema = z.enum([
   'スクロール関連',
   // 'テキストアニメーション',
   // 'ページ関連・切り替え効果',
-  '未分類',
+  '常時再生',
 ]);
 
 
@@ -94,14 +94,14 @@ export const categoryMapping = {
     color: '#0891b2',
     description: 'スクロールトリガー効果とパララックス効果を含むスクロール連動アニメーション',
   },
-  '未分類': {
-    id: 'uncategorized',
+  '常時再生': {
+    id: 'autoplay',
     subcategories: [
       '未分類',
     ],
-    icon: 'question-mark',
-    color: '#fbbf24',
-    description: 'その他の未分類アニメーション',
+    icon: 'play',
+    color: '#aa67a6',
+    description: 'ページをロードした瞬間から再生し続けるアニメーション',
   },
   // 'テキストアニメーション': {
   //   id: 'text',
