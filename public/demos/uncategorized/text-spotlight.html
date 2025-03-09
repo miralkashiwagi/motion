@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>テキスト画像に正面からスポットライトを当てる</title>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+  <style>
+    @import url('https://unpkg.com/destyle.css@4.0.1/destyle.min.css') layer(destyle);
+    @import url('../assets/css/common.css') layer(common);
+
+    @layer destyle, common, base, demo;
+
+
+    @layer demo {
+      .text-spotlight {
+        position: relative;
+        max-width: 100%;
+        mask-size: contain;
+      }
+
+      .text-spotlight img {
+        width: 100%;
+        height: auto;
+        display: block;
+      }
+
+      .text-spotlight::before,
+      .text-spotlight::after {
+        content: "";
+        position: absolute;
+        height: 70%;
+        aspect-ratio: 1;
+        left: 0;
+        filter: blur(20px);
+        z-index: 1;
+      }
+
+      .text-spotlight::before {
+        top: -10%;
+        background-color: #fa5ff0;
+        animation: text-spotlight 10s linear infinite;
+      }
+
+      .text-spotlight::after {
+        position: absolute;
+        bottom: -10%;
+        background-color: #5ffac4;
+        animation: text-spotlight 10s linear -3s infinite;
+      }
+
+
+      @keyframes text-spotlight {
+        0% {
+          transform: translate(-100%, 0);
+        }
+        100% {
+          transform: translate(500%, 0);
+        }
+      }
+
+    }
+
+    @layer base {
+    }
+
+  </style>
+</head>
+<body>
+
+<div class="layout">
+  <div>
+    <p class="text-spotlight" style="mask-image: url(../assets/images/text-catch-copy.svg);">
+      <img src="../assets/images/text-catch-copy.svg" alt="素敵なキャッチコピー">
+    </p>
+
+
+  </div>
+</div>
+
+<script src="../assets/js/utils.js"></script>
+<script>
+  // メッセージリスナーを追加（親フレームからのリセット指示を受け取る）
+  window.addEventListener('message', (event) => {
+    if (event.data === 'reset-demo') {
+      // スクロール位置をリセット
+      window.scrollTo(0, 0);
+      location.reload();
+    }
+  });
+</script>
+</body>
+</html>

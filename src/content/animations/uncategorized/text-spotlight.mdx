@@ -1,0 +1,82 @@
+---
+title: テキスト画像に正面からスポットライトを当てる（CSS）
+parentCategory: 未分類
+category: 未分類
+tags: [ボタン, CSS]
+difficulty: intermediate
+pubDate: 2025-03-09
+---
+
+import IframeDemo from '../../../components/IframeDemo.astro';
+
+## デモ
+
+<IframeDemo/>
+
+## 実装方法
+
+### HTML
+
+```html
+<p class="text-spotlight" style="mask-image: url(../assets/images/text-catch-copy.svg);">
+  <img src="../assets/images/text-catch-copy.svg" alt="素敵なキャッチコピー">
+</p>
+```
+
+### CSS
+
+```css
+.text-spotlight {
+  position: relative;
+  max-width: 100%;
+  mask-size: contain;
+}
+
+.text-spotlight img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.text-spotlight::before,
+.text-spotlight::after {
+  content: "";
+  position: absolute;
+  height: 70%;
+  aspect-ratio: 1;
+  left: 0;
+  filter: blur(20px);
+  z-index: 1;
+}
+
+.text-spotlight::before {
+  top: -10%;
+  background-color: #fa5ff0;
+  animation: text-spotlight 10s linear infinite;
+}
+
+.text-spotlight::after {
+  position: absolute;
+  bottom: -10%;
+  background-color: #5ffac4;
+  animation: text-spotlight 10s linear -3s infinite;
+}
+
+
+@keyframes text-spotlight {
+  0% {
+    transform: translate(-100%, 0);
+  }
+  100% {
+    transform: translate(500%, 0);
+  }
+}
+```
+
+## ポイント
+- テキストを画像で置く必要がある。
+- 表示画像と同じ画像を`mask-image`に指定して、疑似要素をテキストの部分でだけ表示している。
+- animationプロパティで制御しているため、疑似要素を順番に動かすことはできない。
+  - タイミングを重視するならGSAPを使う方が無難。
+  - （1つの@keyframesでCSS変数を使ってふたつの疑似要素をまとめて動かしても良いかも）
+- 小さい画面サイズでも対応できるように、`mask-size: contain`を指定している。親要素のサイズとimgのサイズが常に同じする必要がある。

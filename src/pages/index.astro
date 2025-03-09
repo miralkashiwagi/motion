@@ -14,7 +14,7 @@ const latestAnimations = allAnimations
     const dateB = b.data.pubDate || new Date(0);
     return dateB.getTime() - dateA.getTime();
   })
-  .slice(0, 24); // 最新24件を表示
+  .slice(0, 32); // 最新32件を表示
 
 ---
 

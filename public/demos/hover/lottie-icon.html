@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lottieアイコンをホバーで再生</title>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+  <style>
+    @import url('https://unpkg.com/destyle.css@4.0.1/destyle.min.css') layer(destyle);
+    @import url('../assets/css/common.css') layer(common);
+
+    @layer destyle, common, base, demo;
+
+    @layer demo {
+      .btn {
+        border: solid 1px #ccc;
+        border-radius: 100px;
+        padding: 10px 32px;
+        display: inline-flex;
+        align-items: center;
+        gap: 16px;
+        background: #fff;
+      }
+
+      .btn-deco {
+        display: block;
+        width: 40px;
+        height: 40px;
+        flex-shrink: 0;
+      }
+
+      .btn-deco--small {
+        width: 20px;
+        height: 20px;
+      }
+
+    }
+
+    @layer base {
+    }
+
+  </style>
+</head>
+<body>
+
+<div class="layout">
+  <div class="items">
+    <a href="#" class="btn js-btn-lottie">
+      ホバーで再生(Lottie)
+      <span class="btn-deco" data-lottie-src="../assets/files/icon-lottie.json"></span>
+    </a>
+  </div>
+
+  <div class="items">
+    <a href="#" class="btn js-btn-lottie">
+      ホバーで再生(Lottie)
+      <span class="btn-deco btn-deco--small" data-lottie-src="../assets/files/arrow-lottie.json"></span>
+    </a>
+  </div>
+</div>
+
+<script src="../assets/js/utils.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bodymovin/5.12.2/lottie.min.js"></script>
+<script>
+
+  //https://github.com/airbnb/lottie-web?tab=readme-ov-file#html-player-installation
+
+  const btns = document.querySelectorAll('.js-btn-lottie');
+  btns.forEach((btn) => {
+    const lottieContainer = btn.querySelector('[data-lottie-src]');
+    const lottieSrc = lottieContainer.dataset.lottieSrc;
+    const lottieOptions = {
+      container: lottieContainer, // アニメーションを表示する要素
+      renderer: 'svg',
+      loop: false,
+      autoplay: false,
+      path: lottieSrc,
+    }
+    const lottieAnimation = lottie.loadAnimation(lottieOptions);
+    // ボタンをホバーしたときの処理
+    btn.addEventListener('mouseenter', () => {
+      // アニメーションを再生
+      lottieAnimation.goToAndPlay(0);
+    });
+  });
+
+
+  // メッセージリスナーを追加（親フレームからのリセット指示を受け取る）
+  window.addEventListener('message', (event) => {
+    if (event.data === 'reset-demo') {
+      // スクロール位置をリセット
+      window.scrollTo(0, 0);
+      location.reload();
+    }
+  });
+</script>
+</body>
+</html>
