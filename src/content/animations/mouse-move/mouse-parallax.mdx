@@ -1,0 +1,183 @@
+---
+title: マウスに合わせてパララックス風に動く（GSAP）
+parentCategory: インタラクティブ要素
+category: マウスムーブ
+tags: [GSAP]
+difficulty: advanced
+pubDate: 2025-03-13
+---
+
+import IframeDemo from '../../../components/IframeDemo.astro';
+
+## デモ
+
+<IframeDemo/>
+
+## 実装方法
+
+### HTML
+
+```html
+<div class="parallax-container js-parallax-container">
+  <div class="parallax-layer bg js-parallax-layer" data-speed="0.05"></div>
+  <div class="parallax-layer text-container js-parallax-layer" data-speed="0.2">
+    <p>マウスを移動すると要素がわずかに動きます</p>
+  </div>
+  <div class="parallax-layer text-container-02 js-parallax-layer" data-speed="0.5">
+    <p>移動距離が大きいと手前にあるように見えます</p>
+  </div>
+</div>
+```
+
+### CSS
+
+```css
+/*CSSは適宜設定*/
+.parallax-container {
+  position: relative;
+  width: 100%;
+  height: 100dvh;
+  overflow: hidden;
+}
+
+.parallax-layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+```
+```javascript
+const container = document.querySelector('.js-parallax-container');
+const layers = document.querySelectorAll('.js-parallax-layer');
+let tiltX = 0;
+let tiltY = 0;
+let isMobile = false;
+
+// 先に全てのハンドラー関数を定義
+
+// マウス移動のハンドラー（デスクトップ用）
+const handleMouseMove = throttle((e) => {
+  tiltX = (e.clientX / window.innerWidth) * 2 - 1;
+  tiltY = (e.clientY / window.innerHeight) * 2 - 1;
+  updateLayers();
+}, 33);
+
+// デバイス傾きのハンドラー（モバイル用）
+const handleDeviceOrientation = throttle((e) => {
+  if (e.gamma && e.beta) {
+    tiltY = Math.min(Math.max(e.beta / 45, -1), 1) * -0.5;
+    tiltX = Math.min(Math.max(e.gamma / 45, -1), 1) * 0.5;
+    updateLayers();
+  }
+}, 50);
+
+// タッチイベント用ハンドラー
+let startX, startY;
+let isDragging = false;
+
+function handleTouchStart(e) {
+  isDragging = true;
+  startX = e.touches[0].clientX;
+  startY = e.touches[0].clientY;
+}
+
+const handleTouchMove = throttle((e) => {
+  if (isDragging) {
+    const touchX = e.touches[0].clientX;
+    const touchY = e.touches[0].clientY;
+
+    tiltX = Math.min(Math.max((touchX - startX) / 50, -1), 1);
+    tiltY = Math.min(Math.max((touchY - startY) / 50, -1), 1);
+
+    updateLayers();
+  }
+}, 50);
+
+function handleTouchEnd() {
+  isDragging = false;
+
+  // タッチ終了時のアニメーション
+  gsap.to({ x: tiltX, y: tiltY }, {
+    x: 0,
+    y: 0,
+    duration: 1.5,
+    ease: 'elastic.out(1, 0.3)',
+    onUpdate: function() {
+      tiltX = this.targets()[0].x;
+      tiltY = this.targets()[0].y;
+      updateLayers();
+    }
+  });
+}
+
+// レイヤー更新関数
+function updateLayers() {
+  const duration = isMobile ? 1 : 0.75;
+
+  layers.forEach(layer => {
+    const speed = parseFloat(layer.dataset.speed || 0.1);
+
+    gsap.to(layer, {
+      x: tiltX * 100 * speed,//※ tiltXに - を付けると反対方向に動く
+      y: tiltY * 100 * speed,//※ tiltYに - を付けると反対方向に動く
+      duration: duration,
+      ease: 'power2.out'
+    });
+  });
+}
+
+// イベントリスナーの設定関数 - ハンドラーを定義した後で宣言
+function setupDesktopEvents() {
+  // マウスイベントを追加
+  document.addEventListener('mousemove', handleMouseMove);
+
+  // モバイル用イベントを削除
+  window.removeEventListener('deviceorientation', handleDeviceOrientation);
+  container.removeEventListener('touchstart', handleTouchStart);
+  container.removeEventListener('touchmove', handleTouchMove);
+  container.removeEventListener('touchend', handleTouchEnd);
+
+  // console.log('デスクトップモード有効化');
+}
+
+function setupMobileEvents() {
+  // デスクトップ用イベントを削除
+  document.removeEventListener('mousemove', handleMouseMove);
+
+  // デバイスの向き検出をサポートしている場合
+  if (window.DeviceOrientationEvent) {
+    window.addEventListener('deviceorientation', handleDeviceOrientation);
+  }
+
+  // タッチイベント
+  container.addEventListener('touchstart', handleTouchStart);
+  container.addEventListener('touchmove', handleTouchMove);
+  container.addEventListener('touchend', handleTouchEnd);
+
+  // console.log('モバイルモード有効化');
+}
+
+// responsiveMatch関数を使ってデバイスタイプごとの設定を切り替え
+responsiveMatch(
+  () => {
+    // モバイルデバイスの場合の処理
+    isMobile = true;
+    setupMobileEvents();
+
+  },
+  () => {
+    // デスクトップの場合の処理
+    isMobile = false;
+    setupDesktopEvents();
+  }
+);
+
+```
+
+
+
+## ポイント
+- 要素ごとに違う係数で、マウスの位置に合わせてGSAPで移動することでパララックス風の効果を持たせます
+- スマートフォンでも近いユーザー体験を引き起こすために、画面幅が狭い環境では `deviceorientation` か `touchmove` で動きをつけるようにしています。

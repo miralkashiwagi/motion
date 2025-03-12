@@ -14,10 +14,7 @@ const parentCategorySchema = z.enum([
 // サブカテゴリーの定義
 const subcategorySchema = z.enum([
   'ホバーエフェクト',
-  'ボタン効果',
-  'カード効果',
-  'シャドウ効果',
-  'アンダーライン効果',
+  'マウスムーブ',
   'ドロワーメニュー',
   'ドロップダウン',
   'メガメニュー',
@@ -63,14 +60,11 @@ export const categoryMapping = {
     id: 'interactive',
     subcategories: [
       'ホバーエフェクト',
-      'ボタン効果',
-      'カード効果',
-      'シャドウ効果',
-      'アンダーライン効果',
+      'マウスムーブ',
     ],
     icon: 'cursor',
     color: '#4f46e5',
-    description: 'ホバーエフェクト、ボタン効果、カード効果など、ユーザーの操作に反応するアニメーション',
+    description: 'ホバーエフェクト、マウスムーブなど、ユーザーの操作に反応するアニメーション',
   },
   'メニュー展開効果': {
     id: 'menu',

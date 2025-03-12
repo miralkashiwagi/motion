@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>マウスに合わせてパララックス風に動く（GSAP）</title>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+  <style>
+    @import url('https://unpkg.com/destyle.css@4.0.1/destyle.min.css') layer(destyle);
+    @import url('../assets/css/common.css') layer(common);
+
+    @layer destyle, common, base, demo;
+
+
+    @layer demo {
+
+      .parallax-container {
+        position: relative;
+        width: 100%;
+        height: 100dvh;
+        overflow: hidden;
+      }
+
+      .parallax-layer {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+      }
+
+      .bg {
+        background-image: url('../assets/images/img-sample-02.jpg');
+        background-size: cover;
+        background-position: center;
+      }
+
+
+      .text-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.5);
+      }
+
+      .text-container-02{
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.5);
+        padding-top: 2lh;
+      }
+
+
+
+    }
+
+    @layer base {
+    }
+
+  </style>
+</head>
+<body>
+
+
+<div class="parallax-container js-parallax-container">
+  <div class="parallax-layer bg js-parallax-layer" data-speed="0.05"></div>
+  <div class="parallax-layer text-container js-parallax-layer" data-speed="0.2">
+    <p>マウスを移動すると要素がわずかに動きます</p>
+  </div>
+  <div class="parallax-layer text-container-02 js-parallax-layer" data-speed="0.5">
+    <p>移動距離が大きいと手前にあるように見えます</p>
+  </div>
+</div>
+<div class="spacer"></div>
+
+<script src="../assets/js/utils.js"></script>
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.4/gsap.min.js"></script>
+
+
+
+<script>
+  // const container = document.querySelector('.js-parallax-container');
+  // const layers = document.querySelectorAll('.js-parallax-layer');
+  //
+  // document.addEventListener('mousemove',
+  //   throttle((e) => {
+  //     const mouseX = e.clientX / window.innerWidth - 0.5;
+  //     const mouseY = e.clientY / window.innerHeight - 0.5;
+  //
+  //     layers.forEach(layer => {
+  //       const speed = parseFloat(layer.getAttribute('data-speed') || '0.1');
+  //
+  //       gsap.to(layer, {
+  //         x: mouseX * 100 * speed,
+  //         y: mouseY * 100 * speed,
+  //         duration: 0.75,
+  //         ease: 'power1.out'
+  //       });
+  //     });
+  //   }, 33)// 33ミリ秒（約30FPS）でthrottleを適用
+  // );
+
+
+
+  const container = document.querySelector('.js-parallax-container');
+  const layers = document.querySelectorAll('.js-parallax-layer');
+  let tiltX = 0;
+  let tiltY = 0;
+  let isMobile = false;
+
+  // 先に全てのハンドラー関数を定義
+
+  // マウス移動のハンドラー（デスクトップ用）
+  const handleMouseMove = throttle((e) => {
+    tiltX = (e.clientX / window.innerWidth) * 2 - 1;
+    tiltY = (e.clientY / window.innerHeight) * 2 - 1;
+    updateLayers();
+  }, 33);
+
+  // デバイス傾きのハンドラー（モバイル用）
+  const handleDeviceOrientation = throttle((e) => {
+    if (e.gamma && e.beta) {
+      tiltY = Math.min(Math.max(e.beta / 45, -1), 1) * -0.5;
+      tiltX = Math.min(Math.max(e.gamma / 45, -1), 1) * 0.5;
+      updateLayers();
+    }
+  }, 50);
+
+  // タッチイベント用ハンドラー
+  let startX, startY;
+  let isDragging = false;
+
+  function handleTouchStart(e) {
+    isDragging = true;
+    startX = e.touches[0].clientX;
+    startY = e.touches[0].clientY;
+  }
+
+  const handleTouchMove = throttle((e) => {
+    if (isDragging) {
+      const touchX = e.touches[0].clientX;
+      const touchY = e.touches[0].clientY;
+
+      tiltX = Math.min(Math.max((touchX - startX) / 50, -1), 1);
+      tiltY = Math.min(Math.max((touchY - startY) / 50, -1), 1);
+
+      updateLayers();
+    }
+  }, 50);
+
+  function handleTouchEnd() {
+    isDragging = false;
+
+    // タッチ終了時のアニメーション
+    gsap.to({ x: tiltX, y: tiltY }, {
+      x: 0,
+      y: 0,
+      duration: 1.5,
+      ease: 'elastic.out(1, 0.3)',
+      onUpdate: function() {
+        tiltX = this.targets()[0].x;
+        tiltY = this.targets()[0].y;
+        updateLayers();
+      }
+    });
+  }
+
+  // レイヤー更新関数
+  function updateLayers() {
+    const duration = isMobile ? 1 : 0.75;
+
+    layers.forEach(layer => {
+      const speed = parseFloat(layer.dataset.speed || 0.1);
+
+      gsap.to(layer, {
+        x: tiltX * 100 * speed,//※ tiltXに - を付けると反対方向に動く
+        y: tiltY * 100 * speed,//※ tiltYに - を付けると反対方向に動く
+        duration: duration,
+        ease: 'power2.out'
+      });
+    });
+  }
+
+  // イベントリスナーの設定関数 - ハンドラーを定義した後で宣言
+  function setupDesktopEvents() {
+    // マウスイベントを追加
+    document.addEventListener('mousemove', handleMouseMove);
+
+    // モバイル用イベントを削除
+    window.removeEventListener('deviceorientation', handleDeviceOrientation);
+    container.removeEventListener('touchstart', handleTouchStart);
+    container.removeEventListener('touchmove', handleTouchMove);
+    container.removeEventListener('touchend', handleTouchEnd);
+
+    // console.log('デスクトップモード有効化');
+  }
+
+  function setupMobileEvents() {
+    // デスクトップ用イベントを削除
+    document.removeEventListener('mousemove', handleMouseMove);
+
+    // デバイスの向き検出をサポートしている場合
+    if (window.DeviceOrientationEvent) {
+      window.addEventListener('deviceorientation', handleDeviceOrientation);
+    }
+
+    // タッチイベント
+    container.addEventListener('touchstart', handleTouchStart);
+    container.addEventListener('touchmove', handleTouchMove);
+    container.addEventListener('touchend', handleTouchEnd);
+
+    // console.log('モバイルモード有効化');
+  }
+
+  // responsiveMatch関数を使ってデバイスタイプごとの設定を切り替え
+  responsiveMatch(
+    () => {
+      // モバイルデバイスの場合の処理
+      isMobile = true;
+      setupMobileEvents();
+
+      // モバイル向けのエフェクト調整
+      // layers.forEach(layer => {
+      //   layer.dataset.originalSpeed = layer.dataset.speed || 0.1;
+      //   layer.dataset.speed = parseFloat(layer.dataset.originalSpeed) * 2; // モバイルでは効果を強調
+      // });
+    },
+    () => {
+      // デスクトップの場合の処理
+      isMobile = false;
+      setupDesktopEvents();
+
+      // 元のスピードに戻す
+      // layers.forEach(layer => {
+      //   if (layer.dataset.originalSpeed) {
+      //     layer.dataset.speed = layer.dataset.originalSpeed;
+      //   }
+      // });
+    }
+  );
+
+
+
+  // メッセージリスナーを追加（親フレームからのリセット指示を受け取る）
+  window.addEventListener('message', (event) => {
+    if (event.data === 'reset-demo') {
+      // スクロール位置をリセット
+      window.scrollTo(0, 0);
+      location.reload();
+    }
+  });
+</script>
+</body>
+</html>
