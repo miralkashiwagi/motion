@@ -1,0 +1,83 @@
+---
+title: 回転し続ける衛星の起動のような円（CSS）
+parentCategory: 常時再生
+category: 未分類
+tags: [CSS]
+difficulty: beginner
+pubDate: 2025-03-12
+---
+
+import IframeDemo from '../../../components/IframeDemo.astro';
+
+## デモ
+
+<IframeDemo/>
+
+## 実装方法
+
+### HTML
+
+```html
+<div class="orbits">
+  <!-- orbit部分は画像でもよい-->
+  <div class="orbit"></div>
+  <div class="orbit"></div>
+  <div class="orbit"></div>
+  <div class="orbit"></div>
+</div>
+```
+
+### CSS
+
+```css
+
+.orbits {
+  grid-area: 1/1;
+  display: grid;
+  width: 200px;
+}
+
+.orbit{
+  grid-area: 1/1;
+  border-radius: 50%;
+  aspect-ratio: 1;
+  width: 100%;
+  animation: orbit 6s linear infinite;
+
+  /* 適宜スタイリングするか画像を配置 */
+}
+
+.orbit:nth-child(1) {
+  animation-direction: reverse;
+  animation-duration: 10s;
+}
+.orbit:nth-child(2) {
+  animation-delay: -1s;
+  scale: 1.2; /*画像自体を別々にする場合はスケーリング調整は不要*/
+}
+.orbit:nth-child(3) {
+  animation-delay: -2s;
+  animation-direction: reverse;
+  scale: 1.3; /*画像自体を別々にする場合はスケーリング調整は不要*/
+}
+.orbit:nth-child(4) {
+  animation-delay: -3s;
+  animation-duration: 10s;
+  scale: 1.5; /*画像自体を別々にする場合はスケーリング調整は不要*/
+}
+
+
+@keyframes orbit {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+```
+
+## ポイント
+- 線の円の上に衛星のような小さな塗りの円を配置して、回転させているだけ
+- 大きさの違う線の円を3つ前後配置して、速度と回転方向を変えることで衛星のように見せることができる

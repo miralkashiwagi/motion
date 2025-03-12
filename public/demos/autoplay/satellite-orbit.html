@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>回転し続ける衛星の起動のような円（CSS）</title>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+  <style>
+    @import url('https://unpkg.com/destyle.css@4.0.1/destyle.min.css') layer(destyle);
+    @import url('../assets/css/common.css') layer(common);
+
+    @layer destyle, common, base, demo;
+
+
+    @layer demo {
+      body{
+        background: #001743;
+      }
+
+      .orbits {
+        grid-area: 1/1;
+        display: grid;
+        width: 200px;
+      }
+
+      .orbit{
+        grid-area: 1/1;
+        border-radius: 50%;
+        aspect-ratio: 1;
+        width: 100%;
+        border: 1px solid #fff;
+        position: relative;
+        animation: orbit 6s linear infinite;
+      }
+
+      .orbit:nth-child(1) {
+        animation-direction: reverse;
+        animation-duration: 10s;
+      }
+      .orbit:nth-child(2) {
+        animation-delay: -1s;
+        scale: 1.2;
+      }
+      .orbit:nth-child(3) {
+        animation-delay: -2s;
+        animation-direction: reverse;
+        scale: 1.3;
+      }
+      .orbit:nth-child(4) {
+        animation-delay: -3s;
+        animation-duration: 10s;
+        scale: 1.5;
+      }
+
+      .orbit::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 6px;
+        aspect-ratio: 1;
+        border-radius: 50%;
+        background-color: #fff;
+      }
+
+      @keyframes orbit {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+
+
+    }
+
+    @layer base {
+    }
+
+  </style>
+</head>
+<body>
+
+<div class="layout">
+  <div>
+
+    <div class="orbits">
+      <div class="orbit"></div>
+      <div class="orbit"></div>
+      <div class="orbit"></div>
+      <div class="orbit"></div>
+    </div>
+
+  </div>
+</div>
+
+<script src="../assets/js/utils.js"></script>
+<script>
+  // メッセージリスナーを追加（親フレームからのリセット指示を受け取る）
+  window.addEventListener('message', (event) => {
+    if (event.data === 'reset-demo') {
+      // スクロール位置をリセット
+      window.scrollTo(0, 0);
+      location.reload();
+    }
+  });
+</script>
+</body>
+</html>
