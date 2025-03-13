@@ -125,13 +125,13 @@
   }, 33);
 
   // デバイス傾きのハンドラー（モバイル用）
-  const handleDeviceOrientation = throttle((e) => {
-    if (e.gamma && e.beta) {
-      tiltY = Math.min(Math.max(e.beta / 45, -1), 1) * -0.5;
-      tiltX = Math.min(Math.max(e.gamma / 45, -1), 1) * 0.5;
-      updateLayers();
-    }
-  }, 50);
+  // const handleDeviceOrientation = throttle((e) => {
+  //   if (e.gamma && e.beta) {
+  //     tiltY = Math.min(Math.max(e.beta / 45, -1), 1) * -0.5;
+  //     tiltX = Math.min(Math.max(e.gamma / 45, -1), 1) * 0.5;
+  //     updateLayers();
+  //   }
+  // }, 50);
 
   // タッチイベント用ハンドラー
   let startX, startY;
@@ -194,7 +194,7 @@
     document.addEventListener('mousemove', handleMouseMove);
 
     // モバイル用イベントを削除
-    window.removeEventListener('deviceorientation', handleDeviceOrientation);
+    // window.removeEventListener('deviceorientation', handleDeviceOrientation);
     container.removeEventListener('touchstart', handleTouchStart);
     container.removeEventListener('touchmove', handleTouchMove);
     container.removeEventListener('touchend', handleTouchEnd);
@@ -207,9 +207,9 @@
     document.removeEventListener('mousemove', handleMouseMove);
 
     // デバイスの向き検出をサポートしている場合
-    if (window.DeviceOrientationEvent) {
-      window.addEventListener('deviceorientation', handleDeviceOrientation);
-    }
+    // if (window.DeviceOrientationEvent) {
+    //   window.addEventListener('deviceorientation', handleDeviceOrientation);
+    // }
 
     // タッチイベント
     container.addEventListener('touchstart', handleTouchStart);

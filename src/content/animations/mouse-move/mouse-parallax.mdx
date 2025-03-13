@@ -64,14 +64,6 @@ const handleMouseMove = throttle((e) => {
   updateLayers();
 }, 33);
 
-// デバイス傾きのハンドラー（モバイル用）
-const handleDeviceOrientation = throttle((e) => {
-  if (e.gamma && e.beta) {
-    tiltY = Math.min(Math.max(e.beta / 45, -1), 1) * -0.5;
-    tiltX = Math.min(Math.max(e.gamma / 45, -1), 1) * 0.5;
-    updateLayers();
-  }
-}, 50);
 
 // タッチイベント用ハンドラー
 let startX, startY;
@@ -134,7 +126,6 @@ function setupDesktopEvents() {
   document.addEventListener('mousemove', handleMouseMove);
 
   // モバイル用イベントを削除
-  window.removeEventListener('deviceorientation', handleDeviceOrientation);
   container.removeEventListener('touchstart', handleTouchStart);
   container.removeEventListener('touchmove', handleTouchMove);
   container.removeEventListener('touchend', handleTouchEnd);
@@ -145,11 +136,6 @@ function setupDesktopEvents() {
 function setupMobileEvents() {
   // デスクトップ用イベントを削除
   document.removeEventListener('mousemove', handleMouseMove);
-
-  // デバイスの向き検出をサポートしている場合
-  if (window.DeviceOrientationEvent) {
-    window.addEventListener('deviceorientation', handleDeviceOrientation);
-  }
 
   // タッチイベント
   container.addEventListener('touchstart', handleTouchStart);
@@ -180,5 +166,5 @@ responsiveMatch(
 
 ## ポイント
 - 要素ごとに違う係数で、マウスの位置に合わせてGSAPで移動することでパララックス風の効果を持たせます
-- スマートフォンでも近いユーザー体験を引き起こすために、画面幅が狭い環境では `deviceorientation` か `touchmove` で動きをつけるようにしています。
-- モバイルイベントでの動作については、deviceorientationを持つ実機と持たない実機２種類での具体的な検証と調整が必要になります。
+- スマートフォンでも近いユーザー体験を引き起こすために、画面幅が狭い環境では `touchmove` で動きをつけるようにしています。
+- モバイルイベントでの動作については、`deviceorientation` で実装することも可能です。
