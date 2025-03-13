@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>スクロールして画面内に入ったら出現（GSAP）</title>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+  <style>
+    @import url('https://unpkg.com/destyle.css@4.0.1/destyle.min.css') layer(destyle);
+    @import url('../assets/css/common.css') layer(common);
+
+    @layer destyle, common, base, demo;
+
+
+    @layer demo {
+
+
+      .gsap-scroll-container {
+        padding: 1rem;
+        max-width: 800px;
+        margin: 0 auto;
+      }
+
+      .elements {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 1rem;
+      }
+
+
+      .element {
+        padding: 2rem;
+        margin-bottom: 1.5rem;
+        background-color: #ccc;
+        border-radius: 0.5rem;
+        text-align: center;
+        font-weight: 500;
+      }
+
+    }
+
+    @layer base {
+      .spacer {
+        height: 100vh;
+      }
+    }
+  </style>
+</head>
+
+<body>
+<div class="gsap-scroll-container">
+  <!-- スクロール用のスペーサーを追加 -->
+  <p>スクロールしてね</p>
+  <div class="spacer"></div>
+
+  <h1>出現する要素</h1>
+  <div class="elements">
+    <div class="element js-fadein">設定値に合わせて出現</div>
+    <div class="element js-fadein">設定値に合わせて出現</div>
+    <div class="element js-fadein">設定値に合わせて出現</div>
+    <div class="element js-fadein">設定値に合わせて出現</div>
+    <div class="element js-fadein">設定値に合わせて出現</div>
+    <div class="element js-fadein">設定値に合わせて出現</div>
+  </div>
+
+  <!-- スクロール用のスペーサーを追加 -->
+  <div class="spacer"></div>
+</div>
+
+<script src="../assets/js/utils.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.4/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.4/ScrollTrigger.min.js"></script>
+
+<script type="module">
+  import {Pane} from 'https://cdn.jsdelivr.net/npm/tweakpane@4.0.5/dist/tweakpane.min.js';
+
+  document.addEventListener('DOMContentLoaded', () => {
+    // マーカーを表示してデバッグしやすくする（開発時のみ）
+    // ScrollTrigger.defaults({
+    //   markers: true
+    // });
+    // アニメーションのパラメータ設定（Tweakpaneで制御できるようにオブジェクトとして保持）
+    // デフォルト設定
+    const defaultSettings = {
+      from: {
+        opacity: 0,
+        x: 0,
+        y: 50,
+        scale: 1,
+        rotation: 0,
+        ease: 'power2.out',
+        duration: 0.8,
+        mask: 'unset'
+      },
+      to: {
+        opacity: 1,
+        mask: 'unset'
+      },
+      scrollTrigger: {
+        start: 'top bottom',
+        // end: 'bottom bottom',
+        toggleActions: 'play none none none'
+      }
+    };
+
+    // Tweakpaneの設定
+    const pane = new Pane({
+      container: document.getElementById('tweakpane-container')
+    });
+
+    //position:fixed
+    pane.containerElem_.style.position = 'fixed';
+    pane.containerElem_.style.width = '300px';
+
+    // フォルダとパラメータの追加
+    const fromFolder = pane.addFolder({ title: 'From設定' });
+    const toFolder = pane.addFolder({ title: 'To設定' });
+    const scrollTriggerFolder = pane.addFolder({ title: 'ScrollTrigger設定' });
+
+    // From設定のパラメータ
+    fromFolder.addBinding(defaultSettings.from, 'opacity', { min: 0, max: 1, step: 0.1 });
+    fromFolder.addBinding(defaultSettings.from, 'x', { min: -200, max: 200, step: 1 });
+    fromFolder.addBinding(defaultSettings.from, 'y', { min: -200, max: 200, step: 1 });
+    fromFolder.addBinding(defaultSettings.from, 'scale', { min: 0, max: 2, step: 0.1 });
+    fromFolder.addBinding(defaultSettings.from, 'rotation', { min: -360, max: 360, step: 1 });
+    fromFolder.addBinding(defaultSettings.from, 'duration', { min: 0, max: 2, step: 0.1 });
+    fromFolder.addBinding(defaultSettings.from, 'ease', {
+      options: {
+        'power2.out': 'power2.out',
+        'back.out': 'back.out',
+        'elastic.out': 'elastic.out',
+        'bounce.out': 'bounce.out'
+      }
+    });
+    fromFolder.addBinding(defaultSettings.from, 'mask', {
+      options: {
+        'なし': 'unset',
+        '左から': 'inset(0 100% 0 0)',
+        '右から': 'inset(0 0 0 100%)',
+        '下から': 'inset(100% 0 0 0)',
+        '上から': 'inset(0 0 100% 0)'
+      }
+    });
+
+    // To設定のパラメータ
+    toFolder.addBinding(defaultSettings.to, 'opacity', { min: 0, max: 1, step: 0.1 });
+    toFolder.addBinding(defaultSettings.to, 'mask', {
+      options: {
+        'なし': 'unset',
+        'マスク解除': 'inset(0% 0% 0% 0%)',
+        '左': 'inset(0 100% 0 0)',
+        '右': 'inset(0 0 0 100%)',
+        '下': 'inset(100% 0 0 0)',
+        '上': 'inset(0 0 100% 0)'
+      }
+    });
+
+    // ScrollTrigger設定のパラメータ
+    scrollTriggerFolder.addBinding(defaultSettings.scrollTrigger, 'start', {
+      options: {
+        '要素の上端が画面の下端': 'top bottom',
+        '要素の上端が画面の下端から20%': 'top 80%',
+      }
+    });
+    // scrollTriggerFolder.addBinding(defaultSettings.scrollTrigger, 'end', {
+    //   options: {
+    //     '要素の下端が画面の下端': 'bottom bottom',
+    //     '要素の下端が画面の下端から20%': 'bottom 80%',
+    //   }
+    // });
+    scrollTriggerFolder.addBinding(defaultSettings.scrollTrigger, 'toggleActions', {
+      options: {
+        //１回だけ再生、上に戻ったらreverseして下に進んだらplay
+
+        '１回だけ再生': 'play none none none',
+        '上方向に戻ったら消える': 'play none none reverse',
+      }
+    });
+
+    // アニメーション関数
+    function animateElements() {
+      const elements = document.querySelectorAll('.js-fadein');
+
+      elements.forEach(element => {
+        // 要素にスタイルを適用
+
+
+        // アニメーションの種類を判定
+        const hasToSettings =
+          defaultSettings.to.opacity !== 1 ||
+          defaultSettings.to.mask !== 'unset';
+
+        const timeline = gsap.timeline({
+          scrollTrigger: {
+            trigger: element,
+            start: defaultSettings.scrollTrigger.start,
+            // end: defaultSettings.scrollTrigger.end,
+            toggleActions: defaultSettings.scrollTrigger.toggleActions,
+            markers: true // デバッグ用にマーカーを表示
+          }
+        });
+
+        if (hasToSettings) {
+          // gsap.fromToを使用
+          timeline.fromTo(element,
+            {
+              opacity: defaultSettings.from.opacity,
+              x: defaultSettings.from.x,
+              y: defaultSettings.from.y,
+              scale: defaultSettings.from.scale,
+              rotation: defaultSettings.from.rotation,
+              clipPath: defaultSettings.from.mask
+            },
+            {
+              opacity: defaultSettings.to.opacity,
+              clipPath: defaultSettings.to.mask,
+              duration: defaultSettings.from.duration,
+              ease: defaultSettings.from.ease
+            }
+          );
+        } else {
+          // gsap.fromを使用
+          timeline.from(element, {
+            opacity: defaultSettings.from.opacity,
+            x: defaultSettings.from.x,
+            y: defaultSettings.from.y,
+            scale: defaultSettings.from.scale,
+            rotation: defaultSettings.from.rotation,
+            clipPath: defaultSettings.from.mask,
+            duration: defaultSettings.from.duration,
+            ease: defaultSettings.from.ease
+          });
+        }
+      });
+    }
+
+    // 初回実行
+    animateElements();
+
+    // 設定変更時に再実行
+    pane.on('change', () => {
+      // すべてのGSAP/ScrollTriggerアニメーションを完全にリセット
+      gsap.killTweensOf(window);
+      ScrollTrigger.getAll().forEach(trigger => trigger.kill());
+
+      // アニメーションの状態をリセット
+      // ScrollTrigger.refresh();
+
+      // アニメーションを再実行
+      animateElements();
+    });
+
+
+
+
+    // メッセージリスナーを追加（親フレームからのリセット指示を受け取る）
+    window.addEventListener('message', (event) => {
+      if (event.data === 'reset-demo') {
+        // スクロール位置をリセット
+        window.scrollTo(0, 0);
+        location.reload();
+      }
+    });
+
+  });
+</script>
+</body>
+
+</html>
