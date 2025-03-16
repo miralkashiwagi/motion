@@ -281,6 +281,203 @@
     initGSAP();
 
 
+
+    // 反映ボタンの下にコード出力ボタンを追加
+    applyFolder.addButton({
+      title: '📋 コードを生成'
+    }).on('click', () => {
+      // 現在の設定に基づいてコードを生成
+      generateAndShowCode(defaultSettings);
+    });
+
+// コード生成と表示を行う関数
+    function generateAndShowCode(settings) {
+      // コードを生成
+      const code = generateGSAPCode(settings);
+
+      // モーダルを作成してコードを表示
+      showCodeModal(code);
+    }
+
+// GSAP + ScrollTriggerコードを生成する関数
+    function generateGSAPCode(settings) {
+      // fromの値からコード用の文字列を生成
+      const fromProps = [];
+      if (settings.from.opacity !== 1) fromProps.push(`opacity: ${settings.from.opacity}`);
+      if (settings.from.x !== 0) fromProps.push(`x: ${settings.from.x}`);
+      if (settings.from.y !== 0) fromProps.push(`y: ${settings.from.y}`);
+      if (settings.from.scale !== 1) fromProps.push(`scale: ${settings.from.scale}`);
+      if (settings.from.rotation !== 0) fromProps.push(`rotation: ${settings.from.rotation}`);
+      if (settings.from.mask !== 'unset' && settings.from.mask !== undefined) {
+        fromProps.push(`clipPath: "${settings.from.mask}"`);
+      }
+
+      // toの値からコード用の文字列を生成
+      const toProps = [];
+      toProps.push(`opacity: ${settings.to.opacity}`);
+      if (settings.to.mask !== 'unset' && settings.to.mask !== undefined) {
+        toProps.push(`clipPath: "${settings.to.mask}"`);
+      }
+
+      // ScrollTrigger設定
+      const scrollTriggerProps = [];
+      scrollTriggerProps.push(`trigger: ".js-fadein"`);
+      scrollTriggerProps.push(`start: "${settings.scrollTrigger.start}"`);
+      if (settings.scrollTrigger.end) {
+        scrollTriggerProps.push(`end: "${settings.scrollTrigger.end}"`);
+      }
+      scrollTriggerProps.push(`toggleActions: "${settings.scrollTrigger.toggleActions}"`);
+
+      // コード文字列を組み立て
+      return `// GSAPでスクロールアニメーションを設定
+gsap.utils.toArray('.js-fadein').forEach(element => {
+  gsap.fromTo(element,
+    {
+      ${fromProps.join(',\n      ')}
+    },
+    {
+      ${toProps.join(',\n      ')},
+      duration: ${settings.from.duration},
+      ease: "${settings.from.ease}",
+      scrollTrigger: {
+        ${scrollTriggerProps.join(',\n        ')}
+      }
+    }
+  );
+});`;
+    }
+
+
+    // モーダルウィンドウを作成してコードを表示する関数
+    function showCodeModal(codeText) {
+      // すでにあるモーダルとオーバーレイを削除（重複防止）
+      const existingModal = document.getElementById('code-modal');
+      const existingOverlay = document.getElementById('code-modal-overlay');
+      if (existingModal) {
+        existingModal.remove();
+      }
+      if (existingOverlay) {
+        existingOverlay.remove();
+      }
+
+      // モーダル要素を作成
+      const modal = document.createElement('div');
+      modal.id = 'code-modal';
+      modal.style.cssText = `
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    z-index: 1000;
+    max-width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
+  `;
+
+      // バックグラウンドオーバーレイ
+      const overlay = document.createElement('div');
+      overlay.id = 'code-modal-overlay'; // IDを追加
+      overlay.style.cssText = `
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+    z-index: 999;
+  `;
+
+      // オーバーレイクリック時に両方削除
+      overlay.onclick = () => {
+        modal.remove();
+        overlay.remove();
+      };
+
+      // タイトル
+      const title = document.createElement('h3');
+      title.textContent = 'GSAPアニメーションコード';
+      title.style.cssText = 'margin-bottom: 10px; font-weight: bold;';
+
+      // コードを表示するpre要素
+      const pre = document.createElement('pre');
+      pre.style.cssText = `
+    background: #f5f5f5;
+    padding: 15px;
+    border-radius: 4px;
+    overflow-x: auto;
+    font-family: monospace;
+    white-space: pre-wrap;
+    margin: 10px 0;
+  `;
+      pre.textContent = codeText;
+
+      // コピーボタン
+      const copyButton = document.createElement('button');
+      copyButton.textContent = 'コピー';
+      copyButton.style.cssText = `
+    background: #4285f4;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-right: 8px;
+  `;
+      copyButton.onclick = () => {
+        navigator.clipboard.writeText(codeText);
+        copyButton.textContent = 'コピーしました!';
+        setTimeout(() => {
+          copyButton.textContent = 'コピー';
+        }, 2000);
+      };
+
+      // 閉じるボタン - ここを修正
+      const closeButton = document.createElement('button');
+      closeButton.textContent = '閉じる';
+      closeButton.style.cssText = `
+    background: #888;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+  `;
+      // 閉じるボタンクリック時にモーダルとオーバーレイの両方を削除
+      closeButton.onclick = () => {
+        modal.remove();
+        overlay.remove(); // オーバーレイも削除
+      };
+
+      // 要素を組み立てる
+      const buttonContainer = document.createElement('div');
+      buttonContainer.style.cssText = 'display: flex; justify-content: flex-end; margin-top: 15px;';
+      buttonContainer.appendChild(copyButton);
+      buttonContainer.appendChild(closeButton);
+
+      modal.appendChild(title);
+      modal.appendChild(pre);
+      modal.appendChild(buttonContainer);
+
+      // DOMに追加
+      document.body.appendChild(overlay);
+      document.body.appendChild(modal);
+    }
+
+    
+
+
+
+
+
+
+
+
+
+
     // メッセージリスナーを追加（親フレームからのリセット指示を受け取る）
     window.addEventListener('message', (event) => {
       if (event.data === 'reset-demo') {
