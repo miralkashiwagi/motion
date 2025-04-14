@@ -1,0 +1,15 @@
+<svg width="100%" height="100%" viewBox="0 0 1000 200" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" overflow="auto" shape-rendering="auto" fill="#ffffff">
+  <defs>
+    <path id="wavepath" d="M 0 200 0 50 Q 150 143 300 50 t 300 0 300 0 300 0 300 0 300 0 v150 z" />
+    <path id="motionpath" d="M -600 0 0 0" />
+  </defs>
+  <g>
+    <use href="#wavepath" id="wave" y="0" fill="#c2c2c2">
+      <animateMotion
+        dur="20s"
+        repeatCount="indefinite">
+        <mpath href="#motionpath" />
+      </animateMotion>
+    </use>
+  </g>
+</svg>
